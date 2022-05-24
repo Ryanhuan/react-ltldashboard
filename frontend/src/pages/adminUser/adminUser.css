@@ -1,0 +1,106 @@
+.AdminUser {
+    flex: 4;
+
+}
+
+.AdminUserWrapper {
+    height: 100vh;
+    /* max-width: 1000px; */
+    /* width: 500px; */
+    width: 100%;
+
+}
+
+.AdminUserBody {
+    padding: 20px;
+}
+
+.AdminUserBodyGrid {
+    height: 50%;
+    width: 100% !important;
+
+}
+
+.AdminUserBodySignUpWrapper {
+    height: 0px;
+    transition: 0.5s;
+    overflow: hidden;
+
+}
+
+.AdminUserBodySignUpWrapper.active {
+    margin-top: 20px;
+    padding: 20px;
+    height: 280px;
+    transition: 0.5s;
+    -webkit-box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+    box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+    border-radius:10px;
+}
+
+.AdminUserBodySignUpWrapperItem{
+    display: flex;
+}
+
+
+.AdminUserBodySignUpItemBtn{
+text-align: right;
+}
+
+
+
+.userListUser {
+    display: flex;
+    align-items: center;
+}
+
+.userListImg {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.userListIcon{
+    color: var(--black2);
+    font-size: 32px !important;
+    margin-right: 10px;
+}
+
+.userListEdit {
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 5px 10px !important;
+    background-color: var(--success) !important;
+    color: white !important;
+}
+
+.userListDelete {
+    color: red;
+    cursor: pointer;
+}
+
+.CheckCircleOutline{
+    color: var(--success);
+    font-size: 32px !important;
+
+}
+
+.HighlightOff{
+    color: var(--error);
+    font-size: 32px !important;
+
+}
+
+
+Form label{
+    color: var(--black2);
+}
+
+
+.SignUpItemTitle{
+    font-weight: 600;
+    color: var(--fontSubColor);
+    padding-bottom: 10px;
+}
