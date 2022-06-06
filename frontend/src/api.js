@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useState } from 'react';
+import jwt_decode from 'jwt-decode'
+
 const baseURL = "http://localhost:3001/";
 // 從 localStorage 中獲取 token
 const getToken = () => {
@@ -7,16 +9,14 @@ const getToken = () => {
   return userToken?.token
 };
 
-const resetToken = (userToken)=>{
-  localStorage.removeItem('token');
-  localStorage.setItem('token', JSON.stringify(userToken));
+const resetToken = async (userToken) => {
+   localStorage.removeItem('token');
+   localStorage.setItem('token', JSON.stringify(userToken));
 }
 
 const removeToken = ()=>{
   localStorage.removeItem('token');
 }
-
-
 
 export default function useToken() {
   const [token, setToken] = useState(getToken());
@@ -36,6 +36,7 @@ export default function useToken() {
 export const instance  = axios.create({
   baseURL,
   headers: {
+    'Content-Type': 'application/json',
     authorization: getToken(), // headers 塞 token
   },
 });
@@ -47,6 +48,17 @@ instance.interceptors.request.use(
     const token = getToken();
     if (token) {
       config.headers["authorization"] = token;
+
+      let _token= JSON.parse(token)
+      let decodeRefreshToken = jwt_decode(_token.refreshToken);
+      const { exp } = decodeRefreshToken;
+      const nowTime = new Date().getTime();
+      if(exp<=nowTime){
+        removeToken();
+        window.location.href= '/login';
+        return;
+      }
+
     }
     return config;
   },
@@ -74,8 +86,9 @@ instance.interceptors.response.use(
             const originalRequest = error.config;
             console.log("401!! Unauthorized!")
             const resData = await instance.post("/auth/refreshToken");
-            originalRequest.headers.authorization = await JSON.stringify(resData.data.token);
-            resetToken(resData.data.token);
+            originalRequest.headers.authorization = JSON.stringify(resData.data.token);
+            await resetToken(resData.data.token);
+            this.setToken(resData.data.token);
             isRefreshing = false;
             return axios(originalRequest);
           }
@@ -107,14 +120,26 @@ instance.interceptors.response.use(
 );
 
 
-// post signin
-export const postLoginUser = async(postData) => instance.post("/auth/signin", postData).then((res) => res.data);
+// [get] userId
+export const getUserId =() =>{return JSON.parse(localStorage.getItem('userId'));}
 
-// post signup
+// [post] signin
+export const postLoginUser = async(data) => instance.post("/auth/signin", data).then((res) => res.data);
+
+// [post] signup
 export const postUserSignup = async(data) => instance.post("/api/signup", data).then((res) => res.data);
 
-// get user info
+// [get] user info
 export const getAllUsersInfo = async() => instance.get("/api/getAllUsers").then((res) => res.data);
 
-// post user  edit
+// [post] user  edit
 export const postUserEdit = async(data) => instance.post("/api/editUser", data).then((res) => res.data);
+
+// [post] get code_type => return seq&desc
+export const getSelectOption = async(data) => instance.post("/api/getSelectOption", data).then((res) => res.data);
+
+// [post] insert mat data
+export const insertMatData = async(data) => instance.post("/api/insertMatData", data).then((res) => res.data);
+
+// [post] get mat data
+export const getMatData = async(data) => instance.post("/api/getMatData", data).then((res) => res.data);

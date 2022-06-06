@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 
 
 
+
 module.exports = {
 
     /**
@@ -16,7 +17,7 @@ module.exports = {
         var qry = {};
 
         await m_db.query("member", qry, options, function (err, result){
-           err!=null? rtn.msg=err : rtn.msg="OK",rtn.data=result;
+            err!=null? rtn.msg=err : rtn.msg="OK",rtn.data=JSON.parse(JSON.stringify(result));
         })
         return rtn;
     },
@@ -32,7 +33,7 @@ module.exports = {
         qry.email = userInfo.email;
 
        await m_db.query("member", qry, options, function (err, result){
-           err!=null? rtn.msg=err+console.log("getUserInfo fail") : rtn.msg="OK",rtn.data=result;
+            err!=null? rtn.msg=err+console.log("getUserInfo fail") : rtn.msg="OK",rtn.data=result;
        })
         return rtn;
 
@@ -82,12 +83,9 @@ module.exports = {
         where.email = userInfo.email;
         const updateData={};
         updateData.isenabled=userInfo.isenabled;
-        
-        const root_tmp=[];
-        userInfo.rootData.forEach(ele=>{
-            ele.check?root_tmp.push(ele.value):'';
-        })
-        updateData.root=root_tmp.toString();
+        console.log("userInfo========",userInfo);
+        updateData.root=userInfo._root;
+        updateData.op_user=userInfo.op_user;
 
         await m_db.update(updateData,"member", where, function (err, result){
             err!=null?rtn.msg=err+console.log("updateUser fail"):rtn.msg='OK';
@@ -95,7 +93,6 @@ module.exports = {
 
         return rtn;
     },
-
 
   
 }
@@ -138,21 +135,15 @@ function insertUserAuthPromise(userInfo, t, resolve, reject) {
  */
 function insertUserMemberPromise(userInfo, t, resolve, reject) {
     try {
-        const {email,username} = userInfo;
+        const {email,username,op_user} = userInfo;
 
         var insertData = {};
         insertData.email = email;
         insertData.displayname = username;
         insertData.cr_date = utility.get_today();
-        insertData.op_user = "admin";
+        insertData.op_user = op_user;
         insertData.isenabled = true;
-
-        root_tmp=[];
-
-        for(var ele in userInfo.root) {
-            userInfo.root[ele].check? root_tmp.push(userInfo.root[ele].value):'';
-         }
-        insertData.root=root_tmp.toString();
+        insertData.root=userInfo._root;
 
         m_db.insertWithTx(insertData, 'member', t, function (err, result) {
             err!=null ? console.log(err)+reject() : resolve();

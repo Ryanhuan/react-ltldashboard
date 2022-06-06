@@ -16,9 +16,9 @@ export default function Sidebar() {
     <div className={sidebar ? 'sidebar active' : 'sidebar'}>
       <div className={sidebar ? 'sidebarWrapper active' : 'sidebarWrapper'}>
         <div className="sidebarMenuTitle">
-          <Link to='/' className="Link"  >
+          <Link to='/Admin' className="Link"  >
             <div className="logo">
-              <img src="images/LOGO_small.png" alt="LOGO" />
+              <img src="/images/LOGO_small.png" alt="LOGO" />
               <span className="logoTitle">後臺管理</span>
             </div>
           </Link>
@@ -31,7 +31,7 @@ export default function Sidebar() {
           <h3 className="sidebarTitle">Main</h3>
           <ul className="sidebarList">
             <li className="sidebarListItem" >
-              <NavLink to='/' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
+              <NavLink to='/Admin' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
                 <LineStyle className="sidebarIcon" />
                 Home
               </NavLink>
@@ -75,18 +75,18 @@ export default function Sidebar() {
           </ul>
         </div>
         <div className="sidebarMenu">
-          <h3 className="sidebarTitle">文章管理</h3>
+          <h3 className="sidebarTitle">材料管理</h3>
           <ul className="sidebarList">
             <li className="sidebarListItem">
-              <NavLink to='/EX' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
+              <NavLink to='/AdminMatManage' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
                 <MailOutline className="sidebarIcon" />
-                分類管理
+                材料管理
               </NavLink>
             </li>
             <li className="sidebarListItem">
               <NavLink to='/EX' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
                 <DynamicFeed className="sidebarIcon" />
-                內容管理
+                材料分類管理
               </NavLink>
             </li>
           </ul>
@@ -123,6 +123,24 @@ export default function Sidebar() {
               <NavLink to='/EX' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
                 <DynamicFeed className="sidebarIcon" />
                 網站訂單管理
+              </NavLink>
+            </li>
+          </ul>
+        </div>
+
+        <div className="sidebarMenu">
+          <h3 className="sidebarTitle">文章管理</h3>
+          <ul className="sidebarList">
+            <li className="sidebarListItem">
+              <NavLink to='/EX' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
+                <MailOutline className="sidebarIcon" />
+                分類管理
+              </NavLink>
+            </li>
+            <li className="sidebarListItem">
+              <NavLink to='/EX' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
+                <DynamicFeed className="sidebarIcon" />
+                內容管理
               </NavLink>
             </li>
           </ul>

@@ -7,7 +7,7 @@ import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 
-import { postUserEdit } from "../../../api";
+import { postUserEdit,getUserId } from "../../../api";
 import Swal from 'sweetalert2'
 
 export class ModalEditUser extends Component {
@@ -59,7 +59,16 @@ export class ModalEditUser extends Component {
 
   submitForm = async e => {
     e.preventDefault();
-    const _postUserEdit = await postUserEdit({ ...this.state });
+
+   //process data
+   const root_tmp=[];
+   for(var ele in this.state.rootData) {
+       if(this.state.rootData[ele].check) root_tmp.push(this.state.rootData[ele].value)
+    }
+   let _root=root_tmp.toString();
+   let op_user=getUserId()?.email||'user';
+
+    const _postUserEdit = await postUserEdit({ ...this.state,_root,op_user });
     _postUserEdit.msg === 'Edit_User_OK' ?
       Swal.fire({
         position: 'bottom-end',

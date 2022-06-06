@@ -22,7 +22,7 @@ var object = db.define("auth", {
     },
     op_user: {
         field: "op_user",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(100),
     },
     login_date: {
         field: "login_date",

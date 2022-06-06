@@ -45,11 +45,12 @@ module.exports = {
      * @param  {JSON} options Sequelize Options
      * @param  {any} callback 
      */
-    query:async function (table, qry, options, callback) {
+    query: async function (table, qry, options, callback) {
         var tb = require('../db/' + table);
         options.where = qry;
-       await tb.findAll(options).then(function (result) {
-            callback(null, result);
+        await tb.findAll(options).then(function (result) {
+            callback(null,result);
+            // callback(null,JSON.stringify(result));
         }).catch(function (err) {
             callback(err);
         })
@@ -61,10 +62,10 @@ module.exports = {
      * @param  {String} table 資料表名稱
      * @param  {any} callback 
      */
-    insert: function (insertdata, table, callback) {
+    insert:async function (insertdata, table, callback) {
         var tb = require('../db/' + table);
 
-        tb.create(insertdata).then(function (result) {
+        await tb.create(insertdata).then(function (result) {
             callback(null, result);
         }).catch(function (err) {
             callback(err);
@@ -97,7 +98,7 @@ module.exports = {
      * @param  {JSON} where 更新條件
      * @param  {any} callback 
      */
-    update:async function (updatedata, table, where, callback) {
+    update: async function (updatedata, table, where, callback) {
         var tb = require('../db/' + table);
         await tb.update(updatedata, {
             where: where

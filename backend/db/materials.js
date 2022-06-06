@@ -57,7 +57,7 @@ var object = db.define("materials", {
     },
     op_user: {
         field: "op_user",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(100),
     },
 
     guid: {

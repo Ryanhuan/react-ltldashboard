@@ -3,7 +3,7 @@ import { useState ,useEffect} from 'react'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from 'react-bootstrap/Button'
-import { postUserSignup,getAllUsersInfo } from "../../api";
+import { postUserSignup,getAllUsersInfo,getUserId } from "../../api";
 import { DataGrid } from '@mui/x-data-grid';
 import { AccountCircle ,CheckCircleOutline, HighlightOff} from '@material-ui/icons';
 import {ModalEditUser} from './ModalEditUser/ModalEditUser';
@@ -49,7 +49,15 @@ export default function AdminUser() {
             alert("兩次密碼輸入不一致!");
         }
         else {
-            const signUpData = await postUserSignup({ email, password, username, root });
+            //process data
+            const root_tmp=[];
+            for(var ele in root) {
+                if(root[ele].check) root_tmp.push(root[ele].value)
+             }
+            let _root=root_tmp.toString();
+            let op_user=getUserId()?.email||'user';
+
+            const signUpData = await postUserSignup({ email, password, username, _root,op_user });
             if (signUpData.msg === 'SingUp_OK') {
                 Swal.fire({
                     position: 'bottom-end',
@@ -105,9 +113,9 @@ export default function AdminUser() {
 
     //set users grid columns
     const columns = [
-        { field: 'id', headerName: 'ID', width: 90 },
+        { field: 'id', headerName: 'ID',flex:1 },
         {
-            field: 'displayname', headerName: 'User', width: 200,
+            field: 'displayname', headerName: 'User', flex:1,
             renderCell: (params) => {
                 return (
                     <div className="userListUser">
@@ -120,11 +128,11 @@ export default function AdminUser() {
                 )
             }
         },
-        { field: 'email', headerName: 'Email', width: 300 },
+        { field: 'email', headerName: 'Email', flex:2 },
         {
             field: 'isenabled',
             headerName: 'Status',
-            width: 70,
+            flex:1,
             renderCell: (params) => {
                 return (
                     <div className="userListEnable">
@@ -139,12 +147,12 @@ export default function AdminUser() {
         {
             field: 'root',
             headerName: 'root',
-            width: 300,
+            flex:2,
         },
         {
             field: 'action',
             headerName: 'Action',
-            width: 100,
+            flex:1,
             renderCell: (params) => {
                 const userListEditOpen=(data)=>{
                     let data_=JSON.parse(JSON.stringify(data));

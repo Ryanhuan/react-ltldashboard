@@ -38,7 +38,7 @@ var object = db.define("member", {
     },
     op_user: {
         field: "op_user",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(100),
     },
     isenabled: {
         field: "isenabled",

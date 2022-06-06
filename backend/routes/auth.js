@@ -36,7 +36,6 @@ router.post("/signin", function (req, res) {
                 rtn.msg = 'ACCOUNT_NOT_ENABLE';
                 res.json(rtn);
             }
-
             //compare pwd
             const psRes = bcrypt.compareSync(password, result[0].password);
             if (!psRes) { // compare fail
@@ -50,6 +49,7 @@ router.post("/signin", function (req, res) {
             rtn.token.refreshToken = await Tokens.refreshToken.createToken(result[0]);
             //return userId
             const userId_= await member.getUserInfo(req.body);
+            
             rtn.userId= userId_.data[0];
             //return ok and data
             rtn.msg = "OK_LOGIN_SUCCESSFULLY";

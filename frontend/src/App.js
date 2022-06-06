@@ -9,7 +9,10 @@ import User from './pages/user/User'
 import NewUser from './pages/newUser/NewUser'
 import ProductList from './pages/productList/ProductList'
 import Login from './pages/login/Login'
+
 import AdminUser from './pages/adminUser/AdminUser'
+import {AdminMatManage} from './pages/adminMatManage/AdminMatManage'
+
 import useToken from './api'
 
 
@@ -53,7 +56,11 @@ function App() {
                 <Route path='/products' element={<ProductList />} /> 
                 <Route path='/product/:productId' element={<User />} /> 
                 <Route path='/newProduct' element={<NewUser />} /> 
+
+                <Route path='/Admin' element={<Home />} /> 
                 <Route path='/AdminUser' element={<AdminUser />} /> 
+                <Route path='/AdminMatManage' element={<AdminMatManage />} />
+                
                 <Route path='*'  element={<Home />} />
               </Routes>
             </div>
