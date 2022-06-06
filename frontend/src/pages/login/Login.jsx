@@ -3,12 +3,12 @@ import { useState } from 'react'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from 'react-bootstrap/Button'
-import PropTypes from 'prop-types';
 
 import { postLoginUser} from "../../api";
 
 
-export default function Login({ setToken }) {
+
+export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -21,8 +21,7 @@ export default function Login({ setToken }) {
         else {
             const loginData = await postLoginUser({ email, password });
             if (loginData.msg === 'OK_LOGIN_SUCCESSFULLY') {
-                console.log(loginData);
-                setToken(loginData.token);
+                localStorage.setItem('token', JSON.stringify(loginData.token));
                 localStorage.setItem('userId', JSON.stringify(loginData.userId));
                 window.location.reload(false);
             } else {
@@ -80,8 +79,3 @@ export default function Login({ setToken }) {
         </div>
     )
 }
-
-
-Login.propTypes = {
-    setToken: PropTypes.func.isRequired
-  }

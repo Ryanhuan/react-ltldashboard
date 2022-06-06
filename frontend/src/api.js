@@ -18,20 +18,6 @@ const removeToken = ()=>{
   localStorage.removeItem('token');
 }
 
-export default function useToken() {
-  const [token, setToken] = useState(getToken());
-  
-  const saveToken = (userToken) => {
-    localStorage.setItem('token', JSON.stringify(userToken));
-    setToken(userToken.token);
-  };
-  return {
-    setToken: saveToken,
-    token
-  }
-}
-
-
 // 創建一個 axios 實例
 export const instance  = axios.create({
   baseURL,
@@ -40,63 +26,63 @@ export const instance  = axios.create({
     authorization: getToken(), // headers 塞 token
   },
 });
-let isRefreshing = false;
 
 //request
 instance.interceptors.request.use(
-  (config) => {
+  (request) => {
     const token = getToken();
     if (token) {
-      config.headers["authorization"] = token;
-
+      request.headers['authorization'] =token;
       let _token= JSON.parse(token)
       let decodeRefreshToken = jwt_decode(_token.refreshToken);
       const { exp } = decodeRefreshToken;
       const nowTime = new Date().getTime();
       if(exp<=nowTime){
-        removeToken();
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
         window.location.href= '/login';
         return;
       }
 
     }
-    return config;
+    return request;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
 
-
 //response
 instance.interceptors.response.use(
   function (response) {
-    // console.log(response);
-
-    // Do something with response data
+    // if (response.data.token) {
+    //   window.localStorage.setItem('token', response.data.token);
+    // }
     return response;
   },
   async function (error) {
     if (error.response){
       switch (error.response.status) {
         case 401:
-          if (!isRefreshing) {
-            console.log('isRefreshingToken ')
-            isRefreshing = true; 
-            const originalRequest = error.config;
-            console.log("401!! Unauthorized!")
-            const resData = await instance.post("/auth/refreshToken");
-            originalRequest.headers.authorization = JSON.stringify(resData.data.token);
-            await resetToken(resData.data.token);
-            this.setToken(resData.data.token);
-            isRefreshing = false;
-            return axios(originalRequest);
+          const originalRequest = error.config;
+          if (!originalRequest._retry) {
+            try {
+              console.log('isRefreshingToken')
+              originalRequest._retry = true;
+              // console.log("401!! Unauthorized!")
+              const resData = await instance.post("/auth/refreshToken");
+              originalRequest.headers['authorization'] = JSON.stringify(resData.data.token);
+              await resetToken(resData.data.token);
+              return axios(originalRequest);
+            } catch (_error) {
+              return Promise.reject(_error);
+            }
           }
           break;
         case 403:
           console.log("403!! Forbidden!")
           removeToken();
-          window.location.href= '/login';
+          window.location.href = '/login';
           break
 
         case 404:

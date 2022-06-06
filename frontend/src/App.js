@@ -13,8 +13,6 @@ import Login from './pages/login/Login'
 import AdminUser from './pages/adminUser/AdminUser'
 import {AdminMatManage} from './pages/adminMatManage/AdminMatManage'
 
-import useToken from './api'
-
 
 function ErrorFallback({error, resetErrorBoundary}) {
   return (
@@ -28,14 +26,14 @@ function ErrorFallback({error, resetErrorBoundary}) {
 
 
 function App() {
-  const { token, setToken } = useToken();
-
+  let token=localStorage.getItem('token');
+  
   if(!token) {
     return  (
         <Router>
           <Routes>
-            <Route path='/login' element={<Login setToken={setToken} />} /> 
-            <Route path='*' element={<Login setToken={setToken} />} /> 
+            <Route path='/login' element={<Login />} /> 
+            <Route path='*'  element={<Login />}/> 
           </Routes> 
         </Router>
     )
