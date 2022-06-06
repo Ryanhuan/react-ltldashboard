@@ -55,9 +55,6 @@ instance.interceptors.request.use(
 //response
 instance.interceptors.response.use(
   function (response) {
-    // if (response.data.token) {
-    //   window.localStorage.setItem('token', response.data.token);
-    // }
     return response;
   },
   async function (error) {

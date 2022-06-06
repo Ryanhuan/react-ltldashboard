@@ -1,0 +1,55 @@
+.insertRow{
+    padding: 5px 0;
+}
+
+.btn{
+    margin: 5px 5px;
+}
+
+.AdminMatManageItem{
+    padding: 20px;
+}
+
+.AdminMatManageItemTitle{
+    font-weight: 600;
+    font-size: 24px;
+    color: var(--fontSubColor);
+    padding-bottom: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.AdminMatManageItemTitleIcon{
+    font-size: 28px !important;
+    transform: rotate(900deg);
+}
+
+.AdminMatManageItemWrapper {
+    height: 0px;
+    transition: 0.5s;
+    overflow: hidden;
+}
+
+.AdminMatManageItemTitleIcon.active{
+    transition: 0.5s ease-in;
+    transform: rotate(0deg);
+}
+
+.AdminMatManageItemTitleIcon.noActive{
+    transition: 0.5s ease-in;
+    transform: rotate(900deg);
+}
+
+.AdminMatManageItemWrapper.active{
+    padding-top: 10px;
+    height: 370px;
+    transition: 0.5s;
+    -webkit-box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+    box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+    border-radius:10px;
+}
+
+
+
+.matDataList{
+    height:500px;
+}
