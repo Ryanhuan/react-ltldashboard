@@ -10,11 +10,8 @@ import { Eject } from '@material-ui/icons';
 import { DataGrid } from '@mui/x-data-grid';
 
 import Swal from 'sweetalert2';
-import { getSelectOption, insertMatData , getMatData } from "../../api";
+import { postData } from "../../api";
 
-
-
-// export default function AdminMatManage() {
 export class AdminMatManage extends Component {
     constructor(props) {
         super(props);
@@ -39,8 +36,11 @@ export class AdminMatManage extends Component {
         //bind
         this.insertData = this.insertData.bind(this);
         this.searchData = this.searchData.bind(this);
+        
+        this.dataClear = this.dataClear.bind(this);
         this.WrapperOpen = this.WrapperOpen.bind(this);
         this.handleDataChange = this.handleDataChange.bind(this);
+        
         //func
         this._getSelectOption();
     }
@@ -49,7 +49,6 @@ export class AdminMatManage extends Component {
         this._getMatData({});
     }
 
-
     //get select Option 
     async _getSelectOption() {
         //copy state.SelectOption
@@ -57,7 +56,7 @@ export class AdminMatManage extends Component {
         //qry from state.SelectOption
         let qryTmp = Object.keys(_SelectOption);
         //get Select Option res 
-        let _res = await getSelectOption(qryTmp);
+        let _res = await postData("/api/getSelectOption",qryTmp);
         //update Select Option data
         qryTmp.forEach(ele => {
             _res.data[ele].forEach(ele_res => {
@@ -66,22 +65,19 @@ export class AdminMatManage extends Component {
         })
     }
 
-     // insert & search data onchange
-    handleDataChange(event, action) {
-        action = action + 'Data';
-        let _action = this.state[action];
-        let _name = event.target.name;
-        _action[_name] = event.target.value;
-        this.setState({ [action]: _action });
-
-        if (action === "insertData") {
-            //計算單價
-            if ((_name === 'price' && this.state.insertData.num !== 0) || _name === 'num') {
-                let tmpPrice = this.state.insertData.price / this.state.insertData.num;
-                _action.pricePer = Math.round(tmpPrice * 10) / 10;
-                this.setState({ insertData: _action });
-            }
+    //get mat data for grid
+    async _getMatData(qryData) {
+        let _res = await postData("/api/getMatData",qryData);
+        let _gridData = _res.data;
+        delete _gridData.guid;
+        _gridData.forEach(ele => {
+            ele.matId = ele.id;
+            ele.id = '';
+        })
+        for (let i = 0; i < _gridData.length; i++) {
+            _gridData[i].id = (i + 1);
         }
+        this.setState({ gridData: [..._gridData] });
     }
 
     //材料新增材料
@@ -98,7 +94,7 @@ export class AdminMatManage extends Component {
                 timer: 1500
             })
         }else{
-            let res_ = await insertMatData(this.state.insertData);
+            let res_ = await postData("/api/insertMatData",this.state.insertData);
             if (res_.status === 'InsertMatData_OK') {
                 Swal.fire({
                     position: 'bottom-end',
@@ -136,39 +132,43 @@ export class AdminMatManage extends Component {
     async searchData(event) {
         event.preventDefault();
     }
-    
-    insertDataClear(event){
-        event.preventDefault();
+
+    // insert & search data onchange
+    handleDataChange(event, action) {
+        action = action + 'Data';
+        let _action = this.state[action];
+        let _name = event.target.name;
+        _action[_name] = event.target.value;
+        this.setState({ [action]: _action });
+
+        if (action === "insertData") {
+            //計算單價
+            if ((_name === 'price' && this.state.insertData.num !== 0) || _name === 'num') {
+                let tmpPrice = this.state.insertData.price / this.state.insertData.num;
+                _action.pricePer = Math.round(tmpPrice * 10) / 10;
+                this.setState({ insertData: _action });
+            }
+        }
     }
 
-    searchDataClear(event){
+    //clear
+    dataClear(event) {
         event.preventDefault();
+        let _dataName = this.state[event.target.name];
+        for (var ele in _dataName) {
+            if (typeof _dataName[ele] === 'string') { _dataName[ele] = '' } else if (typeof _dataName[ele] === 'number') { _dataName[ele] = 0 };
+        }
+        this.setState({ [_dataName]: _dataName });
     }
 
     // wrapper switch
-    WrapperOpen(event,wrapper) {
+    WrapperOpen(event) {
         event.preventDefault();
-        let _WrapperOpen=this.state.WrapperOpen;
-        _WrapperOpen[wrapper]=!_WrapperOpen[wrapper];
+        let wrapperName = event.target.name;
+        let _WrapperOpen = this.state.WrapperOpen;
+        _WrapperOpen[wrapperName] = !_WrapperOpen[wrapperName];
         this.setState({ WrapperOpen: _WrapperOpen });
     }
-
-
- 
-    async _getMatData(qryData) {
-        let _res = await getMatData(qryData);
-        let _gridData = _res.data;
-        delete _gridData.guid;
-        _gridData.forEach(ele => {
-            ele.matId = ele.id;
-            ele.id = '';
-        })
-        for (let i = 0; i < _gridData.length; i++) {
-            _gridData[i].id = (i + 1);
-        }
-        this.setState({ gridData: [..._gridData] });
-    }
-
    
 
     render() {
@@ -193,7 +193,6 @@ export class AdminMatManage extends Component {
             },
         ];
 
-
         return (
             <div className="AdminMatManage">
                 <div className="AdminMatManageWrapper">
@@ -201,9 +200,10 @@ export class AdminMatManage extends Component {
                         <span className="PageTitle">材料管理</span>
                     </div>
                     <div className="AdminMatManageBody">
+                        {/* insert */}
                         <div className="AdminMatManageItem">
                             <div className="AdminMatManageItemTitle">
-                                <a href="/#" className="AdminMatManageItemTitle" onClick={(e)=>{this.WrapperOpen(e,"insertWrapper")}}>材料新增<Eject className={this.state.WrapperOpen.insertWrapper ? 'AdminMatManageItemTitleIcon active' : 'AdminMatManageItemTitleIcon noActive'} /></a>
+                                <a href="/#" className="AdminMatManageItemTitle" name="insertWrapper" onClick={this.WrapperOpen}>材料新增<Eject className={this.state.WrapperOpen.insertWrapper ? 'AdminMatManageItemTitleIcon active' : 'AdminMatManageItemTitleIcon noActive'} /></a>
                             </div>
                             <div className={this.state.WrapperOpen.insertWrapper ? 'AdminMatManageItemWrapper active' : 'AdminMatManageItemWrapper'}>
                                 <Container>
@@ -276,7 +276,7 @@ export class AdminMatManage extends Component {
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={3} md={3}>
                                             <Button className="btn" variant="outline-primary" onClick={this.insertData}>新增</Button>
-                                            <Button className="btn" variant="outline-secondary" onClick={this.insertDataClear}>清除新增</Button>
+                                            <Button className="btn" variant="outline-secondary" name="insertData" onClick={this.dataClear}>清除新增</Button>
                                         </Col>
                                     </Row>
                                 </Container>
@@ -286,7 +286,7 @@ export class AdminMatManage extends Component {
                         {/* edit */}
                         <div className="AdminMatManageItem">
                             <div className="AdminMatManageItemTitle">
-                                <a href="/#" className="AdminMatManageItemTitle" onClick={(e)=>{this.WrapperOpen(e,"searchWrapper")}}>材料搜尋<Eject className={this.state.WrapperOpen.searchWrapper ? 'AdminMatManageItemTitleIcon active' : 'AdminMatManageItemTitleIcon noActive'} /></a>
+                                <a href="/#" className="AdminMatManageItemTitle" name="searchWrapper" onClick={this.WrapperOpen}>材料搜尋<Eject className={this.state.WrapperOpen.searchWrapper ? 'AdminMatManageItemTitleIcon active' : 'AdminMatManageItemTitleIcon noActive'} /></a>
                             </div>
                             <div className={this.state.WrapperOpen.searchWrapper ? 'AdminMatManageItemWrapper active' : 'AdminMatManageItemWrapper'}>
                                 <Container>
@@ -359,7 +359,7 @@ export class AdminMatManage extends Component {
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={3} md={3}>
                                             <Button className="btn" variant="outline-primary" onClick={this.searchData}>搜尋</Button>
-                                            <Button className="btn" variant="outline-secondary" onClick={this.searchDataClear}>清除搜尋</Button>
+                                            <Button className="btn" variant="outline-secondary" name="searchData" onClick={this.dataClear}>清除搜尋</Button>
                                         </Col>
                                     </Row>
 

@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useState } from 'react';
 import jwt_decode from 'jwt-decode'
 
 const baseURL = "http://localhost:3001/";
@@ -102,27 +101,13 @@ instance.interceptors.response.use(
   }
 );
 
+// [post] 
+export const postData  = async(url,data) => instance.post(url, data).then((res) => res.data);
 
-// [get] userId
+// [get] 
+export const getData  = async(url) => instance.get(url).then((res) => res.data);
+
+// get userId
 export const getUserId =() =>{return JSON.parse(localStorage.getItem('userId'));}
 
-// [post] signin
-export const postLoginUser = async(data) => instance.post("/auth/signin", data).then((res) => res.data);
 
-// [post] signup
-export const postUserSignup = async(data) => instance.post("/api/signup", data).then((res) => res.data);
-
-// [get] user info
-export const getAllUsersInfo = async() => instance.get("/api/getAllUsers").then((res) => res.data);
-
-// [post] user  edit
-export const postUserEdit = async(data) => instance.post("/api/editUser", data).then((res) => res.data);
-
-// [post] get code_type => return seq&desc
-export const getSelectOption = async(data) => instance.post("/api/getSelectOption", data).then((res) => res.data);
-
-// [post] insert mat data
-export const insertMatData = async(data) => instance.post("/api/insertMatData", data).then((res) => res.data);
-
-// [post] get mat data
-export const getMatData = async(data) => instance.post("/api/getMatData", data).then((res) => res.data);

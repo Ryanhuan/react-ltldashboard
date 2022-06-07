@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from 'react-bootstrap/Button'
 
-import { postLoginUser} from "../../api";
+import { postData  } from "../../api";
 
 
 
@@ -19,7 +19,7 @@ export default function Login() {
             alert("Email or password is not entered!");
         }
         else {
-            const loginData = await postLoginUser({ email, password });
+            const loginData = await postData("/auth/signin",{ email, password });
             if (loginData.msg === 'OK_LOGIN_SUCCESSFULLY') {
                 localStorage.setItem('token', JSON.stringify(loginData.token));
                 localStorage.setItem('userId', JSON.stringify(loginData.userId));

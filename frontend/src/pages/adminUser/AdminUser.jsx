@@ -3,7 +3,9 @@ import { useState ,useEffect} from 'react'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from 'react-bootstrap/Button'
-import { postUserSignup,getAllUsersInfo,getUserId } from "../../api";
+import { postData , getData ,getUserId } from "../../api";
+
+// import { postUserSignup,getAllUsersInfo,getUserId } from "../../api";
 import { DataGrid } from '@mui/x-data-grid';
 import { AccountCircle ,CheckCircleOutline, HighlightOff} from '@material-ui/icons';
 import {ModalEditUser} from './ModalEditUser/ModalEditUser';
@@ -57,7 +59,7 @@ export default function AdminUser() {
             let _root=root_tmp.toString();
             let op_user=getUserId()?.email||'user';
 
-            const signUpData = await postUserSignup({ email, password, username, _root,op_user });
+            const signUpData = await postData("/api/signup",{ email, password, username, _root,op_user });
             if (signUpData.msg === 'SingUp_OK') {
                 Swal.fire({
                     position: 'bottom-end',
@@ -98,7 +100,7 @@ export default function AdminUser() {
     useEffect(() => {getAllUsersInfo_();},[]);
 
     const getAllUsersInfo_ = () => {
-        getAllUsersInfo()
+        getData("/api/getAllUsers")
         .then((result) => {
             // console.log(result.data);
             var tmp=[];

@@ -6,8 +6,8 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
+import { postData ,getUserId } from "../../../api";
 
-import { postUserEdit,getUserId } from "../../../api";
 import Swal from 'sweetalert2'
 
 export class ModalEditUser extends Component {
@@ -68,7 +68,7 @@ export class ModalEditUser extends Component {
    let _root=root_tmp.toString();
    let op_user=getUserId()?.email||'user';
 
-    const _postUserEdit = await postUserEdit({ ...this.state,_root,op_user });
+    const _postUserEdit = await postData("/api/editUser",{ ...this.state,_root,op_user });
     _postUserEdit.msg === 'Edit_User_OK' ?
       Swal.fire({
         position: 'bottom-end',
