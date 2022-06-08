@@ -6,9 +6,9 @@ import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from 'react-bootstrap/Button'
-import { Eject } from '@material-ui/icons';
+import { Eject, DeleteOutline, Edit} from '@material-ui/icons';
 import { DataGrid } from '@mui/x-data-grid';
-
+import {CustomModal}from '../../components/modal/customModal';
 import Swal from 'sweetalert2';
 import { postData } from "../../api";
 
@@ -22,16 +22,21 @@ export class AdminMatManage extends Component {
                 searchWrapper:false,
             },
             insertData: {
-                id: '', type: '', name: '', size: '', quality: '', storeName: '', price: 0, num: 0, pricePer: 0, memo: '',
+                id: '', type: '', name: '', size: '', quality: '', store_name: '', price: '', num: '', price_per: '', memo: '',
             },
             searchData: {
-                id: '', type: '', name: '', size: '', quality: '', storeName: '', price: 0, num: 0, pricePer: 0, memo: '',
+                id: '', type: '', name: '', size: '', quality: '', storeName: '', lowPrice: '', highPrice: '', lowPricePer: '', highPricePer: '', memo: '',
             },
             SelectOption: {
                 ma_type: [{ value: '', label: '==請選擇==' },],
                 ma_quality: [{ value: '', label: '==請選擇==' },],
             },
             gridData:[],
+            modal:{
+                show: false,
+                title:'',
+                data:{},
+            }
         };
         //bind
         this.insertData = this.insertData.bind(this);
@@ -70,12 +75,8 @@ export class AdminMatManage extends Component {
         let _res = await postData("/api/getMatData",qryData);
         let _gridData = _res.data;
         delete _gridData.guid;
-        _gridData.forEach(ele => {
-            ele.matId = ele.id;
-            ele.id = '';
-        })
         for (let i = 0; i < _gridData.length; i++) {
-            _gridData[i].id = (i + 1);
+            _gridData[i].seq = (i + 1);
         }
         this.setState({ gridData: [..._gridData] });
     }
@@ -94,8 +95,15 @@ export class AdminMatManage extends Component {
                 timer: 1500
             })
         }else{
-            let res_ = await postData("/api/insertMatData",this.state.insertData);
-            if (res_.status === 'InsertMatData_OK') {
+            let _insertData=this.state.insertData
+            for(let ele in _insertData){
+                if(ele==='price'||ele==='num'||ele==='price_per'){
+                    _insertData[ele]= _insertData[ele]==='' ? 0:parseInt(_insertData[ele]);
+                }
+            }
+            // _insertData
+            let _res = await postData("/api/insertMatData",this.state.insertData);
+            if (_res.status === 'InsertMatData_OK') {
                 Swal.fire({
                     position: 'bottom-end',
                     width: 400,
@@ -104,7 +112,8 @@ export class AdminMatManage extends Component {
                     showConfirmButton: false,
                     timer: 1500
                 })
-            } else if (res_.msg === 'ID_Repeated') {
+                this._getMatData({});
+            } else if (_res.msg === 'ID_Repeated') {
                 Swal.fire({
                     position: 'bottom-end',
                     width: 400,
@@ -118,19 +127,26 @@ export class AdminMatManage extends Component {
                     position: 'bottom-end',
                     width: 400,
                     icon: 'error',
-                    title: res_.msg,
+                    title: JSON.stringify(_res.msg),
                     showConfirmButton: false,
                     timer: 1500
                 })
             }
         }
-        
-
     }
 
     //材料搜尋材料
     async searchData(event) {
         event.preventDefault();
+        if(this.state.searchData.lowPricePer > this.state.searchData.highPrice ){
+            Swal.fire(
+                'No No!',
+                '最低單價不可高於最高單價',
+                'error'
+            )
+        }else{
+            this._getMatData(this.state.searchData);
+        }
     }
 
     // insert & search data onchange
@@ -138,14 +154,15 @@ export class AdminMatManage extends Component {
         action = action + 'Data';
         let _action = this.state[action];
         let _name = event.target.name;
-        _action[_name] = event.target.value;
+        // input type change (if type == number && value !=='' then string => number)
+        _action[_name] = (event.target.type === 'number' && event.target.value !== '') ? parseInt(event.target.value) : _action[_name] = event.target.value;
         this.setState({ [action]: _action });
 
         if (action === "insertData") {
             //計算單價
-            if ((_name === 'price' && this.state.insertData.num !== 0) || _name === 'num') {
+            if ((_name === 'price' && this.state.insertData.num !== '') || _name === 'num') {
                 let tmpPrice = this.state.insertData.price / this.state.insertData.num;
-                _action.pricePer = Math.round(tmpPrice * 10) / 10;
+                _action.price_per = Math.round(tmpPrice * 10) / 10;
                 this.setState({ insertData: _action });
             }
         }
@@ -155,7 +172,7 @@ export class AdminMatManage extends Component {
     dataClear(event) {
         event.preventDefault();
         let _dataName = this.state[event.target.name];
-        for (var ele in _dataName) {
+        for (let ele in _dataName) {
             if (typeof _dataName[ele] === 'string') { _dataName[ele] = '' } else if (typeof _dataName[ele] === 'number') { _dataName[ele] = 0 };
         }
         this.setState({ [_dataName]: _dataName });
@@ -173,9 +190,111 @@ export class AdminMatManage extends Component {
 
     render() {
 
+        const selectOptionChange=(value,selectOptions)=>{
+            for(let ele in selectOptions){
+              if(selectOptions[ele].label===value){ return selectOptions[ele].value }
+            }
+        }
+
+        const modalOpen=(event,data)=>{
+            event.preventDefault();
+            let _data=JSON.parse(JSON.stringify(data));
+            let _modal=this.state.modal;
+            _data.type=selectOptionChange(_data.type,this.state.SelectOption.ma_type);
+            _data.quality=selectOptionChange(_data.quality,this.state.SelectOption.ma_quality);
+            _modal.data=_data;
+            _modal.title="修改";
+            _modal.show=!_modal.show;
+            this.setState({modal:_modal});
+        }
+
+        const modalOnHide=()=>{
+            let _modal=this.state.modal;
+            _modal.show=!_modal.show;
+            this.setState({modal:_modal});
+        }
+
+        //edit submit
+        const submitForm=async (event,data)=>{
+            event.preventDefault();
+            Swal.fire({
+                title: '確定要修改?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '確定',
+                cancelButtonText: '取消'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    let _res = await postData("/api/editMatData", data);
+                    if (_res.status === 'editMatData_OK') {
+                        Swal.fire(
+                            '完成修改!',
+                            '修改成功.',
+                            'success'
+                        )
+                        this._getMatData({});
+                    } else {
+                        Swal.fire(
+                            'Fail!',
+                            _res.msg,
+                            'error'
+                        )
+                    }
+                }
+            })
+            modalOnHide();
+        }
+
+        //grid delete
+        const handleDelete = async (event, data) => {
+            event.preventDefault();
+            Swal.fire({
+                title: '確定要刪除?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '確定',
+                cancelButtonText: '取消'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    let _res = await postData("/api/deleteMatData", data);
+                    if (_res.status === 'deleteMatData_OK') {
+                        Swal.fire(
+                            '完成刪除!',
+                            '刪除成功.',
+                            'success'
+                        )
+                        this._getMatData({});
+                    } else {
+                        Swal.fire(
+                            'Fail!',
+                            _res.msg,
+                            'error'
+                        )
+                    }
+                }
+            })
+        }
+
+        const modalCols = [
+            { field: 'id', headerName: 'ID', type: 'text', className: 'mb-2 col-4 '},
+            { field: 'type', headerName: '類別', type: 'dropDown', className: 'mb-2 col-4' ,selectOption:this.state.SelectOption.ma_type},
+            { field: 'name', headerName: '品名', type: 'text', className: 'mb-2 col-4 ' },
+            { field: 'size', headerName: '尺寸', type: 'text', className: 'mb-2 col-4 ' },
+            { field: 'quality', headerName: '質地', type: 'dropDown', className: 'mb-2 col-4 ' ,selectOption:this.state.SelectOption.ma_quality },
+            { field: 'store_name', headerName: '店家', type: 'text', className: 'mb-2 col-4 ' },
+            { field: 'price', headerName: '價錢', type: 'number', className: 'mb-2 col-4 ' },
+            { field: 'num', headerName: '數量', type: 'number', className: 'mb-2 col-4 ' },
+            { field: 'price_per', headerName: '單價(元)', type: 'number', className: 'mb-2 col-4 ',disabled:true},
+            { field: 'memo', headerName: '備註', type: 'text', className: 'mb-2 col-12 ' },
+        ]
+
         const columns = [
-            { field: 'id', headerName: 'Seq' , flex: 1 },
-            { field: 'matId', headerName: 'ID', flex: 1},
+            { field: 'seq', headerName: 'Seq', flex: 1},
+            { field: 'id', headerName: 'ID', flex: 1},
             { field: 'type', headerName: '類別', flex: 1},
             { field: 'name', headerName: '品名', flex: 1},
             { field: 'size', headerName: '尺寸',  flex: 1},
@@ -185,8 +304,13 @@ export class AdminMatManage extends Component {
                 renderCell: (params) => {
                     return (
                         <>
-                            <button className="userListEdit">Edit</button>
-                            {/* <DeleteOutline className="userListDelete" onClick={() => handleDelete(params.row.id)} /> */}
+                            <Edit className="matGridEdit" onClick={(e) => modalOpen(e,params.row)} title="edit"/>
+                            <DeleteOutline className="matGridDelete" onClick={(e) => handleDelete(e,params.row)} />
+                            {this.state.modal.show ?
+                                <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
+                                modalCols={modalCols} submitForm={(e,data)=>{submitForm(e,data)}}
+                                 /> : ''
+                            }
                         </>
                     )
                 }
@@ -242,7 +366,7 @@ export class AdminMatManage extends Component {
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputStoreName" label="店家" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="店家" name='storeName' value={this.state.insertData.storeName}  onChange={(e)=>{this.handleDataChange(e,"insert")}}/>
+                                                <Form.Control type="text" placeholder="店家" name='store_name' value={this.state.insertData.store_name}  onChange={(e)=>{this.handleDataChange(e,"insert")}}/>
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -250,17 +374,17 @@ export class AdminMatManage extends Component {
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputPrice" label="價錢" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="價錢" name='price' value={this.state.insertData.price}  onChange={(e)=>{this.handleDataChange(e,"insert")}}/>
+                                                <Form.Control type="number" placeholder="價錢" name='price' value={this.state.insertData.price|| ''}  onChange={(e)=>{this.handleDataChange(e,"insert")}}/>
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputNum" label="數量" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="數量" name='num' value={this.state.insertData.num}  onChange={(e)=>{this.handleDataChange(e,"insert")}} />
+                                                <Form.Control type="number" placeholder="數量" name='num' value={this.state.insertData.num|| ''}  onChange={(e)=>{this.handleDataChange(e,"insert")}} />
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputPricePer" label="單價" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="單價" name='pricePer' value={this.state.insertData.pricePer} onChange={(e)=>{this.handleDataChange(e,"insert")}}disabled readOnly />
+                                                <Form.Control type="number" placeholder="單價" name='price_per' value={this.state.insertData.price_per|| ''} onChange={(e)=>{this.handleDataChange(e,"insert")}}disabled readOnly />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -283,67 +407,59 @@ export class AdminMatManage extends Component {
                             </div>
                         </div>
 
-                        {/* edit */}
+                        {/* search */}
                         <div className="AdminMatManageItem">
                             <div className="AdminMatManageItemTitle">
                                 <a href="/#" className="AdminMatManageItemTitle" name="searchWrapper" onClick={this.WrapperOpen}>材料搜尋<Eject className={this.state.WrapperOpen.searchWrapper ? 'AdminMatManageItemTitleIcon active' : 'AdminMatManageItemTitleIcon noActive'} /></a>
                             </div>
-                            <div className={this.state.WrapperOpen.searchWrapper ? 'AdminMatManageItemWrapper active' : 'AdminMatManageItemWrapper'}>
+                            <div className={this.state.WrapperOpen.searchWrapper ? 'AdminMatManageItemWrapper searchWrapper active' : 'AdminMatManageItemWrapper searchWrapper'}>
                                 <Container>
                                     <Row className="justify-content-md-center insertRow">
-                                        <Col xs={12} md={4}>
+                                        <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingInputIdSearch" label="ID" className="mb-1 ">
                                                 <Form.Control type="text" placeholder="ID" name='id' value={this.state.searchData.id}  onChange={(e)=>{this.handleDataChange(e,"search")}}/>
                                             </FloatingLabel>
                                         </Col>
-                                        <Col xs={12} md={4}>
+                                        <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingSelectTypeSearch" label="類別">
                                                 <Form.Select aria-label="Floating label select" name='type' value={this.state.searchData.type}  onChange={(e)=>{this.handleDataChange(e,"search")}} >
                                                     {this.state.SelectOption.ma_type.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                 </Form.Select>
                                             </FloatingLabel>
                                         </Col>
-                                        <Col xs={12} md={4}>
+                                        <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingInputNameSearch" label="品名" className="mb-1 ">
                                                 <Form.Control type="text" placeholder="品名" name='name' value={this.state.searchData.name} onChange={(e)=>{this.handleDataChange(e,"search")}}/>
+                                            </FloatingLabel>
+                                        </Col>
+                                        <Col xs={12} md={3}>
+                                            <FloatingLabel controlId="floatingInputSizeSearch" label="尺寸" className="mb-1 ">
+                                                <Form.Control type="text" placeholder="尺寸" name='size' value={this.state.searchData.size} onChange={(e)=>{this.handleDataChange(e,"search")}} />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
 
                                     <Row className="justify-content-md-center insertRow">
-                                        <Col xs={12} md={4}>
-                                            <FloatingLabel controlId="floatingInputSizeSearch" label="尺寸" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="尺寸" name='size' value={this.state.searchData.size} onChange={(e)=>{this.handleDataChange(e,"search")}} />
-                                            </FloatingLabel>
-                                        </Col>
-                                        <Col xs={12} md={4}>
+                                        <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingSelectQualitySearch" label="質地">
                                                 <Form.Select aria-label="Floating label select" name='quality' value={this.state.searchData.quality}  onChange={(e)=>{this.handleDataChange(e,"search")}} >
                                                     {this.state.SelectOption.ma_quality.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                 </Form.Select>
                                             </FloatingLabel>
                                         </Col>
-                                        <Col xs={12} md={4}>
+                                        <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingInputStoreNameSearch" label="店家" className="mb-1 ">
                                                 <Form.Control type="text" placeholder="店家" name='storeName' value={this.state.searchData.storeName}  onChange={(e)=>{this.handleDataChange(e,"search")}} />
                                             </FloatingLabel>
                                         </Col>
-                                    </Row>
-
-                                    <Row className="justify-content-md-center insertRow">
-                                        <Col xs={12} md={4}>
-                                            <FloatingLabel controlId="floatingInputPriceSearch" label="價錢" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="價錢" name='price' value={this.state.searchData.price} onChange={(e)=>{this.handleDataChange(e,"search")}} />
+                                        <Col xs={12} md={3}>
+                                            <FloatingLabel controlId="floatingInputLowPricePerSearch" label="最低單價" className="mb-1 ">
+                                                <Form.Control type="number" placeholder="最低單價" name='lowPricePer' value={this.state.searchData.lowPricePer || ''}  onChange={(e)=>{this.handleDataChange(e,"search")}}  />
                                             </FloatingLabel>
                                         </Col>
-                                        <Col xs={12} md={4}>
-                                            <FloatingLabel controlId="floatingInputNumSearch" label="數量" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="數量" name='num' value={this.state.searchData.num} onChange={(e)=>{this.handleDataChange(e,"search")}} />
-                                            </FloatingLabel>
-                                        </Col>
-                                        <Col xs={12} md={4}>
-                                            <FloatingLabel controlId="floatingInputPricePerSearch" label="單價" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="單價" name='pricePer' value={this.state.searchData.pricePer}  onChange={(e)=>{this.handleDataChange(e,"search")}}disabled readOnly />
+                                        <Col xs={12} md={3}>
+                                            <FloatingLabel controlId="floatingInputHighPricePerSearch" label="最高單價" className="mb-1 ">
+                                                <Form.Control type="number" placeholder="最高單價" name='highPricePer' value={this.state.searchData.highPricePer || ''}  onChange={(e)=>{this.handleDataChange(e,"search")}}  />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -363,15 +479,6 @@ export class AdminMatManage extends Component {
                                         </Col>
                                     </Row>
 
-
-                                    {/* <Row className="justify-content-md-center insertRow">
-                                        <Col xs={12} md={4}>
-                                        </Col>
-                                        <Col xs={12} md={4}>
-                                        </Col>
-                                        <Col xs={12} md={4}>
-                                        </Col>
-                                    </Row> */}
                                 </Container>
                             </div>
                         </div>
@@ -381,9 +488,10 @@ export class AdminMatManage extends Component {
                                 <DataGrid
                                     rows={this.state.gridData}
                                     columns={columns}
-                                    pageSize={5}
-                                    rowsPerPageOptions={[5]}
+                                    pageSize={10}
+                                    rowsPerPageOptions={[10]}
                                     disableSelectionOnClick
+                                    getRowId={(row) => row.seq}
                                 />
                             </div>
                         </div>
@@ -394,5 +502,3 @@ export class AdminMatManage extends Component {
         )
     }
 }
-
-

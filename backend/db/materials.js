@@ -8,12 +8,12 @@ var db = require("./database");
 var object = db.define("materials", {
     id: {
         field: "id",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING,
         allowNull: false,
     },
     type: {
         field: "type",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(50),
     },
     name: {
         field: "name",
@@ -25,7 +25,7 @@ var object = db.define("materials", {
     },
     quality: {
         field: "quality",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(50),
     },
     price: {
         field: "price",
@@ -41,11 +41,11 @@ var object = db.define("materials", {
     },
     store_name: {
         field: "store_name",
-        type: Sequelize.STRING(50),
+        type: Sequelize.STRING(100),
     },
     memo: {
         field: "memo",
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING,
     },
     cr_date: {
         field: "cr_date",

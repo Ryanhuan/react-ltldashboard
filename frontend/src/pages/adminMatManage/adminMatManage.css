@@ -48,8 +48,21 @@
     border-radius:10px;
 }
 
+.searchWrapper.active {
+    height: 300px;
 
+}
 
 .matDataList{
-    height:500px;
+    height:635px;
+}
+
+.matGridEdit{
+    color: rgba(32, 157, 32, 0.789);
+    cursor: pointer;
+}
+
+.matGridDelete{
+    color: red;
+    cursor: pointer;
 }

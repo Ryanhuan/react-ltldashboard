@@ -182,8 +182,6 @@ router.post("/getMatData", async function (req, res) {
   var rtn = {};
   try {
     console.log("----------api/getMatData_start-----------");
-   
-
     var qryData = {
       ...req.body,
     };
@@ -206,5 +204,63 @@ router.post("/getMatData", async function (req, res) {
   }
 });
 
+router.post("/deleteMatData", async function (req, res) {
+  var rtn = {};
+  try {
+    console.log("----------api/deleteMatData_start-----------");
+   
+    var reqData = {
+      ...req.body,
+    };
+
+    let _res = await Mat.deleteMatData(reqData);
+    // console.log("_res",_res);
+    if (_res.status == 'OK') {
+      rtn.status = 'deleteMatData_OK';
+      rtn.data = _res.data;
+    } else {
+      rtn.status = 'deleteMatData_Fail'
+      rtn.msg = _res.msg;
+    }
+
+    console.log("----------api/deleteMatData_end-----------");
+    res.json(rtn);
+  } catch (err) {
+    console.log(err);
+    rtn.msg = err.message;
+    res.json(rtn);
+  }
+});
+
+router.post("/editMatData", async function (req, res) {
+  var rtn = {};
+  try {
+    console.log("----------api/editMatData_start-----------");
+    var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
+    var op_user = TokenVerify.decodeData.email;
+
+    var reqData = {
+      ...req.body,
+      op_user
+    };
+
+    let _res = await Mat.editMatData(reqData);
+    // console.log("_res",_res);
+    if (_res.status == 'OK') {
+      rtn.status = 'editMatData_OK';
+      rtn.data = _res.data;
+    } else {
+      rtn.status = 'editMatData_Fail'
+      rtn.msg = _res.msg;
+    }
+
+    console.log("----------api/editMatData_end-----------");
+    res.json(rtn);
+  } catch (err) {
+    console.log(err);
+    rtn.msg = err.message;
+    res.json(rtn);
+  }
+});
 
 module.exports = router;

@@ -1,6 +1,8 @@
 const db = require('../db/database');
 const m_db = require("./m_db");
 const utility = require("../public/javascripts/utility");
+var Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 
 module.exports = {
@@ -25,6 +27,7 @@ module.exports = {
                 // console.log("insertData",insertData);
                 await m_db.insert(insertData, 'materials', function (err, result) {
                     if (err != null) {
+                        console.log(err);
                         rtn.status = 'Fail';
                         rtn.msg = err;
                     } else {
@@ -46,9 +49,47 @@ module.exports = {
         try {
             var options = {};
             var qry = {};
-    
+            if (reqData.id != undefined && reqData.id != "") {
+                qry.id = {};
+                qry.id[Op.like] = '%' + reqData.id + '%';
+            }
+            if (reqData.type != undefined && reqData.type != "") {
+                qry.type = reqData.type;
+            }
+            if (reqData.name != undefined && reqData.name != "") {
+                qry.name = {};
+                qry.name[Op.like] = '%' + reqData.name + '%';
+            }
+            if (reqData.size != undefined && reqData.size != "") {
+                qry.size = {};
+                qry.size[Op.like] = '%' + reqData.size + '%';
+            }
+            if (reqData.quality != undefined && reqData.quality != "") {
+                qry.quality = reqData.quality;
+            }
+            if (reqData.store_name != undefined && reqData.store_name != "") {
+                qry.store_name = {};
+                qry.store_name[Op.like] = '%' + reqData.store_name + '%';
+            }
+            if (reqData.memo != undefined && reqData.memo != "") {
+                qry.memo = {};
+                qry.memo[Op.like] = '%' + reqData.memo + '%';
+            }
+
+            if (reqData.lowPricePer != undefined && reqData.lowPricePer != "") {
+                qry.price_per = {};
+                qry.price_per[Op.gte] = reqData.lowPricePer;
+            }
+            if (reqData.highPricePer != undefined && reqData.highPricePer != "") {
+                if (qry.price_per == undefined) {
+                    qry.price_per = {};
+                }
+                qry.price_per[Op.lte] = reqData.highPricePer;
+            }
+
             await m_db.query("materials", qry, options, async function (err, result) {
                 if (err != null) {
+                    console.log("err", err);
                     rtn.status = "Fail";
                     rtn.msg = err;
                 } else {
@@ -58,11 +99,11 @@ module.exports = {
                 }
             })
 
-           for (let i = 0; i < rtn.data.length; i++) {
-                rtn.data[i].type=await codeDesc(rtn.data[i].type, "ma_type");
-                rtn.data[i].quality=await codeDesc(rtn.data[i].quality, "ma_quality");
+            for (let i = 0; i < rtn.data.length; i++) {
+                rtn.data[i].type = await codeDesc(rtn.data[i].type, "ma_type");
+                rtn.data[i].quality = await codeDesc(rtn.data[i].quality, "ma_quality");
             }
- 
+
             return rtn;
         } catch (err) {
             rtn.status = 'Fail';
@@ -70,7 +111,64 @@ module.exports = {
             return rtn;
         }
     },
+
+    //delete
+    deleteMatData: async function (reqData) {
+        var rtn = {};
+        try {
+            var where = {};
+            where.guid = reqData.guid;
+
+            await m_db.delete("materials", where, function (err, result) {
+                if (err != null) {
+                    rtn.status = "Fail";
+                    rtn.msg = err.message;
+                } else {
+                    rtn.status = "OK";
+                }
+            })
+            return rtn;
+        } catch (err) {
+            rtn.status = 'Fail';
+            rtn.msg = err;
+            return rtn;
+        }
+    },
+    //edit
+    editMatData: async function (reqData) {
+        var rtn = {};
+        try {
+            var where = {};
+            where.guid = reqData.guid;
+            upData = {
+                ...reqData
+            }
+            upData.up_date = utility.get_today();
+
+            await m_db.update(upData, "materials", where, function (err, result) {
+                if (err != null) {
+                    console.log(err);
+                    if (err = 'Validation error') {
+                        rtn.status = 'Fail';
+                        rtn.msg = 'ID_Repeated';
+                    } else {
+                        rtn.status = 'Fail';
+                        rtn.msg = err.message;
+                    }
+                } else {
+                    rtn.status = "OK";
+                }
+            })
+            return rtn;
+        } catch (err) {
+            rtn.status = 'Fail';
+            rtn.msg = err;
+            return rtn;
+        }
+    }
+
 }
+
 
 
 //檢查mat id 是否重複
@@ -104,23 +202,22 @@ async function checkMatId(Id) {
 
 async function codeDesc(data, searchCodeType) {
     var qry = {};
-    var rtn='';
-    if(data!=null && data!=undefined) {
+    var rtn = '';
+    if (data != null && data != undefined) {
         qry.code_seq1 = data;
         qry.code_type = searchCodeType;
-    
+
         var options = {};
-    
+
         await m_db.query("publiccode", qry, options, function (err, result) {
             if (err != null) {
                 console.log("codeDesc_err", err);
-                rtn=data;
+                rtn = data;
             } else {
-                let _res=JSON.parse(JSON.stringify(result));
-                rtn = _res.length!=0 ?_res[0].code_desc1:data;
+                let _res = JSON.parse(JSON.stringify(result));
+                rtn = _res.length != 0 ? _res[0].code_desc1 : data;
             }
         })
     }
     return rtn;
 }
-

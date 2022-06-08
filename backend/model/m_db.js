@@ -137,9 +137,9 @@ module.exports = {
      * @param  {JSON} where 刪除條件
      * @param  {any} callback 
      */
-    delete: function (table, where, callback) {
+    delete:async function (table, where, callback) {
         var tb = require('../db/' + table);
-        tb.destroy({
+        await tb.destroy({
             where: where
         }).then(function (result) {
             callback(null, result);

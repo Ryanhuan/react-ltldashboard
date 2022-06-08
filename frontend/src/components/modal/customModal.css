@@ -1,0 +1,48 @@
+.modalItem{
+    font-size: 18px;
+    text-justify: center;
+}
+
+Form label{
+    font-size: 20px;
+
+}
+
+.rootListContainer{
+    padding-top: 20px;
+}
+.rootList{
+    padding: 10px;
+}
+
+.btn{
+    background-color: none !important;
+    color:none ;
+}
+
+.btn-outline-secondary,.btn-outline-primary{
+    background-color: white !important;
+}
+
+.btn-outline-secondary:hover{
+    background-color: gray !important;
+
+}
+
+.btn-outline-primary:hover{
+    background-color: rgba(36, 36, 243, 0.842) !important;
+
+}
+
+
+.modal-backdrop {
+    background-color: rgba(125, 125, 125, 0.353) !important;
+}
+
+.modal-content {
+    border: 0px !important;
+}
+
+.modalTitle{
+    font-weight: 600 !important; 
+}
