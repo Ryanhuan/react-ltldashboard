@@ -58,11 +58,16 @@
 }
 
 .matGridEdit{
-    color: rgba(32, 157, 32, 0.789);
+    color: var(--success);
     cursor: pointer;
 }
 
 .matGridDelete{
-    color: red;
+    color:  var(--error);
     cursor: pointer;
+}
+
+.matGridEdit:hover,
+.matGridDelete:hover{
+    color : var(--hoverColor) ;
 }

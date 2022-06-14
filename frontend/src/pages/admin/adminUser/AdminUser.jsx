@@ -3,11 +3,12 @@ import { useState ,useEffect} from 'react'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from 'react-bootstrap/Button'
-import { postData , getData ,getUserId } from "../../api";
+import { postData , getData ,getUserId } from "../../../api";
 
 // import { postUserSignup,getAllUsersInfo,getUserId } from "../../api";
 import { DataGrid } from '@mui/x-data-grid';
-import { AccountCircle ,CheckCircleOutline, HighlightOff} from '@material-ui/icons';
+import { AccountCircle ,CheckCircleOutline, HighlightOff, Edit} from '@material-ui/icons';
+
 import {ModalEditUser} from './ModalEditUser/ModalEditUser';
 import Swal from 'sweetalert2';
 
@@ -164,9 +165,8 @@ export default function AdminUser() {
                 }
                 return (
                     <>
-                        <Button  className="userListEdit" onClick={() =>userListEditOpen(params.row)}>
-                            Edit
-                        </Button>
+                        <Edit  className="userListEdit" onClick={() =>userListEditOpen(params.row)} />
+                         
                         {userListEditModalShow?
                             <ModalEditUser   show={userListEditModalShow} onHide={() => setUserListEditModalShow(false)}
                                              editData={userListEditData}  getAllUsersInfo={getAllUsersInfo_} />:''

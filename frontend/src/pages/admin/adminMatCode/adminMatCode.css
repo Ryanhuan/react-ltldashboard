@@ -1,0 +1,65 @@
+
+.AdminMatCodeItem{
+    padding: 20px;
+}
+
+.AdminMatCodeItemTitle{
+    padding-bottom: 10px;
+}
+
+.AdminMatCodeItemTitle{
+    font-weight: 600;
+    font-size: 24px;
+    color: var(--fontSubColor);
+    padding-bottom: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.AdminMatCodeItemTitleIcon{
+    font-size: 28px !important;
+    transform: rotate(900deg);
+}
+
+.AdminMatCodeItemTitleIcon.active{
+    transition: 0.5s ease-in;
+    transform: rotate(0deg);
+}
+
+.AdminMatCodeItemTitleIcon.noActive{
+    transition: 0.5s ease-in;
+    transform: rotate(900deg);
+}
+
+.AdminMatCodeItemWrapper {
+    height: 0px;
+    transition: 0.5s;
+    overflow: hidden;
+}
+
+.AdminMatCodeItemWrapper.active{
+    padding-top: 10px;
+    height: 130px;
+    transition: 0.5s;
+    -webkit-box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+    box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+    border-radius:10px;
+}
+
+
+.matCodeDataList{
+    height:635px;
+}
+
+.newMatCode{
+    color: var(--mainColor);
+    display: block;
+    min-width: 60px;
+    height: 60px;
+    line-height: 75px;
+    text-align: center; 
+    cursor: pointer;
+}
+
+.AdminMatCodeItemContainer{
+    padding: 10px 0;
+}

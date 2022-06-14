@@ -188,7 +188,8 @@ a:hover{
 
 .sidebarIcon {
     display: block;
-    min-width: 60px;
+    min-width: 50px;
+    margin-right: 10px;
     height: 60px;
     line-height: 75px;
     text-align: center;

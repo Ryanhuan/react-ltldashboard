@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-import { postData ,getUserId } from "../../../api";
+import { postData ,getUserId } from "../../../../api";
 
 import Swal from 'sweetalert2'
 

@@ -84,7 +84,7 @@ export default function Sidebar() {
               </NavLink>
             </li>
             <li className="sidebarListItem">
-              <NavLink to='/EX' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
+              <NavLink to='/AdminMatCode' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
                 <DynamicFeed className="sidebarIcon" />
                 材料分類管理
               </NavLink>

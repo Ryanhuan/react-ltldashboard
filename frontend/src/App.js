@@ -1,17 +1,20 @@
 import {  BrowserRouter as Router,  Route,  Routes } from "react-router-dom";
 import {ErrorBoundary} from 'react-error-boundary';
 import "./App.css";
-import Topbar from './components/topbar/Topbar'
-import Sidebar from './components/sidebar/Sidebar'
+import Topbar from './components/admin/topbar/Topbar'
+import Sidebar from './components/admin/sidebar/Sidebar'
+import ScrollArrow from './components/scrollArrow/ScrollArrow'
 import Home from './pages/home/Home'
-import UserList from './pages/userList/UserList'
-import User from './pages/user/User'
-import NewUser from './pages/newUser/NewUser'
-import ProductList from './pages/productList/ProductList'
 import Login from './pages/login/Login'
 
-import AdminUser from './pages/adminUser/AdminUser'
-import {AdminMatManage} from './pages/adminMatManage/AdminMatManage'
+import NewUser from './pages/client/newUser/NewUser'
+import ProductList from './pages/client/productList/ProductList'
+import UserList from './pages/client/userList/UserList'
+import User from './pages/client/user/User'
+
+import AdminUser from './pages/admin/adminUser/AdminUser'
+import {AdminMatManage} from './pages/admin/adminMatManage/AdminMatManage'
+import {AdminMatCode} from './pages/admin/adminMatCode/AdminMatCode'
 
 
 function ErrorFallback({error, resetErrorBoundary}) {
@@ -44,6 +47,7 @@ function App() {
         <Router>
           <div className="appContainer">
             <Sidebar />
+            <ScrollArrow/>
             <div className="appBody">
               <Topbar />
               <Routes>
@@ -58,6 +62,7 @@ function App() {
                 <Route path='/Admin' element={<Home />} /> 
                 <Route path='/AdminUser' element={<AdminUser />} /> 
                 <Route path='/AdminMatManage' element={<AdminMatManage />} />
+                <Route path='/AdminMatCode' element={<AdminMatCode />} />
                 
                 <Route path='*'  element={<Home />} />
               </Routes>

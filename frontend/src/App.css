@@ -29,7 +29,7 @@
     min-height: 100vh;
     background: var(--white);
     transition: 0.5s;
-    /* margin-right: calc(-55vw + 50%); */
+
 }
 
 .Link {

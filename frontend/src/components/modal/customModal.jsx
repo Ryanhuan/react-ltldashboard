@@ -85,8 +85,8 @@ export class CustomModal extends Component {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button className="btn btn-outline-secondary" onClick={this.props.onHide}>Close</Button>
-            <Button className="btn btn-outline-primary" type="submit">Save</Button>
+            <Button className="btn btn-outline-secondary" onClick={this.props.onHide}>取消</Button>
+            <Button className="btn btn-outline-primary" type="submit">確定</Button>
           </Modal.Footer>
         </Form>
       </Modal>

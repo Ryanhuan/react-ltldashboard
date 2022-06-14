@@ -130,7 +130,8 @@ router.post("/getSelectOption", async function (req, res) {
         JSON.parse(_res.data).forEach(ele => {
           _tmp.push({
             value: ele.code_seq1,
-            label: ele.code_desc1
+            label: ele.code_desc1,
+            guid: ele.guid
           })
         });
         rtn.data[req.body[i]] = _tmp;
@@ -148,6 +149,109 @@ router.post("/getSelectOption", async function (req, res) {
   }
 });
 
+router.post("/getCodeTypeKind/:type", async function (req, res) {
+  var rtn = {};
+  try {
+    console.log("----------api/getCodeTypeKind_start-----------");
+    rtn.data = {};
+ 
+    let _res= await codeManage.getCodeTypeKind(req.params.type);
+    // console.log("_res",_res);
+    if (_res.status == 'OK') {
+      rtn.msg = 'getCodeTypeKind_OK';
+      rtn.data=_res.data;
+    } else {
+      rtn.msg = 'getCodeTypeKind_Fail';
+    }
+    // console.log("rtn",rtn);
+    console.log("----------api/getCodeTypeKind_end-----------");
+    res.json(rtn);
+  } catch (err) {
+    console.log(err);
+    rtn.msg = err.message;
+    res.json(rtn);
+  }
+});
+
+router.post("/editCodeData", async function (req, res) {
+  var rtn = {};
+  try {
+    console.log("----------api/editCodeData_start-----------");
+    rtn.data = {};
+    var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
+    var op_user = TokenVerify.decodeData.email;
+ 
+    let _res= await codeManage.editCodeData({...req.body,op_user});
+    // console.log("_res",_res);
+    if (_res.status == 'OK') {
+      rtn.status = 'editCodeData_OK';
+      rtn.data=_res.data;
+    } else {
+      rtn.status = 'editCodeData_Fail';
+    }
+    // console.log("rtn",rtn);
+    console.log("----------api/editCodeData_end-----------");
+    res.json(rtn);
+  } catch (err) {
+    console.log(err);
+    rtn.msg = err.message;
+    res.json(rtn);
+  }
+});
+
+router.post("/insertCodeData", async function (req, res) {
+  var rtn = {};
+  try {
+    console.log("----------api/insertCodeData_start-----------");
+    rtn.data = {};
+    var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
+    var op_user = TokenVerify.decodeData.email;
+ 
+    let _res= await codeManage.insertCodeData({...req.body,op_user});
+    // console.log("_res",_res);
+    if (_res.status == 'OK') {
+      rtn.status = 'insertCodeData_OK';
+      rtn.data=_res.data;
+    } else {
+      rtn.status = 'insertCodeData_Fail';
+      rtn.msg=_res.msg;
+    }
+    // console.log("rtn",rtn);
+    console.log("----------api/insertCodeData_end-----------");
+    res.json(rtn);
+  } catch (err) {
+    console.log(err);
+    rtn.msg = err.message;
+    res.json(rtn);
+  }
+});
+
+router.post("/deleteCodeData", async function (req, res) {
+  var rtn = {};
+  try {
+    console.log("----------api/deleteCodeData_start-----------");
+    var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
+    var op_user = TokenVerify.decodeData.email;
+
+    let _res = await codeManage.deleteCodeData({...req.body,op_user});
+    // console.log("_res",_res);
+    if (_res.status == 'OK') {
+      rtn.status = 'deleteCodeData_OK';
+      rtn.data = _res.data;
+    } else {
+      rtn.status = 'deleteCodeData_Fail'
+      rtn.msg = _res.msg;
+    }
+
+    console.log("----------api/deleteCodeData_end-----------");
+    res.json(rtn);
+  } catch (err) {
+    console.log(err);
+    rtn.msg = err.message;
+    res.json(rtn);
+  }
+});
+
 router.post("/insertMatData", async function (req, res) {
   var rtn = {};
   try {
@@ -155,11 +259,11 @@ router.post("/insertMatData", async function (req, res) {
     var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
     var op_user = TokenVerify.decodeData.email;
 
-    var insertData = {
-      ...req.body,
-      op_user
-    };
-    let _res = await Mat.insertMat(insertData);
+    // var insertData = {
+    //   ...req.body, op_user
+    // };
+    // let _res = await Mat.insertMat(insertData);
+    let _res = await Mat.insertMat({...req.body, op_user});
     // console.log("_res",_res);
     if (_res.status == 'OK') {
       rtn.status = 'InsertMatData_OK';

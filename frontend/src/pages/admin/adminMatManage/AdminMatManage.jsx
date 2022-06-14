@@ -8,9 +8,9 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from 'react-bootstrap/Button'
 import { Eject, DeleteOutline, Edit} from '@material-ui/icons';
 import { DataGrid } from '@mui/x-data-grid';
-import {CustomModal}from '../../components/modal/customModal';
+import {CustomModal}from '../../../components/modal/customModal';
 import Swal from 'sweetalert2';
-import { postData } from "../../api";
+import { postData } from "../../../api";
 
 export class AdminMatManage extends Component {
     constructor(props) {
@@ -304,7 +304,7 @@ export class AdminMatManage extends Component {
                 renderCell: (params) => {
                     return (
                         <>
-                            <Edit className="matGridEdit" onClick={(e) => modalOpen(e,params.row)} title="edit"/>
+                            <Edit className="matGridEdit" onClick={(e) => modalOpen(e,params.row)}/>
                             <DeleteOutline className="matGridDelete" onClick={(e) => handleDelete(e,params.row)} />
                             {this.state.modal.show ?
                                 <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}

@@ -69,15 +69,16 @@ text-align: right;
 }
 
 .userListEdit {
-    border: none !important;
-    border-radius: 10px !important;
-    padding: 5px 10px !important;
-    background-color: var(--success) !important;
-    color: white !important;
+    cursor: pointer;
+    color : var(--success) !important;
+}
+
+.userListEdit:hover{
+    color : var(--hoverColor) !important;
 }
 
 .userListDelete {
-    color: red;
+    color: var(--error);
     cursor: pointer;
 }
 
