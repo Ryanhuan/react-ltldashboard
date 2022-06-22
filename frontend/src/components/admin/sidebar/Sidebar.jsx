@@ -95,16 +95,16 @@ export default function Sidebar() {
         <div className="sidebarMenu">
           <h3 className="sidebarTitle">產品管理</h3>
           <ul className="sidebarList">
-            <li className="sidebarListItem">
-              <NavLink to='/EX' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
-                <MailOutline className="sidebarIcon" />
-                分類管理
+          <li className="sidebarListItem">
+              <NavLink to='/AdminProductManage' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
+                <DynamicFeed className="sidebarIcon" />
+                產品管理
               </NavLink>
             </li>
             <li className="sidebarListItem">
-              <NavLink to='/EX' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
-                <DynamicFeed className="sidebarIcon" />
-                產品內容
+              <NavLink to='/AdminProductCode' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
+                <MailOutline className="sidebarIcon" />
+                產品分類管理
               </NavLink>
             </li>
           </ul>

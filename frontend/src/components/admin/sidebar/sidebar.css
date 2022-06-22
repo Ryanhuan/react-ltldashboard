@@ -12,8 +12,7 @@ h3{
 
 .sidebarWrapper {
     position: relative;
-
-    width: 300px;
+    width: 230px;
     height: 100%;
     background: var(--mainColor);
     border-left: 10px solid var(--mainColor);
@@ -49,12 +48,6 @@ h3{
     opacity: 0;
     /* display:none; */
 
-}
-
-
-.sidebarWrapper.active .sidebarTitle{
-    width: 40px;
-    padding-left: 8px;
 }
 
 .sidebarMenuTitle{
@@ -101,10 +94,10 @@ h3{
 
 .logo img {
     display: block;
-    height: 80px;
+    height: 50px;
     bottom:10px;
     font-weight: bold;
-    font-size: 30px;
+    /* font-size: 10px; */
     cursor: pointer;
     /* transition-delay: 3s; */
     transition:all 0.5s;
@@ -119,15 +112,21 @@ h3{
     color: var(--white);
     margin-top: 16px;
     margin-left: 10px;
-    font-size: 28px;
+    font-size: 24px;
     transition:all 0.5s;
     opacity: 1;
 }
 
 .sidebarTitle{
     color:var(--black2);
-    padding-left: 8px;
+    /* padding-left: 1px; */
 
+}
+
+.sidebarWrapper.active .sidebarTitle{
+    /* width: 40px; */
+    /* padding-left: 1px; */
+    white-space: nowrap;
 }
 
 .sidebarList {
@@ -155,7 +154,7 @@ h3{
 .sidebarListItem:nth-child(n) {
     margin-top: 15px;
     margin-bottom: 15px;
-    font-size: 20px;
+    font-size: 16px;
 }
 
 .sidebarListItem {
@@ -176,10 +175,10 @@ a:hover{
 
 
 .sidebarListLink,
-.sidebarListLink.active  {
+.sidebarListLink.active  { 
     position: relative;
     display: block;
-    padding: 0 10px;
+    /* padding: 0 10px; */
     height: 40px;
     line-height: 40px;
     text-align: start;
@@ -187,10 +186,10 @@ a:hover{
 }
 
 .sidebarIcon {
+    margin-right: 20px;
     display: block;
     min-width: 50px;
-    margin-right: 10px;
-    height: 60px;
+    /* height: 60px; */
     line-height: 75px;
     text-align: center;
 } 
@@ -206,9 +205,9 @@ a:hover{
     content: '';
     position: absolute;
     right: 0;
-    top: -50px;
-    width: 50px;
-    height: 50px;
+    top: -60px;
+    width: 60px;
+    height: 60px;
     background: transparent;
     border-radius: 50%;
     box-shadow: 35px 35px 0 10px var(--white);
@@ -221,10 +220,11 @@ a:hover{
     content: '';
     position: absolute;
     right: 0;
-    bottom: -50px;
-    width: 50px;
-    height: 50px;
+    bottom: -60px;
+    width:  60px;
+    height: 60px;
     background: transparent;
+    /* background: black; */
     border-radius: 50%;
     box-shadow: 35px -35px 0 10px var(--white);
     pointer-events: none;
@@ -235,7 +235,7 @@ a:hover{
     font-size: 12px;
     position: relative;
     bottom: 0px;
-    width: 280px;
+    width: 220px;
     text-align: right;
     color: var(--white);
     padding: 10px;

@@ -15,7 +15,8 @@ import User from './pages/client/user/User'
 import AdminUser from './pages/admin/adminUser/AdminUser'
 import {AdminMatManage} from './pages/admin/adminMatManage/AdminMatManage'
 import {AdminMatCode} from './pages/admin/adminMatCode/AdminMatCode'
-
+import {AdminProductManage} from './pages/admin/adminProductManage/AdminProductManage'
+import {AdminProductCode} from './pages/admin/adminProductCode/AdminProductCode'
 
 function ErrorFallback({error, resetErrorBoundary}) {
   return (
@@ -63,6 +64,8 @@ function App() {
                 <Route path='/AdminUser' element={<AdminUser />} /> 
                 <Route path='/AdminMatManage' element={<AdminMatManage />} />
                 <Route path='/AdminMatCode' element={<AdminMatCode />} />
+                <Route path='/AdminProductManage' element={<AdminProductManage />} />
+                <Route path='/AdminProductCode' element={<AdminProductCode />} />
                 
                 <Route path='*'  element={<Home />} />
               </Routes>
