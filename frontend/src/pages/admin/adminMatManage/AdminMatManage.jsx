@@ -293,7 +293,7 @@ export class AdminMatManage extends Component {
         ]
 
         const columns = [
-            { field: 'seq', headerName: 'Seq', flex: 1},
+            { field: 'seq', headerName: '序', flex: 1},
             { field: 'id', headerName: 'ID', flex: 1},
             { field: 'type', headerName: '類別', flex: 1},
             { field: 'name', headerName: '品名', flex: 1},

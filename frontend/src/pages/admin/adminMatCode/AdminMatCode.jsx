@@ -9,7 +9,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { DeleteOutline, Edit, Eject } from '@material-ui/icons';
 import { CustomModal } from '../../../components/modal/customModal';
-import { postData, getData } from "../../../api";
+import { postData } from "../../../api";
 
 import Swal from 'sweetalert2';
 
@@ -62,7 +62,7 @@ export class AdminMatCode extends Component {
     //材料新增材料
     async insertData(event) {
         event.preventDefault();
-        if(this.state.insertData.value===''||this.state.insertData.label===''){
+        if (this.state.insertData.value === '' || this.state.insertData.label === '') {
             Swal.fire({
                 position: 'bottom-end',
                 width: 400,
@@ -71,8 +71,18 @@ export class AdminMatCode extends Component {
                 showConfirmButton: false,
                 timer: 1500
             })
-        }else{
-            let _res = await postData("/api/insertCodeData",this.state.insertData);
+        } else if (this.state.insertData.value.match("^[a-zA-Z0-9 ]*$") == null) {
+            //check 
+            Swal.fire({
+                position: 'bottom-end',
+                width: 400,
+                icon: 'error',
+                title: '代碼請輸入英文或數字!',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        } else {
+            let _res = await postData("/api/insertCodeData", this.state.insertData);
             if (_res.status === 'insertCodeData_OK') {
                 Swal.fire({
                     position: 'bottom-end',
@@ -118,10 +128,8 @@ export class AdminMatCode extends Component {
         let _action = this.state[action];
         let _name = event.target.name;
         // input type change (if type == number && value !=='' then string => number)
-        _action[_name] = (event.target.type === 'number' && event.target.value !== '') ? parseInt(event.target.value) : _action[_name] = event.target.value;
+        _action[_name] = (event.target.type === 'number' && event.target.value !== '') ? parseInt(event.target.value) : event.target.value;
         this.setState({ [action]: _action });
-
-
     }
 
     //get grid data
@@ -164,6 +172,7 @@ export class AdminMatCode extends Component {
         _WrapperOpen[wrapperName] = !_WrapperOpen[wrapperName];
         this.setState({ WrapperOpen: _WrapperOpen });
     }
+    
     //clear
     dataClear(event) {
         event.preventDefault();
@@ -173,7 +182,6 @@ export class AdminMatCode extends Component {
         }
         this.setState({ [_dataName]: _dataName });
     }
-
 
 
 
@@ -265,7 +273,7 @@ export class AdminMatCode extends Component {
         ]
 
         const columns = [
-            { field: 'seq', headerName: 'Seq', flex: 1 },
+            { field: 'seq', headerName: '序', flex: 1 },
             { field: 'value', headerName: '代碼', flex: 2 },
             { field: 'label', headerName: '代碼敘述', flex: 2 },
             {
@@ -273,10 +281,8 @@ export class AdminMatCode extends Component {
                 renderCell: (params) => {
                     return (
                         <>
-                            {/* <Edit className="matGridEdit" onClick={(e) => modalOpen(e,params.row)}/>
-                            <DeleteOutline className="matGridDelete" /> */}
                             <Edit className="matGridEdit" onClick={(e) => modalOpen(e, params.row)} />
-                            <DeleteOutline className="matGridDelete" onClick={(e) => handleDelete(e,params.row)} />
+                            <DeleteOutline className="matGridDelete" onClick={(e) => handleDelete(e, params.row)} />
                             {this.state.modal.show ?
                                 <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
                                     modalCols={modalCols} submitForm={(e, data) => { submitForm(e, data) }}
@@ -313,6 +319,7 @@ export class AdminMatCode extends Component {
                                             <FloatingLabel controlId="floatingInputValue" label="代碼" className="mb-1 ">
                                                 <Form.Control type="text" placeholder="代碼" name='value' value={this.state.insertData.value} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
                                             </FloatingLabel>
+                                            <span className="notice">※請輸入英文或數字</span>
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputLabel" label="代碼描述" className="mb-1 ">
@@ -360,7 +367,7 @@ export class AdminMatCode extends Component {
                                     />
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
@@ -368,3 +375,4 @@ export class AdminMatCode extends Component {
         )
     }
 }
+

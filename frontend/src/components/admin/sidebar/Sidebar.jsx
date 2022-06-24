@@ -101,6 +101,12 @@ export default function Sidebar() {
                 產品管理
               </NavLink>
             </li>
+             <li className="sidebarListItem">
+              <NavLink to='/AdminProductAdd' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
+                <MailOutline className="sidebarIcon" />
+                產品新增
+              </NavLink>
+            </li>
             <li className="sidebarListItem">
               <NavLink to='/AdminProductCode' className={`${baseSidebarStyle} + ${(navData) => navData.isActive ? "active" : ""} `} >
                 <MailOutline className="sidebarIcon" />
