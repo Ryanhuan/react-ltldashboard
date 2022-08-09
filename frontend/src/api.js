@@ -42,7 +42,6 @@ instance.interceptors.request.use(
         window.location.href= '/login';
         return;
       }
-
     }
     return request;
   },

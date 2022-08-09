@@ -15,20 +15,6 @@
     cursor: pointer;
     text-decoration: none;
 }
-.AdminMatCodeItemTitleIcon{
-    font-size: 28px !important;
-    transform: rotate(900deg);
-}
-
-.AdminMatCodeItemTitleIcon.active{
-    transition: 0.5s ease-in;
-    transform: rotate(0deg);
-}
-
-.AdminMatCodeItemTitleIcon.noActive{
-    transition: 0.5s ease-in;
-    transform: rotate(900deg);
-}
 
 .AdminMatCodeItemWrapper {
     height: 0px;
@@ -45,19 +31,8 @@
     border-radius:10px;
 }
 
-
 .matCodeDataList{
     height:635px;
-}
-
-.newMatCode{
-    color: var(--mainColor);
-    display: block;
-    min-width: 60px;
-    height: 60px;
-    line-height: 75px;
-    text-align: center; 
-    cursor: pointer;
 }
 
 .AdminMatCodeItemContainer{

@@ -327,7 +327,9 @@ export class AdminMatManage extends Component {
                         {/* insert */}
                         <div className="AdminMatManageItem">
                             <div className="AdminMatManageItemTitle">
-                                <a href="/#" className="AdminMatManageItemTitle" name="insertWrapper" onClick={this.WrapperOpen}>材料新增<Eject className={this.state.WrapperOpen.insertWrapper ? 'AdminMatManageItemTitleIcon active' : 'AdminMatManageItemTitleIcon noActive'} /></a>
+                                <a href="/#" className="AdminMatManageItemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
+                                    材料新增
+                                    <Eject className={this.state.WrapperOpen.insertWrapper ? 'pageTitleRotateIcon active' : 'pageTitleRotateIcon noActive'} /></a>
                             </div>
                             <div className={this.state.WrapperOpen.insertWrapper ? 'AdminMatManageItemWrapper active' : 'AdminMatManageItemWrapper'}>
                                 <Container>
@@ -410,7 +412,9 @@ export class AdminMatManage extends Component {
                         {/* search */}
                         <div className="AdminMatManageItem">
                             <div className="AdminMatManageItemTitle">
-                                <a href="/#" className="AdminMatManageItemTitle" name="searchWrapper" onClick={this.WrapperOpen}>材料搜尋<Eject className={this.state.WrapperOpen.searchWrapper ? 'AdminMatManageItemTitleIcon active' : 'AdminMatManageItemTitleIcon noActive'} /></a>
+                                <a href="/#" className="AdminMatManageItemTitle" name="searchWrapper" onClick={this.WrapperOpen}>
+                                    材料搜尋
+                                    <Eject className={this.state.WrapperOpen.searchWrapper ? 'pageTitleRotateIcon active' : 'pageTitleRotateIcon noActive'} /></a>
                             </div>
                             <div className={this.state.WrapperOpen.searchWrapper ? 'AdminMatManageItemWrapper searchWrapper active' : 'AdminMatManageItemWrapper searchWrapper'}>
                                 <Container>

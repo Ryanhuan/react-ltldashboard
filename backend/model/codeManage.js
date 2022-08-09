@@ -29,7 +29,7 @@ module.exports = {
             }
             await m_db.query("publiccode", qry, options, function (err, result) {
                 result = JSON.stringify(result);
-                err != null ? rtn.msg = err : rtn.msg = "OK", rtn.data = result;
+                err != null ? rtn.msg = err : rtn.status = "OK", rtn.data = result;
             })
             return rtn;
         } catch (err) {
@@ -70,11 +70,13 @@ module.exports = {
 
             let _tmp = [];
             for (let ele in _res) {
-                if (_res[ele].code_seq1 == '**') {
-                    let _x = {};
-                    _x.value = _res[ele].code_type;
-                    _x.label = _res[ele].code_desc1;
-                    _tmp.push(_x);
+                if (_res[ele].code_type.split('_')[0] == type) {
+                    if (_res[ele].code_seq1 == '**') {
+                        let _x = {};
+                        _x.value = _res[ele].code_type;
+                        _x.label = _res[ele].code_desc1;
+                        _tmp.push(_x);
+                    }
                 }
             }
             rtn.status = "OK"
@@ -86,11 +88,64 @@ module.exports = {
             return rtn;
         }
     },
+
      /**
+     * Function description : 取得 code_seq1 最後序
+     * @param  {string} code_type  要查詢的code_type
+     * @param  {string} return 回傳最後seq
+     */
+      getCodeSeq1_seq: async function (code_type) {
+        var rtn = {};
+        try {
+            var qry = {
+                code_type: code_type,
+            };
+
+            var options = {
+                order: [
+                    ["code_type"],
+                    ["code_seq1"]
+                ],
+            }
+
+            let _res;
+            await m_db.query("publiccode", qry, options, function (err, result) {
+                result = JSON.parse(JSON.stringify(result));
+                if (err != null) {
+                    rtn.status = 'Fail';
+                    rtn.msg = err;
+                } else {
+                    _res = result;
+                }
+            })
+
+            let _seq = '';
+            for (let ele in _res) {
+                console.log("_res.length",_res.length);
+                if (_res.length == 1) {
+                    //只有描述(code_seq1='**') 沒有其他 row data
+                    _seq = '1';
+                } else {
+                    let _splitTmp = _res[_res.length-1].code_seq1.split('_');
+                    _seq = (Number(_splitTmp[_splitTmp.length-1]) + 1).toString();
+                }
+            }
+          
+            rtn.status = "OK"
+            rtn.data = _seq;
+            return rtn;
+        } catch (err) {
+            rtn.status = 'Fail';
+            rtn.msg = err;
+            return rtn;
+        }
+    },
+
+    /**
      * Function description : 新增代碼Type之seq&desc
      * @param  {JSON} reqData 資料
      */
-      insertCodeData: async function (reqData) {
+    insertCodeData: async function (reqData) {
         var rtn = {};
         try {
             let ChkRepeated = await _ChkRepeated(reqData);
@@ -101,12 +156,12 @@ module.exports = {
                 rtn.msg = ChkRepeated.msg;
             } else {
                 var insertData = {};
-                insertData.code_type=reqData.type;
-                insertData.code_seq1=reqData.value;
-                insertData.code_desc1=reqData.label;
-                insertData.op_user=reqData.op_user;
+                insertData.code_type = reqData.type;
+                insertData.code_seq1 = reqData.type + "_" + reqData._codeSeq.data;
+                insertData.code_desc1 = reqData.label;
+                insertData.op_user = reqData.op_user;
                 insertData.cr_date = utility.get_today();
- 
+
                 await m_db.insert(insertData, 'publiccode', function (err, result) {
                     if (err != null) {
                         console.log(err);
@@ -125,19 +180,20 @@ module.exports = {
             return rtn;
         }
     },
+
     /**
      * Function description : 修改代碼Type之seq&desc
      * @param  {JSON} reqData 資料
      */
-     editCodeData: async function (reqData) {
+    editCodeData: async function (reqData) {
         var rtn = {};
         try {
             var where = {};
             where.guid = reqData.guid;
-            var upData={};
-            upData.code_seq1=reqData.value;
-            upData.code_desc1=reqData.label;
-            upData.op_user=reqData.op_user;
+            var upData = {};
+            upData.code_seq1 = reqData.value;
+            upData.code_desc1 = reqData.label;
+            upData.op_user = reqData.op_user;
             upData.up_date = utility.get_today();
 
             await m_db.update(upData, "publiccode", where, function (err, result) {
@@ -156,6 +212,7 @@ module.exports = {
             return rtn;
         }
     },
+
     //delete
     deleteCodeData: async function (reqData) {
         var rtn = {};
@@ -180,7 +237,7 @@ module.exports = {
     },
 }
 
-async function _ChkRepeated(data){
+async function _ChkRepeated(data) {
     var rtn = {};
     try {
         var options = {};
@@ -192,21 +249,21 @@ async function _ChkRepeated(data){
                 rtn.status = false;
                 rtn.msg = err;
             } else {
-               _res=JSON.parse(JSON.stringify(result)) ;
+                _res = JSON.parse(JSON.stringify(result));
             }
         })
 
-        for(let ele in _res){
-            if(_res[ele].code_seq1==data.value || _res[ele].code_desc1==data.label){
+        for (let ele in _res) {
+            if (_res[ele].code_seq1 == data.value || _res[ele].code_desc1 == data.label) {
                 rtn.status = false;
                 rtn.msg = 'code_ChkRepeated';
-            }else{
+            } else {
                 rtn.status = true;
             }
         }
-       
+
         return rtn;
-    }catch (err) {
+    } catch (err) {
         rtn.status = false;
         rtn.msg = err;
         return rtn;

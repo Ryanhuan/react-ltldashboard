@@ -8,20 +8,20 @@ var db = require("./database");
 var object = db.define("publiccode", {
     code_type: {
         field: "code_type",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(20),
         allowNull: false,
     },
     code_seq1: {
         field: "code_seq1",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(20),
     },
     code_seq2: {
         field: "code_seq2",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(20),
     },
     code_seq3: {
         field: "code_seq3",
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(20),
     },
     code_desc1: {
         field: "code_desc1",

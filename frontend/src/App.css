@@ -31,13 +31,13 @@
     min-height: 100vh;
     background: var(--white);
     transition: 0.5s;
-
 }
 
 .Link {
     text-decoration: none;
     color: inherit;
 }
+/* ========================================================================== */
 
 /*  frostedGlass */
 .frostedGlass {
@@ -46,9 +46,9 @@
     background: rgba(255, 255, 255, 0.6) !important;
 }
 
+/* ========================================================================== */
 
 /* btn-main */
-
 .btn-main {
     background-color: var(--mainColor) !important;
     border-color: var(--white) !important;
@@ -59,28 +59,48 @@
     border-color: var(--mainColor) !important;
 }
 
-
 .PageTitle {
     position: relative;
     display:inline-block;
     font-weight: 600;
     font-size: 32px;
-    /* width: 100vw; */
     color: var(--fontMainColor);
     padding: 20px;
 }
 
+/* ========================================================================== */
 
-
-
+/* 修改  input(number) css style start */
 /* Chrome, Safari, Edge, Opera */
 input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-/* Firefox */
+/* 同上，依Firefox修改 */
 input[type=number] {
   -moz-appearance: textfield;
 }
+/* nput(number) css style end */
+
+/* ========================================================================== */
+
+/* Page Title Rotate Icon Start  */
+.pageTitleRotateIcon{
+    font-size: 28px !important;
+    transform: rotate(900deg);
+}
+
+.pageTitleRotateIcon.active{
+    transition: 0.5s ease-in;
+    transform: rotate(0deg);
+}
+
+.pageTitleRotateIcon.noActive{
+    transition: 0.5s ease-in;
+    transform: rotate(900deg);
+}
+/* Page Title Rotate Icon End  */
+
+/* ========================================================================== */
+

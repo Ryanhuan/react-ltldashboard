@@ -1,14 +1,10 @@
 .AdminUser {
     flex: 4;
-
 }
 
 .AdminUserWrapper {
     height: 100vh;
-    /* max-width: 1000px; */
-    /* width: 500px; */
     width: 100%;
-
 }
 
 .AdminUserBody {
@@ -18,14 +14,13 @@
 .AdminUserBodyGrid {
     height: 50%;
     width: 100% !important;
-
 }
 
-.AdminUserBodySignUpWrapper {
+.AdminUserBodySignUpWrapper,
+.AdminUserBodySignUpWrapper.noActive {
     height: 0px;
-    transition: 0.5s;
     overflow: hidden;
-
+    transition:0.5s;
 }
 
 .AdminUserBodySignUpWrapper.active {

@@ -24,7 +24,7 @@ export class AdminMatCode extends Component {
             SearchTypeCode: '',
             SelectOption: [],
             insertData: {
-                type: '', value: '', label: '',
+                type: '', label: '',
             },
             gridData: [],
             modal: {
@@ -62,26 +62,28 @@ export class AdminMatCode extends Component {
     //材料新增材料
     async insertData(event) {
         event.preventDefault();
-        if (this.state.insertData.value === '' || this.state.insertData.label === '') {
+        if (this.state.insertData.label === '') {
             Swal.fire({
                 position: 'bottom-end',
                 width: 400,
                 icon: 'error',
-                title: '代碼及代碼描述 必填!',
+                title: '項目欄位 必填!',
                 showConfirmButton: false,
                 timer: 1500
             })
-        } else if (this.state.insertData.value.match("^[a-zA-Z0-9 ]*$") == null) {
-            //check 
-            Swal.fire({
-                position: 'bottom-end',
-                width: 400,
-                icon: 'error',
-                title: '代碼請輸入英文或數字!',
-                showConfirmButton: false,
-                timer: 1500
-            })
-        } else {
+        } 
+        // else if (this.state.insertData.value.match("^[a-zA-Z0-9 ]*$") == null) {
+        //     //check 
+        //     Swal.fire({
+        //         position: 'bottom-end',
+        //         width: 400,
+        //         icon: 'error',
+        //         title: '代碼請輸入英文或數字!',
+        //         showConfirmButton: false,
+        //         timer: 1500
+        //     })
+        // } 
+        else {
             let _res = await postData("/api/insertCodeData", this.state.insertData);
             if (_res.status === 'insertCodeData_OK') {
                 Swal.fire({
@@ -172,7 +174,7 @@ export class AdminMatCode extends Component {
         _WrapperOpen[wrapperName] = !_WrapperOpen[wrapperName];
         this.setState({ WrapperOpen: _WrapperOpen });
     }
-    
+
     //clear
     dataClear(event) {
         event.preventDefault();
@@ -268,14 +270,14 @@ export class AdminMatCode extends Component {
         }
 
         const modalCols = [
-            { field: 'value', headerName: '代碼', type: 'text', className: 'mb-6 col-6 ' },
-            { field: 'label', headerName: '代碼敘述', type: 'text', className: 'mb-6 col-6' },
+            // { field: 'value', headerName: '代碼', type: 'text', className: 'mb-6 col-6 ' },
+            { field: 'label', headerName: '項目', type: 'text', className: 'mb-6 col-6' },
         ]
 
         const columns = [
             { field: 'seq', headerName: '序', flex: 1 },
-            { field: 'value', headerName: '代碼', flex: 2 },
-            { field: 'label', headerName: '代碼敘述', flex: 2 },
+            // { field: 'value', headerName: '代碼', flex: 2 },
+            { field: 'label', headerName: '項目', flex: 2 },
             {
                 field: 'actions', headerName: 'Actions', flex: 1,
                 renderCell: (params) => {
@@ -300,10 +302,12 @@ export class AdminMatCode extends Component {
                     <div className="AdminMatCodeTop">
                         <span className="PageTitle">材料分類管理</span>
                     </div>
-                    <div className="AdminMatCodeBody">
+                    <div className="AdminMatCodeBody"> 
                         <div className="AdminMatCodeItem">
                             <div className="AdminMatCodeItemTitle">
-                                <a href="/#" className="AdminMatCodeItemTitle" name="insertWrapper" onClick={this.WrapperOpen}>代碼新增<Eject className={this.state.WrapperOpen.insertWrapper ? 'AdminMatCodeItemTitleIcon active' : 'AdminMatCodeItemTitleIcon noActive'} /></a>
+                                <a href="/#" className="AdminMatCodeItemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
+                                    代碼新增
+                                    <Eject className={this.state.WrapperOpen.insertWrapper ? 'pageTitleRotateIcon active' : 'pageTitleRotateIcon noActive'} /></a>
                             </div>
                             <div className={this.state.WrapperOpen.insertWrapper ? 'AdminMatCodeItemWrapper active' : 'AdminMatCodeItemWrapper'}>
                                 <Container>
@@ -315,15 +319,15 @@ export class AdminMatCode extends Component {
                                                 </Form.Select>
                                             </FloatingLabel>
                                         </Col>
-                                        <Col xs={12} md={4}>
+                                        {/* <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputValue" label="代碼" className="mb-1 ">
                                                 <Form.Control type="text" placeholder="代碼" name='value' value={this.state.insertData.value} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
                                             </FloatingLabel>
                                             <span className="notice">※請輸入英文或數字</span>
-                                        </Col>
+                                        </Col> */}
                                         <Col xs={12} md={4}>
-                                            <FloatingLabel controlId="floatingInputLabel" label="代碼描述" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="代碼描述" name='label' value={this.state.insertData.label} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
+                                            <FloatingLabel controlId="floatingInputLabel" label="項目" className="mb-1 ">
+                                                <Form.Control type="text" placeholder="項目" name='label' value={this.state.insertData.label} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>

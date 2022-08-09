@@ -1,9 +1,10 @@
-const {log} = require('async');
+const log = require('async');
 var express = require('express');
 const Tokens = require("../middlewares/token");
 const member = require("../model/member");
 const codeManage = require("../model/codeManage");
 const Mat = require("../model/Mat");
+const product = require("../model/product");
 const utility = require("../public/javascripts/utility");
 
 var router = express.Router();
@@ -42,6 +43,7 @@ router.all('/*', async function (req, res, next) {
   }
 });
 
+//  login and account
 router.post("/signup", async function (req, res) {
   var rtn = {};
   try {
@@ -117,6 +119,7 @@ router.post("/editUser", async function (req, res) {
   }
 });
 
+// public code
 router.post("/getSelectOption", async function (req, res) {
   var rtn = {};
   try {
@@ -124,13 +127,14 @@ router.post("/getSelectOption", async function (req, res) {
     rtn.data = {};
     for (let i = 0; i < req.body.length; i++) {
       let _res = await codeManage.getCodeInfo(req.body[i]);
-      if (_res.msg == 'OK') {
+      if (_res.status == 'OK') {
         rtn.msg = 'getSelectOption_OK';
         let _tmp = [];
         JSON.parse(_res.data).forEach(ele => {
           _tmp.push({
             value: ele.code_seq1,
             label: ele.code_desc1,
+            mark: ele.mark,
             guid: ele.guid
           })
         });
@@ -154,17 +158,44 @@ router.post("/getCodeTypeKind/:type", async function (req, res) {
   try {
     console.log("----------api/getCodeTypeKind_start-----------");
     rtn.data = {};
- 
-    let _res= await codeManage.getCodeTypeKind(req.params.type);
+
+    let _res = await codeManage.getCodeTypeKind(req.params.type);
     // console.log("_res",_res);
     if (_res.status == 'OK') {
       rtn.msg = 'getCodeTypeKind_OK';
-      rtn.data=_res.data;
+      rtn.data = _res.data;
     } else {
       rtn.msg = 'getCodeTypeKind_Fail';
     }
     // console.log("rtn",rtn);
     console.log("----------api/getCodeTypeKind_end-----------");
+    res.json(rtn);
+  } catch (err) {
+    console.log(err);
+    rtn.msg = err.message;
+    res.json(rtn);
+  }
+});
+
+router.post("/getCodeMark/:codeType/:codeSeq1", async function (req, res) {
+  var rtn = {};
+  try {
+    console.log("----------api/getCodeMark_start-----------");
+    rtn.data = {};
+    let _res = await codeManage.getCodeInfo(req.params.codeType);
+    // console.log("_res",_res);
+    if (_res.status == 'OK') {
+      rtn.msg = 'getCodeMark_OK';
+      JSON.parse(_res.data).forEach(ele => {
+        if (ele.code_seq1 == req.params.codeSeq1) {
+          rtn.data.mark = ele.mark;
+        }
+      });
+    } else {
+      rtn.msg = 'getCodeMark_Fail';
+    }
+    // console.log("rtn",rtn);
+    console.log("----------api/getCodeMark_end-----------");
     res.json(rtn);
   } catch (err) {
     console.log(err);
@@ -180,12 +211,15 @@ router.post("/editCodeData", async function (req, res) {
     rtn.data = {};
     var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
     var op_user = TokenVerify.decodeData.email;
- 
-    let _res= await codeManage.editCodeData({...req.body,op_user});
+
+    let _res = await codeManage.editCodeData({
+      ...req.body,
+      op_user
+    });
     // console.log("_res",_res);
     if (_res.status == 'OK') {
       rtn.status = 'editCodeData_OK';
-      rtn.data=_res.data;
+      rtn.data = _res.data;
     } else {
       rtn.status = 'editCodeData_Fail';
     }
@@ -206,22 +240,32 @@ router.post("/insertCodeData", async function (req, res) {
     rtn.data = {};
     var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
     var op_user = TokenVerify.decodeData.email;
- 
-    let _res= await codeManage.insertCodeData({...req.body,op_user});
+    //新增代碼 自產code_seq1(code_type+_+seq)
+    //先取現在code_seq1 順序
+    // req.body { type: 'ma_quality', label: '1111' }
+    let _codeSeq = await codeManage.getCodeSeq1_seq(req.body.type);
+    if(_codeSeq.status=='OK'){
+      let _res = await codeManage.insertCodeData({
+      ...req.body,
+      _codeSeq,
+      op_user
+    });
     // console.log("_res",_res);
     if (_res.status == 'OK') {
       rtn.status = 'insertCodeData_OK';
-      rtn.data=_res.data;
+      rtn.data = _res.data;
     } else {
       rtn.status = 'insertCodeData_Fail';
-      rtn.msg=_res.msg;
+      rtn.msg = _res.msg;
     }
     // console.log("rtn",rtn);
+    }
     console.log("----------api/insertCodeData_end-----------");
     res.json(rtn);
   } catch (err) {
     console.log(err);
-    rtn.msg = err.message;
+    rtn.status = 'insertCodeData_Fail';
+    rtn.msg = "insertCodeData_Fail"+err.message;
     res.json(rtn);
   }
 });
@@ -233,7 +277,10 @@ router.post("/deleteCodeData", async function (req, res) {
     var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
     var op_user = TokenVerify.decodeData.email;
 
-    let _res = await codeManage.deleteCodeData({...req.body,op_user});
+    let _res = await codeManage.deleteCodeData({
+      ...req.body,
+      op_user
+    });
     // console.log("_res",_res);
     if (_res.status == 'OK') {
       rtn.status = 'deleteCodeData_OK';
@@ -252,6 +299,7 @@ router.post("/deleteCodeData", async function (req, res) {
   }
 });
 
+// Mat page
 router.post("/insertMatData", async function (req, res) {
   var rtn = {};
   try {
@@ -263,7 +311,10 @@ router.post("/insertMatData", async function (req, res) {
     //   ...req.body, op_user
     // };
     // let _res = await Mat.insertMat(insertData);
-    let _res = await Mat.insertMat({...req.body, op_user});
+    let _res = await Mat.insertMat({
+      ...req.body,
+      op_user
+    });
     // console.log("_res",_res);
     if (_res.status == 'OK') {
       rtn.status = 'InsertMatData_OK';
@@ -312,7 +363,7 @@ router.post("/deleteMatData", async function (req, res) {
   var rtn = {};
   try {
     console.log("----------api/deleteMatData_start-----------");
-   
+
     var reqData = {
       ...req.body,
     };
@@ -366,5 +417,38 @@ router.post("/editMatData", async function (req, res) {
     res.json(rtn);
   }
 });
+
+// Product page
+router.post("/insertProductData", async function (req, res) {
+  var rtn = {};
+  try {
+    console.log("----------api/insertProductData_start-----------");
+    var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
+    var op_user = TokenVerify.decodeData.email;
+
+    var reqData = {
+      ...req.body,
+      op_user
+    };
+
+    let _res = await product.insertProduct(reqData);
+    // console.log("_res",_res);
+    if (_res.status == 'OK') {
+      rtn.status = 'insertProductData_OK';
+      rtn.data = _res.data;
+    } else {
+      rtn.status = 'insertProductData_Fail'
+      rtn.msg = _res.msg;
+    }
+
+    console.log("----------api/insertProductData_end-----------");
+    res.json(rtn);
+  } catch (err) {
+    console.log(err);
+    rtn.msg = err.message;
+    res.json(rtn);
+  }
+});
+
 
 module.exports = router;

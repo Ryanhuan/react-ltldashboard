@@ -3,13 +3,8 @@ import { useState } from 'react';
 import { Link, NavLink } from "react-router-dom";
 import { LineStyle, Menu, ChatBubbleOutline, MailOutline, DynamicFeed, WorkOutline } from '@material-ui/icons';
 
-
-
 export default function Sidebar() {
-
   const [sidebar, setSidebar] = useState(false);
-  const showSidebar = () => setSidebar(!sidebar);
-
   const baseSidebarStyle = "Link sidebarListLink ";
 
   return (
@@ -23,7 +18,7 @@ export default function Sidebar() {
             </div>
           </Link>
           <div className={sidebar ? 'toggle active' : 'toggle'} >
-            <Menu className='toggleIcon' onClick={showSidebar} />
+            <Menu className='toggleIcon' onClick={() => setSidebar(!sidebar)} />
           </div>
         </div>
 
@@ -39,7 +34,7 @@ export default function Sidebar() {
           </ul>
         </div>
 
-        <div className="sidebarMenu">
+        {/* <div className="sidebarMenu">
           <h3 className="sidebarTitle">網站管理</h3>
           <ul className="sidebarList">
             <li className="sidebarListItem">
@@ -73,7 +68,8 @@ export default function Sidebar() {
               </NavLink>
             </li>
           </ul>
-        </div>
+        </div> */}
+
         <div className="sidebarMenu">
           <h3 className="sidebarTitle">材料管理</h3>
           <ul className="sidebarList">
@@ -116,7 +112,7 @@ export default function Sidebar() {
           </ul>
         </div>
 
-        <div className="sidebarMenu">
+        {/* <div className="sidebarMenu">
           <h3 className="sidebarTitle">訂單管理</h3>
           <ul className="sidebarList">
             <li className="sidebarListItem">
@@ -132,9 +128,9 @@ export default function Sidebar() {
               </NavLink>
             </li>
           </ul>
-        </div>
+        </div> */}
 
-        <div className="sidebarMenu">
+        {/* <div className="sidebarMenu">
           <h3 className="sidebarTitle">文章管理</h3>
           <ul className="sidebarList">
             <li className="sidebarListItem">
@@ -150,7 +146,7 @@ export default function Sidebar() {
               </NavLink>
             </li>
           </ul>
-        </div>
+        </div> */}
 
         <div className="sidebarMenu">
           <h3 className="sidebarTitle">管理主頁</h3>

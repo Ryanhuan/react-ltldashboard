@@ -18,25 +18,11 @@
     cursor: pointer;
     text-decoration: none;
 }
-.AdminMatManageItemTitleIcon{
-    font-size: 28px !important;
-    transform: rotate(900deg);
-}
 
 .AdminMatManageItemWrapper {
     height: 0px;
     transition: 0.5s;
     overflow: hidden;
-}
-
-.AdminMatManageItemTitleIcon.active{
-    transition: 0.5s ease-in;
-    transform: rotate(0deg);
-}
-
-.AdminMatManageItemTitleIcon.noActive{
-    transition: 0.5s ease-in;
-    transform: rotate(900deg);
 }
 
 .AdminMatManageItemWrapper.active{
