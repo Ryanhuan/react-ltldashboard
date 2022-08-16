@@ -85,18 +85,30 @@ input[type=number] {
 
 /* ========================================================================== */
 
+/* Page Title Start  */
+.itemTitle{
+    padding-bottom: 10px;
+    font-weight: 600;
+    font-size: 24px;
+    color: var(--fontSubColor);
+    padding-bottom: 10px;
+    cursor: pointer;
+    text-decoration: none;
+} 
+/* Page Title End  */
+
 /* Page Title Rotate Icon Start  */
-.pageTitleRotateIcon{
+.itemIconRotate{
     font-size: 28px !important;
     transform: rotate(900deg);
 }
 
-.pageTitleRotateIcon.active{
+.itemIconRotate.active{
     transition: 0.5s ease-in;
     transform: rotate(0deg);
 }
 
-.pageTitleRotateIcon.noActive{
+.itemIconRotate.noActive{
     transition: 0.5s ease-in;
     transform: rotate(900deg);
 }
@@ -104,3 +116,7 @@ input[type=number] {
 
 /* ========================================================================== */
 
+
+.btn{
+    margin: 5px 5px;
+}

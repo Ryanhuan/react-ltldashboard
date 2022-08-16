@@ -14,17 +14,11 @@ export class AdminProductManage extends Component {
 
     render() {
         return (
-            <div className="AdminProductManage">
-                <div className="AdminProductManageWrapper">
-                    <div className="AdminProductManageTop">
-                        <span className="PageTitle">產品管理</span>
-                    </div>
-
-                    <div className="AdminMatManageBody">
-                        <div className="AdminMatManageItem">
-                            <div className="AdminMatManageItemTitle">
-                                <a href="/#" className="AdminMatManageItemTitle" name="insertWrapper" onClick={this.WrapperOpen}>材料新增</a>
-                            </div>
+            <div className="adminProductManage">
+                <div className="adminProductManageWrapper">
+                    <div className="adminMatManageBody">
+                        <div className="adminMatManageItem">
+                            <a href="/#" className="itemTitle" name="insertWrapper" onClick={this.WrapperOpen}>材料新增</a>
                         </div>
                     </div>
                 </div>

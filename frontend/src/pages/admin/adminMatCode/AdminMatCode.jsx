@@ -10,7 +10,6 @@ import Button from 'react-bootstrap/Button'
 import { DeleteOutline, Edit, Eject } from '@material-ui/icons';
 import { CustomModal } from '../../../components/modal/customModal';
 import { postData } from "../../../api";
-
 import Swal from 'sweetalert2';
 
 export class AdminMatCode extends Component {
@@ -38,14 +37,11 @@ export class AdminMatCode extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.WrapperOpen = this.WrapperOpen.bind(this);
         this.dataClear = this.dataClear.bind(this);
-
     }
-
 
     componentDidMount() {
         this._getSelectOption();
     }
-
 
     //get query select option
     async _getSelectOption() {
@@ -71,21 +67,11 @@ export class AdminMatCode extends Component {
                 showConfirmButton: false,
                 timer: 1500
             })
-        } 
-        // else if (this.state.insertData.value.match("^[a-zA-Z0-9 ]*$") == null) {
-        //     //check 
-        //     Swal.fire({
-        //         position: 'bottom-end',
-        //         width: 400,
-        //         icon: 'error',
-        //         title: '代碼請輸入英文或數字!',
-        //         showConfirmButton: false,
-        //         timer: 1500
-        //     })
-        // } 
+        }
         else {
             let _res = await postData("/api/insertCodeData", this.state.insertData);
             if (_res.status === 'insertCodeData_OK') {
+                //成功
                 Swal.fire({
                     position: 'bottom-end',
                     width: 400,
@@ -96,6 +82,7 @@ export class AdminMatCode extends Component {
                 })
                 this._getGridData([this.state.SearchTypeCode]);
             } else if (_res.msg === 'code_ChkRepeated') {
+                //失敗 代碼重複
                 Swal.fire({
                     position: 'bottom-end',
                     width: 400,
@@ -105,6 +92,7 @@ export class AdminMatCode extends Component {
                     timer: 1500
                 })
             } else {
+                //失敗 其他錯誤
                 Swal.fire({
                     position: 'bottom-end',
                     width: 400,
@@ -116,7 +104,6 @@ export class AdminMatCode extends Component {
             }
         }
     }
-
 
     handleChange(event) {
         event.preventDefault();
@@ -270,13 +257,11 @@ export class AdminMatCode extends Component {
         }
 
         const modalCols = [
-            // { field: 'value', headerName: '代碼', type: 'text', className: 'mb-6 col-6 ' },
             { field: 'label', headerName: '項目', type: 'text', className: 'mb-6 col-6' },
         ]
 
         const columns = [
             { field: 'seq', headerName: '序', flex: 1 },
-            // { field: 'value', headerName: '代碼', flex: 2 },
             { field: 'label', headerName: '項目', flex: 2 },
             {
                 field: 'actions', headerName: 'Actions', flex: 1,
@@ -298,18 +283,13 @@ export class AdminMatCode extends Component {
 
         return (
             <div className="adminMatCode">
-                <div className="AdminMatCodeWrapper">
-                    <div className="AdminMatCodeTop">
-                        <span className="PageTitle">材料分類管理</span>
-                    </div>
-                    <div className="AdminMatCodeBody"> 
-                        <div className="AdminMatCodeItem">
-                            <div className="AdminMatCodeItemTitle">
-                                <a href="/#" className="AdminMatCodeItemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
-                                    代碼新增
-                                    <Eject className={this.state.WrapperOpen.insertWrapper ? 'pageTitleRotateIcon active' : 'pageTitleRotateIcon noActive'} /></a>
-                            </div>
-                            <div className={this.state.WrapperOpen.insertWrapper ? 'AdminMatCodeItemWrapper active' : 'AdminMatCodeItemWrapper'}>
+                <div className="adminMatCodeWrapper">
+                    <div className="adminMatCodeBody">
+                        <div className="adminMatCodeItem">
+                            <a href="/#" className="itemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
+                                代碼新增
+                                <Eject className={this.state.WrapperOpen.insertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                            <div className={this.state.WrapperOpen.insertWrapper ? 'adminMatCodeItemWrapper active' : 'adminMatCodeItemWrapper'}>
                                 <Container>
                                     <Row className="justify-content-md-center">
                                         <Col xs={12} md={4}>
@@ -319,12 +299,6 @@ export class AdminMatCode extends Component {
                                                 </Form.Select>
                                             </FloatingLabel>
                                         </Col>
-                                        {/* <Col xs={12} md={4}>
-                                            <FloatingLabel controlId="floatingInputValue" label="代碼" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="代碼" name='value' value={this.state.insertData.value} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
-                                            </FloatingLabel>
-                                            <span className="notice">※請輸入英文或數字</span>
-                                        </Col> */}
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputLabel" label="項目" className="mb-1 ">
                                                 <Form.Control type="text" placeholder="項目" name='label' value={this.state.insertData.label} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
@@ -341,11 +315,11 @@ export class AdminMatCode extends Component {
                             </div>
                         </div>
 
-                        <div className="AdminMatCodeItem">
-                            <div className="AdminMatCodeItemTitle">
-                                <span className="AdminMatCodeItemTitle">代碼查詢</span>
+                        <div className="adminMatCodeItem">
+                            <div className="adminMatCodeItemTitle">
+                                <span className="adminMatCodeItemTitle">代碼查詢</span>
                             </div>
-                            <div className="AdminMatCodeItemContainer">
+                            <div className="adminMatCodeItemContainer">
                                 <Container>
                                     <Row>
                                         <Col xs={12} md={3}>
@@ -359,7 +333,7 @@ export class AdminMatCode extends Component {
                                 </Container>
                             </div>
 
-                            <div className="AdminMatCodeItemContainer">
+                            <div className="adminMatCodeItemContainer">
                                 <div className="matCodeDataList">
                                     <DataGrid
                                         rows={this.state.gridData}

@@ -1,82 +1,65 @@
-import {  BrowserRouter as Router,  Route,  Routes } from "react-router-dom";
-import {ErrorBoundary} from 'react-error-boundary';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ErrorBoundary } from 'react-error-boundary';
 import "./App.css";
+import { pageSettings } from "./pageSettings"
+
 import Topbar from './components/admin/topbar/Topbar'
 import Sidebar from './components/admin/sidebar/Sidebar'
 import ScrollArrow from './components/scrollArrow/ScrollArrow'
-import Home from './pages/home/Home'
 import Login from './pages/login/Login'
 
-import NewUser from './pages/client/newUser/NewUser'
-import ProductList from './pages/client/productList/ProductList'
-import UserList from './pages/client/userList/UserList'
-import User from './pages/client/user/User'
 
-import AdminUser from './pages/admin/adminUser/AdminUser'
-import {AdminMatManage} from './pages/admin/adminMatManage/AdminMatManage'
-import {AdminMatCode} from './pages/admin/adminMatCode/AdminMatCode'
-import {AdminProductManage} from './pages/admin/adminProductManage/AdminProductManage'
-import {AdminProductCode} from './pages/admin/adminProductCode/AdminProductCode'
-import {AdminProductAdd} from './pages/admin/adminProductAdd/AdminProductAdd'
 
-function ErrorFallback({error, resetErrorBoundary}) {
+function ErrorFallback({ error }) {
   return (
+    //TODO: 待補 Error Page
     <div role="alert">
       <p>Something went wrong:</p>
       <pre>{error.message}</pre>
-      <button onClick={resetErrorBoundary}>Try again</button>
     </div>
   )
 }
 
 
 function App() {
-  let token=localStorage.getItem('token');
-  
-  if(!token) {
-    return  (
-        <Router>
-          <Routes>
-            <Route path='/login' element={<Login />} /> 
-            <Route path='*'  element={<Login />}/> 
-          </Routes> 
-        </Router>
-    )
-  }
-  return (
-    <>
-     <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <Router>
-          <div className="appContainer">
-            <Sidebar />
-            <ScrollArrow/>
-            <div className="appBody">
-              <Topbar />
-              <Routes>
-                <Route path='/' element={<Home />} /> 
-                <Route path='/users' element={<UserList />} /> 
-                <Route path='/user/:userId' element={<User />} /> 
-                <Route path='/newUser' element={<NewUser />} /> 
-                <Route path='/products' element={<ProductList />} /> 
-                <Route path='/product/:productId' element={<User />} /> 
-                <Route path='/newProduct' element={<NewUser />} /> 
+  let token = localStorage.getItem('token');
 
-                <Route path='/Admin' element={<Home />} /> 
-                <Route path='/AdminUser' element={<AdminUser />} /> 
-                <Route path='/AdminMatManage' element={<AdminMatManage />} />
-                <Route path='/AdminMatCode' element={<AdminMatCode />} />
-                <Route path='/AdminProductManage' element={<AdminProductManage />} />
-                <Route path='/AdminProductCode' element={<AdminProductCode />} />
-                <Route path='/AdminProductAdd' element={<AdminProductAdd />} />
-                
-                <Route path='*'  element={<Home />} />
-              </Routes>
+  if (!token) {
+    return (
+      <Router>
+        <Routes>
+          <Route path='/login' element={<Login />} />
+          <Route path='*' element={<Login />} />
+        </Routes>
+      </Router>
+    )
+  } else {
+    return (
+      <>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <Router>
+            <div className="appContainer">
+              <Sidebar />
+              <ScrollArrow />
+              <div className="appBody">
+                <Topbar />
+                <Routes>
+                  {pageSettings.Admin.map((route, index) => (
+                    <Route exact key={index} path={route.href} element={
+                        <>
+                          <span className="PageTitle">{route.pageTitle}</span>
+                          {route.element}
+                        </>
+                    } />
+                  ))}
+                </Routes>
+              </div>
             </div>
-          </div>
-        </Router>
-      </ErrorBoundary>
-    </>
-  );
+          </Router>
+        </ErrorBoundary>
+      </>
+    );
+  }
 }
 
 export default App;

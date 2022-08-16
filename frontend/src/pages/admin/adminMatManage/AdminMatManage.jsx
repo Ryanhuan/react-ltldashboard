@@ -6,9 +6,9 @@ import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from 'react-bootstrap/Button'
-import { Eject, DeleteOutline, Edit} from '@material-ui/icons';
+import { Eject, DeleteOutline, Edit } from '@material-ui/icons';
 import { DataGrid } from '@mui/x-data-grid';
-import {CustomModal}from '../../../components/modal/customModal';
+import { CustomModal } from '../../../components/modal/customModal';
 import Swal from 'sweetalert2';
 import { postData } from "../../../api";
 
@@ -17,9 +17,9 @@ export class AdminMatManage extends Component {
         super(props);
         //declare
         this.state = {
-            WrapperOpen:{
-                insertWrapper:false,
-                searchWrapper:false,
+            WrapperOpen: {
+                insertWrapper: false,
+                searchWrapper: false,
             },
             insertData: {
                 id: '', type: '', name: '', size: '', quality: '', store_name: '', price: '', num: '', price_per: '', memo: '',
@@ -31,21 +31,21 @@ export class AdminMatManage extends Component {
                 ma_type: [{ value: '', label: '==請選擇==' },],
                 ma_quality: [{ value: '', label: '==請選擇==' },],
             },
-            gridData:[],
-            modal:{
+            gridData: [],
+            modal: {
                 show: false,
-                title:'',
-                data:{},
+                title: '',
+                data: {},
             }
         };
         //bind
         this.insertData = this.insertData.bind(this);
         this.searchData = this.searchData.bind(this);
-        
+
         this.dataClear = this.dataClear.bind(this);
         this.WrapperOpen = this.WrapperOpen.bind(this);
         this.handleDataChange = this.handleDataChange.bind(this);
-        
+
         //func
         this._getSelectOption();
     }
@@ -61,7 +61,7 @@ export class AdminMatManage extends Component {
         //qry from state.SelectOption
         let qryTmp = Object.keys(_SelectOption);
         //get Select Option res 
-        let _res = await postData("/api/getSelectOption",qryTmp);
+        let _res = await postData("/api/getSelectOption", qryTmp);
         //update Select Option data
         qryTmp.forEach(ele => {
             _res.data[ele].forEach(ele_res => {
@@ -72,7 +72,7 @@ export class AdminMatManage extends Component {
 
     //get mat data for grid
     async _getMatData(qryData) {
-        let _res = await postData("/api/getMatData",qryData);
+        let _res = await postData("/api/getMatData", qryData);
         let _gridData = _res.data;
         delete _gridData.guid;
         for (let i = 0; i < _gridData.length; i++) {
@@ -85,7 +85,7 @@ export class AdminMatManage extends Component {
     async insertData(event) {
         event.preventDefault();
         // console.log(this.state.insertData);
-        if(this.state.insertData.id===''||this.state.insertData.id===null){
+        if (this.state.insertData.id === '' || this.state.insertData.id === null) {
             Swal.fire({
                 position: 'bottom-end',
                 width: 400,
@@ -94,15 +94,15 @@ export class AdminMatManage extends Component {
                 showConfirmButton: false,
                 timer: 1500
             })
-        }else{
-            let _insertData=this.state.insertData
-            for(let ele in _insertData){
-                if(ele==='price'||ele==='num'||ele==='price_per'){
-                    _insertData[ele]= _insertData[ele]==='' ? 0:parseInt(_insertData[ele]);
+        } else {
+            let _insertData = this.state.insertData
+            for (let ele in _insertData) {
+                if (ele === 'price' || ele === 'num' || ele === 'price_per') {
+                    _insertData[ele] = _insertData[ele] === '' ? 0 : parseInt(_insertData[ele]);
                 }
             }
             // _insertData
-            let _res = await postData("/api/insertMatData",this.state.insertData);
+            let _res = await postData("/api/insertMatData", this.state.insertData);
             if (_res.status === 'InsertMatData_OK') {
                 Swal.fire({
                     position: 'bottom-end',
@@ -138,13 +138,13 @@ export class AdminMatManage extends Component {
     //材料搜尋材料
     async searchData(event) {
         event.preventDefault();
-        if(this.state.searchData.lowPricePer > this.state.searchData.highPrice ){
+        if (this.state.searchData.lowPricePer > this.state.searchData.highPrice) {
             Swal.fire(
                 'No No!',
                 '最低單價不可高於最高單價',
                 'error'
             )
-        }else{
+        } else {
             this._getMatData(this.state.searchData);
         }
     }
@@ -186,36 +186,36 @@ export class AdminMatManage extends Component {
         _WrapperOpen[wrapperName] = !_WrapperOpen[wrapperName];
         this.setState({ WrapperOpen: _WrapperOpen });
     }
-   
+
 
     render() {
 
-        const selectOptionChange=(value,selectOptions)=>{
-            for(let ele in selectOptions){
-              if(selectOptions[ele].label===value){ return selectOptions[ele].value }
+        const selectOptionChange = (value, selectOptions) => {
+            for (let ele in selectOptions) {
+                if (selectOptions[ele].label === value) { return selectOptions[ele].value }
             }
         }
 
-        const modalOpen=(event,data)=>{
+        const modalOpen = (event, data) => {
             event.preventDefault();
-            let _data=JSON.parse(JSON.stringify(data));
-            let _modal=this.state.modal;
-            _data.type=selectOptionChange(_data.type,this.state.SelectOption.ma_type);
-            _data.quality=selectOptionChange(_data.quality,this.state.SelectOption.ma_quality);
-            _modal.data=_data;
-            _modal.title="修改";
-            _modal.show=!_modal.show;
-            this.setState({modal:_modal});
+            let _data = JSON.parse(JSON.stringify(data));
+            let _modal = this.state.modal;
+            _data.type = selectOptionChange(_data.type, this.state.SelectOption.ma_type);
+            _data.quality = selectOptionChange(_data.quality, this.state.SelectOption.ma_quality);
+            _modal.data = _data;
+            _modal.title = "修改";
+            _modal.show = !_modal.show;
+            this.setState({ modal: _modal });
         }
 
-        const modalOnHide=()=>{
-            let _modal=this.state.modal;
-            _modal.show=!_modal.show;
-            this.setState({modal:_modal});
+        const modalOnHide = () => {
+            let _modal = this.state.modal;
+            _modal.show = !_modal.show;
+            this.setState({ modal: _modal });
         }
 
         //edit submit
-        const submitForm=async (event,data)=>{
+        const submitForm = async (event, data) => {
             event.preventDefault();
             Swal.fire({
                 title: '確定要修改?',
@@ -280,36 +280,37 @@ export class AdminMatManage extends Component {
         }
 
         const modalCols = [
-            { field: 'id', headerName: 'ID', type: 'text', className: 'mb-2 col-4 '},
-            { field: 'type', headerName: '類別', type: 'dropDown', className: 'mb-2 col-4' ,selectOption:this.state.SelectOption.ma_type},
+            { field: 'id', headerName: 'ID', type: 'text', className: 'mb-2 col-4 ' },
+            { field: 'type', headerName: '類別', type: 'dropDown', className: 'mb-2 col-4', selectOption: this.state.SelectOption.ma_type },
             { field: 'name', headerName: '品名', type: 'text', className: 'mb-2 col-4 ' },
             { field: 'size', headerName: '尺寸', type: 'text', className: 'mb-2 col-4 ' },
-            { field: 'quality', headerName: '質地', type: 'dropDown', className: 'mb-2 col-4 ' ,selectOption:this.state.SelectOption.ma_quality },
+            { field: 'quality', headerName: '質地', type: 'dropDown', className: 'mb-2 col-4 ', selectOption: this.state.SelectOption.ma_quality },
             { field: 'store_name', headerName: '店家', type: 'text', className: 'mb-2 col-4 ' },
             { field: 'price', headerName: '價錢', type: 'number', className: 'mb-2 col-4 ' },
             { field: 'num', headerName: '數量', type: 'number', className: 'mb-2 col-4 ' },
-            { field: 'price_per', headerName: '單價(元)', type: 'number', className: 'mb-2 col-4 ',disabled:true},
+            { field: 'price_per', headerName: '單價(元)', type: 'number', className: 'mb-2 col-4 ', disabled: true },
             { field: 'memo', headerName: '備註', type: 'text', className: 'mb-2 col-12 ' },
         ]
 
         const columns = [
-            { field: 'seq', headerName: '序', flex: 1},
-            { field: 'id', headerName: 'ID', flex: 1},
-            { field: 'type', headerName: '類別', flex: 1},
-            { field: 'name', headerName: '品名', flex: 1},
-            { field: 'size', headerName: '尺寸',  flex: 1},
-            { field: 'quality', headerName: '質地',flex: 1 },
-            { field: 'price_per', headerName: '單價(元)', flex: 1},
-            { field: 'actions', headerName: 'Actions', flex: 1,
+            { field: 'seq', headerName: '序', flex: 1 },
+            { field: 'id', headerName: 'ID', flex: 1 },
+            { field: 'type', headerName: '類別', flex: 1 },
+            { field: 'name', headerName: '品名', flex: 1 },
+            { field: 'size', headerName: '尺寸', flex: 1 },
+            { field: 'quality', headerName: '質地', flex: 1 },
+            { field: 'price_per', headerName: '單價(元)', flex: 1 },
+            {
+                field: 'actions', headerName: 'Actions', flex: 1,
                 renderCell: (params) => {
                     return (
                         <>
-                            <Edit className="matGridEdit" onClick={(e) => modalOpen(e,params.row)}/>
-                            <DeleteOutline className="matGridDelete" onClick={(e) => handleDelete(e,params.row)} />
+                            <Edit className="matGridEdit" onClick={(e) => modalOpen(e, params.row)} />
+                            <DeleteOutline className="matGridDelete" onClick={(e) => handleDelete(e, params.row)} />
                             {this.state.modal.show ?
                                 <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
-                                modalCols={modalCols} submitForm={(e,data)=>{submitForm(e,data)}}
-                                 /> : ''
+                                    modalCols={modalCols} submitForm={(e, data) => { submitForm(e, data) }}
+                                /> : ''
                             }
                         </>
                     )
@@ -318,37 +319,32 @@ export class AdminMatManage extends Component {
         ];
 
         return (
-            <div className="AdminMatManage">
-                <div className="AdminMatManageWrapper">
-                    <div className="AdminMatManageTop">
-                        <span className="PageTitle">材料管理</span>
-                    </div>
-                    <div className="AdminMatManageBody">
+            <div className="adminMatManage">
+                <div className="adminMatManageWrapper">
+                    <div className="adminMatManageBody">
                         {/* insert */}
-                        <div className="AdminMatManageItem">
-                            <div className="AdminMatManageItemTitle">
-                                <a href="/#" className="AdminMatManageItemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
-                                    材料新增
-                                    <Eject className={this.state.WrapperOpen.insertWrapper ? 'pageTitleRotateIcon active' : 'pageTitleRotateIcon noActive'} /></a>
-                            </div>
-                            <div className={this.state.WrapperOpen.insertWrapper ? 'AdminMatManageItemWrapper active' : 'AdminMatManageItemWrapper'}>
+                        <div className="adminMatManageItem">
+                            <a href="/#" className="itemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
+                                材料新增
+                                <Eject className={this.state.WrapperOpen.insertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                            <div className={this.state.WrapperOpen.insertWrapper ? 'adminMatManageItemWrapper active' : 'adminMatManageItemWrapper'}>
                                 <Container>
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputId" label="ID" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="ID" name='id' value={this.state.insertData.id} onChange={(e)=>{this.handleDataChange(e,"insert")}} />
+                                                <Form.Control type="text" placeholder="ID" name='id' value={this.state.insertData.id} onChange={(e) => { this.handleDataChange(e, "insert") }} />
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingSelectType" label="類別">
-                                                <Form.Select aria-label="Floating label select" name='type' value={this.state.insertData.type}  onChange={(e)=>{this.handleDataChange(e,"insert")}} >
+                                                <Form.Select aria-label="Floating label select" name='type' value={this.state.insertData.type} onChange={(e) => { this.handleDataChange(e, "insert") }} >
                                                     {this.state.SelectOption.ma_type.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                 </Form.Select>
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputName" label="品名" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="品名" name='name' value={this.state.insertData.name}  onChange={(e)=>{this.handleDataChange(e,"insert")}} />
+                                                <Form.Control type="text" placeholder="品名" name='name' value={this.state.insertData.name} onChange={(e) => { this.handleDataChange(e, "insert") }} />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -356,19 +352,19 @@ export class AdminMatManage extends Component {
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputSize" label="尺寸" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="尺寸" name='size' value={this.state.insertData.size}  onChange={(e)=>{this.handleDataChange(e,"insert")}} />
+                                                <Form.Control type="text" placeholder="尺寸" name='size' value={this.state.insertData.size} onChange={(e) => { this.handleDataChange(e, "insert") }} />
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingSelectQuality" label="質地">
-                                                <Form.Select aria-label="Floating label select" name='quality' value={this.state.insertData.quality}  onChange={(e)=>{this.handleDataChange(e,"insert")}} >
+                                                <Form.Select aria-label="Floating label select" name='quality' value={this.state.insertData.quality} onChange={(e) => { this.handleDataChange(e, "insert") }} >
                                                     {this.state.SelectOption.ma_quality.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                 </Form.Select>
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputStoreName" label="店家" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="店家" name='store_name' value={this.state.insertData.store_name}  onChange={(e)=>{this.handleDataChange(e,"insert")}}/>
+                                                <Form.Control type="text" placeholder="店家" name='store_name' value={this.state.insertData.store_name} onChange={(e) => { this.handleDataChange(e, "insert") }} />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -376,17 +372,17 @@ export class AdminMatManage extends Component {
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputPrice" label="價錢" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="價錢" name='price' value={this.state.insertData.price|| ''}  onChange={(e)=>{this.handleDataChange(e,"insert")}}/>
+                                                <Form.Control type="number" placeholder="價錢" name='price' value={this.state.insertData.price || ''} onChange={(e) => { this.handleDataChange(e, "insert") }} />
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputNum" label="數量" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="數量" name='num' value={this.state.insertData.num|| ''}  onChange={(e)=>{this.handleDataChange(e,"insert")}} />
+                                                <Form.Control type="number" placeholder="數量" name='num' value={this.state.insertData.num || ''} onChange={(e) => { this.handleDataChange(e, "insert") }} />
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputPricePer" label="單價" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="單價" name='price_per' value={this.state.insertData.price_per|| ''} onChange={(e)=>{this.handleDataChange(e,"insert")}}disabled readOnly />
+                                                <Form.Control type="number" placeholder="單價" name='price_per' value={this.state.insertData.price_per || ''} onChange={(e) => { this.handleDataChange(e, "insert") }} disabled readOnly />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -394,7 +390,7 @@ export class AdminMatManage extends Component {
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={12}>
                                             <FloatingLabel controlId="floatingInputMemo" label="備註" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="備註" name='memo' value={this.state.insertData.memo}  onChange={(e)=>{this.handleDataChange(e,"insert")}} />
+                                                <Form.Control type="text" placeholder="備註" name='memo' value={this.state.insertData.memo} onChange={(e) => { this.handleDataChange(e, "insert") }} />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -410,35 +406,33 @@ export class AdminMatManage extends Component {
                         </div>
 
                         {/* search */}
-                        <div className="AdminMatManageItem">
-                            <div className="AdminMatManageItemTitle">
-                                <a href="/#" className="AdminMatManageItemTitle" name="searchWrapper" onClick={this.WrapperOpen}>
-                                    材料搜尋
-                                    <Eject className={this.state.WrapperOpen.searchWrapper ? 'pageTitleRotateIcon active' : 'pageTitleRotateIcon noActive'} /></a>
-                            </div>
-                            <div className={this.state.WrapperOpen.searchWrapper ? 'AdminMatManageItemWrapper searchWrapper active' : 'AdminMatManageItemWrapper searchWrapper'}>
+                        <div className="adminMatManageItem">
+                            <a href="/#" className="itemTitle" name="searchWrapper" onClick={this.WrapperOpen}>
+                                材料搜尋
+                                <Eject className={this.state.WrapperOpen.searchWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                            <div className={this.state.WrapperOpen.searchWrapper ? 'adminMatManageItemWrapper searchWrapper active' : 'adminMatManageItemWrapper searchWrapper'}>
                                 <Container>
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingInputIdSearch" label="ID" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="ID" name='id' value={this.state.searchData.id}  onChange={(e)=>{this.handleDataChange(e,"search")}}/>
+                                                <Form.Control type="text" placeholder="ID" name='id' value={this.state.searchData.id} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingSelectTypeSearch" label="類別">
-                                                <Form.Select aria-label="Floating label select" name='type' value={this.state.searchData.type}  onChange={(e)=>{this.handleDataChange(e,"search")}} >
+                                                <Form.Select aria-label="Floating label select" name='type' value={this.state.searchData.type} onChange={(e) => { this.handleDataChange(e, "search") }} >
                                                     {this.state.SelectOption.ma_type.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                 </Form.Select>
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingInputNameSearch" label="品名" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="品名" name='name' value={this.state.searchData.name} onChange={(e)=>{this.handleDataChange(e,"search")}}/>
+                                                <Form.Control type="text" placeholder="品名" name='name' value={this.state.searchData.name} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingInputSizeSearch" label="尺寸" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="尺寸" name='size' value={this.state.searchData.size} onChange={(e)=>{this.handleDataChange(e,"search")}} />
+                                                <Form.Control type="text" placeholder="尺寸" name='size' value={this.state.searchData.size} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -446,24 +440,24 @@ export class AdminMatManage extends Component {
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingSelectQualitySearch" label="質地">
-                                                <Form.Select aria-label="Floating label select" name='quality' value={this.state.searchData.quality}  onChange={(e)=>{this.handleDataChange(e,"search")}} >
+                                                <Form.Select aria-label="Floating label select" name='quality' value={this.state.searchData.quality} onChange={(e) => { this.handleDataChange(e, "search") }} >
                                                     {this.state.SelectOption.ma_quality.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                 </Form.Select>
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingInputStoreNameSearch" label="店家" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="店家" name='storeName' value={this.state.searchData.storeName}  onChange={(e)=>{this.handleDataChange(e,"search")}} />
+                                                <Form.Control type="text" placeholder="店家" name='storeName' value={this.state.searchData.storeName} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingInputLowPricePerSearch" label="最低單價" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="最低單價" name='lowPricePer' value={this.state.searchData.lowPricePer || ''}  onChange={(e)=>{this.handleDataChange(e,"search")}}  />
+                                                <Form.Control type="number" placeholder="最低單價" name='lowPricePer' value={this.state.searchData.lowPricePer || ''} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                             </FloatingLabel>
                                         </Col>
                                         <Col xs={12} md={3}>
                                             <FloatingLabel controlId="floatingInputHighPricePerSearch" label="最高單價" className="mb-1 ">
-                                                <Form.Control type="number" placeholder="最高單價" name='highPricePer' value={this.state.searchData.highPricePer || ''}  onChange={(e)=>{this.handleDataChange(e,"search")}}  />
+                                                <Form.Control type="number" placeholder="最高單價" name='highPricePer' value={this.state.searchData.highPricePer || ''} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -471,7 +465,7 @@ export class AdminMatManage extends Component {
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={12}>
                                             <FloatingLabel controlId="floatingInputMemoSearch" label="備註" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="備註" name='memo' value={this.state.searchData.memo}  onChange={(e)=>{this.handleDataChange(e,"search")}} />
+                                                <Form.Control type="text" placeholder="備註" name='memo' value={this.state.searchData.memo} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -487,7 +481,7 @@ export class AdminMatManage extends Component {
                             </div>
                         </div>
 
-                        <div className="AdminMatManageItem">
+                        <div className="adminMatManageItem">
                             <div className="matDataList">
                                 <DataGrid
                                     rows={this.state.gridData}

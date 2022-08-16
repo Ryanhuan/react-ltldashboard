@@ -1,28 +1,15 @@
 
-.AdminMatCodeItem{
+.adminMatCodeItem{
     padding: 20px;
 }
 
-.AdminMatCodeItemTitle{
-    padding-bottom: 10px;
-}
-
-.AdminMatCodeItemTitle{
-    font-weight: 600;
-    font-size: 24px;
-    color: var(--fontSubColor);
-    padding-bottom: 10px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.AdminMatCodeItemWrapper {
+.adminMatCodeItemWrapper {
     height: 0px;
     transition: 0.5s;
     overflow: hidden;
 }
 
-.AdminMatCodeItemWrapper.active{
+.adminMatCodeItemWrapper.active{
     padding-top: 10px;
     height: 150px;
     transition: 0.5s;
@@ -35,7 +22,7 @@
     height:635px;
 }
 
-.AdminMatCodeItemContainer{
+.adminMatCodeItemContainer{
     padding: 10px 0;
 }
 

@@ -1,29 +1,29 @@
-.AdminUser {
+.adminUser {
     flex: 4;
 }
 
-.AdminUserWrapper {
+.adminUserWrapper {
     height: 100vh;
     width: 100%;
 }
 
-.AdminUserBody {
+.adminUserBody {
     padding: 20px;
 }
 
-.AdminUserBodyGrid {
+.adminUserBodyGrid {
     height: 50%;
     width: 100% !important;
 }
 
-.AdminUserBodySignUpWrapper,
-.AdminUserBodySignUpWrapper.noActive {
+.adminUserBodySignUpWrapper,
+.adminUserBodySignUpWrapper.noActive {
     height: 0px;
     overflow: hidden;
     transition:0.5s;
 }
 
-.AdminUserBodySignUpWrapper.active {
+.adminUserBodySignUpWrapper.active {
     margin-top: 20px;
     padding: 20px;
     height: 280px;
@@ -33,16 +33,13 @@
     border-radius:10px;
 }
 
-.AdminUserBodySignUpWrapperItem{
+.adminUserBodySignUpWrapperItem{
     display: flex;
 }
 
-
-.AdminUserBodySignUpItemBtn{
-text-align: right;
+.adminUserBodySignUpItemBtn{
+    text-align: right;
 }
-
-
 
 .userListUser {
     display: flex;
@@ -77,25 +74,24 @@ text-align: right;
     cursor: pointer;
 }
 
-.CheckCircleOutline{
+.checkCircleOutline{
     color: var(--success);
     font-size: 32px !important;
 
 }
 
-.HighlightOff{
+.highlightOff{
     color: var(--error);
     font-size: 32px !important;
 
 }
-
 
 Form label{
     color: var(--black2);
 }
 
 
-.SignUpItemTitle{
+.signUpItemTitle{
     font-weight: 600;
     color: var(--fontSubColor);
     padding-bottom: 10px;

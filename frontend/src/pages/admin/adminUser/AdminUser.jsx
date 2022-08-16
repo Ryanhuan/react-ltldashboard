@@ -27,19 +27,16 @@ export default function AdminUser() {
         { id: '06', name: '管理主頁', value: 'manage', check: false }
     ]);
     const [wrapperOn, setWrapperOn] = useState(false);
-    
+    //user grid edit (popup modal)
+    const [userListEditModalShow, setUserListEditModalShow] = useState(false); //popup modal
+    const [userListEditData, setUserListEditData] = useState({}); //popup modal
+
     //root checkbox change event
     const changeCheckboxState = (index) => {
         let arrLists = root;
         arrLists[index].check = !arrLists[index].check;
         setRoot([...arrLists]);
     }
-
-    // Sign Up Box open or close event
-    // const signUpOpen = (e) => {
-    //     e.preventDefault();
-    //     setSignUpOpen(!SignUpOpen);
-    // }
 
     // Sign Up submit event
     const signUp = async e => {
@@ -139,8 +136,8 @@ export default function AdminUser() {
                 return (
                     <div className="userListEnable">
                         {params.row.isenabled === true ?
-                            <CheckCircleOutline className="CheckCircleOutline" alt="enable" />
-                            : <HighlightOff className="HighlightOff" alt="disable" />
+                            <CheckCircleOutline className="checkCircleOutline" alt="enable" />
+                            : <HighlightOff className="highlightOff" alt="disable" />
                         }
                     </div>
                 )
@@ -177,11 +174,6 @@ export default function AdminUser() {
     ];
 
 
-    //user grid edit
-    const [userListEditModalShow, setUserListEditModalShow] = useState(false); //popup modal
-    const [userListEditData, setUserListEditData] = useState({}); //popup modal
-
-
     // reset Input box
     const resetSignupInput = () => {
         setEmail("");
@@ -191,26 +183,22 @@ export default function AdminUser() {
     }
 
     return (
-        <div className="AdminUser">
-            <div className="AdminUserWrapper">
-                <div className="AdminUserTop">
-                    <span className="PageTitle">成員管理</span>
-                </div>
-                <div className="AdminUserBody AdminUserBodySignUp">
-                    <div className="AdminMatCodeItemTitle">
-                        <a href="#" className="AdminMatCodeItemTitle" onClick={()=>{setWrapperOn(!wrapperOn)}}>
-                            代碼新增
-                            <Eject className={wrapperOn ? 'pageTitleRotateIcon active' : 'pageTitleRotateIcon noActive'} /></a>
-                    </div>
-                    <div className={wrapperOn ? 'AdminUserBodySignUpWrapper active' : 'AdminUserBodySignUpWrapper noActive'}>
+        <div className="adminUser">
+            <div className="adminUserWrapper">
+                <div className="adminUserBody adminUserBodySignUp">
+                        <a href="#" className="itemTitle" onClick={() => { setWrapperOn(!wrapperOn) }}>
+                            成員新增
+                            <Eject className={wrapperOn ? 'itemIconRotate active' : 'itemIconRotate noActive'} />
+                        </a>
+                    <div className={wrapperOn ? 'adminUserBodySignUpWrapper active' : 'adminUserBodySignUpWrapper noActive'}>
                         <Form onSubmit={signUp}>
-                            <div className="AdminUserBodySignUpWrapperItem">
-                                <div className="AdminUserBodySignUpWrapperLeft">
-                                    <div className="SignUpItemTitle">基本資料</div>
+                            <div className="adminUserBodySignUpWrapperItem">
+                                <div className="adminUserBodySignUpWrapperLeft">
+                                    <div className="signUpItemTitle">基本資料</div>
 
                                     <Form.Group className="mb-1" controlId="formBasicEmail">
                                         <div className="row">
-                                            <div className="AdminUserBodySignUpItem col-md-5">
+                                            <div className="adminUserBodySignUpItem col-md-5">
                                                 <FloatingLabel
                                                     controlId="floatingInputEmail"
                                                     label="Email"
@@ -223,7 +211,7 @@ export default function AdminUser() {
                                                     />
                                                 </FloatingLabel>
                                             </div>
-                                            <div className="AdminUserBodySignUpItem col-md-5">
+                                            <div className="adminUserBodySignUpItem col-md-5">
                                                 <FloatingLabel
                                                     controlId="floatingInputUsername"
                                                     label="UserName"
@@ -240,14 +228,14 @@ export default function AdminUser() {
                                     </Form.Group>
                                     <Form.Group className="mb-1" controlId="formBasicPassword">
                                         <div className="row">
-                                            <div className="AdminUserBodySignUpItem col-md-5 ">
+                                            <div className="adminUserBodySignUpItem col-md-5 ">
                                                 <FloatingLabel controlId="floatingPassword" label="Password" className="mb-3">
                                                     <Form.Control type="password" placeholder="Password" value={password}
                                                         onChange={e => setPassword(e.target.value)}
                                                     />
                                                 </FloatingLabel>
                                             </div>
-                                            <div className="AdminUserBodySignUpItem col-md-5 ">
+                                            <div className="adminUserBodySignUpItem col-md-5 ">
                                                 <FloatingLabel controlId="floatingRePassword" label="RePassword" className="mb-3">
                                                     <Form.Control type="password" placeholder="RePassword" value={rePassword}
                                                         onChange={e => setRePassword(e.target.value)}
@@ -257,8 +245,8 @@ export default function AdminUser() {
                                         </div>
                                     </Form.Group>
                                 </div>
-                                <div className="AdminUserBodySignUpWrapperRight">
-                                    <div className="AdminUserBodySignUpItem">
+                                <div className="adminUserBodySignUpWrapperRight">
+                                    <div className="adminUserBodySignUpItem">
                                         <div className="SignUpItemTitle">權限</div>
                                         {root.map((list, index) => (
                                             <div key={list.id}>
@@ -275,7 +263,7 @@ export default function AdminUser() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="AdminUserBodySignUpItem AdminUserBodySignUpItemBtn">
+                            <div className="adminUserBodySignUpItem adminUserBodySignUpItemBtn">
                                 <Button className="btn btn-main " type="submit"  >
                                     Sign Up
                                 </Button>
@@ -284,7 +272,7 @@ export default function AdminUser() {
                     </div>
                 </div>
 
-                <div className="AdminUserBody AdminUserBodyGrid">
+                <div className="adminUserBody adminUserBodyGrid">
                     <DataGrid
                         rows={userRows_}
                         columns={columns}

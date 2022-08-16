@@ -312,19 +312,14 @@ export class AdminProductCode extends Component {
         ];
 
         return (
-            <div className="AdminProductCode">
-                <div className="AdminProductCodeWrapper">
-                    <div className="AdminProductCodeTop">
-                        <span className="PageTitle">材料分類管理</span>
-                    </div>
-                    <div className="AdminProductCodeBody">
-                        <div className="AdminProductCodeItem">
-                            <div className="AdminProductCodeItemTitle">
-                                <a href="/#" className="AdminProductCodeItemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
-                                    代碼新增
-                                    <Eject className={this.state.WrapperOpen.insertWrapper ? 'pageTitleRotateIcon active' : 'pageTitleRotateIcon noActive'} /></a>
-                            </div>
-                            <div className={this.state.WrapperOpen.insertWrapper ? 'AdminProductCodeItemWrapper active' : 'AdminProductCodeItemWrapper'}>
+            <div className="adminProductCode">
+                <div className="adminProductCodeWrapper">
+                    <div className="adminProductCodeBody">
+                        <div className="adminProductCodeItem">
+                            <a href="/#" className="itemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
+                                代碼新增
+                                <Eject className={this.state.WrapperOpen.insertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                            <div className={this.state.WrapperOpen.insertWrapper ? 'adminProductCodeItemWrapper active' : 'adminProductCodeItemWrapper'}>
                                 <Container>
                                     <Row className="justify-content-md-center">
                                         <Col xs={12} md={3}>
@@ -362,10 +357,9 @@ export class AdminProductCode extends Component {
                                     </Row>
 
                                     <Row className="justify-content-md-center">
-                                        <Col xs={6} md={{ span: 1, offset: 4 }}>
+                                        <Col xs={6} md={{ span: 1, offset: 1 }}>
                                             <Button className="btn" variant="outline-primary" onClick={this.insertData}>新增</Button>
                                         </Col>
-                                        {/* <Col xs={6} md={{span:1,offset:1}}> */}
                                         <Col xs={6} md={2}>
                                             <Button className="btn" variant="outline-secondary" name="insertData" onClick={this.dataClear}>清除新增</Button>
                                         </Col>
@@ -374,11 +368,9 @@ export class AdminProductCode extends Component {
                             </div>
                         </div>
 
-                        <div className="AdminProductCodeItem">
-                            <div className="AdminProductCodeItemTitle">
-                                <span className="AdminProductCodeItemTitle">代碼查詢</span>
-                            </div>
-                            <div className="AdminProductCodeItemContainer">
+                        <div className="adminProductCodeItem">
+                            <a className="itemTitle">代碼查詢</a>
+                            <div className="adminProductCodeItemContainer">
                                 <Container>
                                     <Row>
                                         <Col xs={12} md={3}>
@@ -392,7 +384,7 @@ export class AdminProductCode extends Component {
                                 </Container>
                             </div>
 
-                            <div className="AdminProductCodeItemContainer">
+                            <div className="adminProductCodeItemContainer">
                                 <div className="productCodeDataList">
                                     <DataGrid
                                         rows={this.state.gridData}

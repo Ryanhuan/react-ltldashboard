@@ -1,28 +1,15 @@
 
-.AdminProductCodeItem{
+.adminProductCodeItem{
     padding: 20px;
 }
 
-.AdminProductCodeItemTitle{
-    padding-bottom: 10px;
-}
-
-.AdminProductCodeItemTitle{
-    font-weight: 600;
-    font-size: 24px;
-    color: var(--fontSubColor);
-    padding-bottom: 10px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.AdminProductCodeItemWrapper {
+.adminProductCodeItemWrapper {
     height: 0px;
     transition: 0.5s;
     overflow: hidden;
 }
 
-.AdminProductCodeItemWrapper.active{
+.adminProductCodeItemWrapper.active{
     height: 150px;
     padding-top: 10px;
     transition: 0.5s;
@@ -31,29 +18,13 @@
     border-radius:10px;
 }
 
-
 .productCodeDataList{
     height:635px;
 }
 
-.newProductCode{
-    color: var(--mainColor);
-    display: block;
-    min-width: 60px;
-    height: 60px;
-    line-height: 75px;
-    text-align: center; 
-    cursor: pointer;
-}
-
-.AdminProductCodeItemContainer{
+.adminProductCodeItemContainer{
     padding: 10px 0;
 }
-
-.notice{
-    color: var(--error);
-}
-
 
 .productGridEdit{
     color: var(--success);
@@ -78,7 +49,7 @@
 
 
 @media(max-width:768px) {
-    .AdminProductCodeItemWrapper.active{
+    .adminProductCodeItemWrapper.active{
         height: auto;
     }
 

@@ -2,30 +2,17 @@
     padding: 5px 0;
 }
 
-.btn{
-    margin: 5px 5px;
-}
-
-.AdminMatManageItem{
+.adminMatManageItem{
     padding: 20px;
 }
 
-.AdminMatManageItemTitle{
-    font-weight: 600;
-    font-size: 24px;
-    color: var(--fontSubColor);
-    padding-bottom: 10px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.AdminMatManageItemWrapper {
+.adminMatManageItemWrapper {
     height: 0px;
     transition: 0.5s;
     overflow: hidden;
 }
 
-.AdminMatManageItemWrapper.active{
+.adminMatManageItemWrapper.active{
     padding-top: 10px;
     height: 370px;
     transition: 0.5s;
@@ -36,7 +23,6 @@
 
 .searchWrapper.active {
     height: 300px;
-
 }
 
 .matDataList{
