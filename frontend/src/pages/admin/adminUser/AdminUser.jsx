@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import { DataGrid } from '@mui/x-data-grid';
 import { AccountCircle, CheckCircleOutline, HighlightOff, Edit, Eject } from '@material-ui/icons';
@@ -9,7 +8,8 @@ import { ModalEditUser } from './ModalEditUser/ModalEditUser';
 import { postData, getData, getUserId } from "../../../api";
 import Swal from 'sweetalert2';
 
-// import { useSelectOption } from '../../../hooks/useSelectOption'
+import Button from '../../../components/button/Button'
+
 
 export default function AdminUser() {
     // let navigate = useNavigate();
@@ -27,6 +27,7 @@ export default function AdminUser() {
         { id: '06', name: '管理主頁', value: 'manage', check: false }
     ]);
     const [wrapperOn, setWrapperOn] = useState(false);
+    const [isLoadingSingUp, setIsLoadingSingUp] = useState(false);
     //user grid edit (popup modal)
     const [userListEditModalShow, setUserListEditModalShow] = useState(false); //popup modal
     const [userListEditData, setUserListEditData] = useState({}); //popup modal
@@ -38,7 +39,7 @@ export default function AdminUser() {
         setRoot([...arrLists]);
     }
 
-    // Sign Up submit event
+    // Sign Up event
     const signUp = async e => {
         e.preventDefault();
         // console.log(root);
@@ -48,6 +49,7 @@ export default function AdminUser() {
             alert("兩次密碼輸入不一致!");
         }
         else {
+            setIsLoadingSingUp(!isLoadingSingUp);  //btn loading
             //process data
             const root_tmp = [];
             for (var ele in root) {
@@ -89,12 +91,15 @@ export default function AdminUser() {
                     timer: 1500
                 })
             }
+            setIsLoadingSingUp(!isLoadingSingUp); //btn loading
         }
     }
 
     //grid for all user info 
     const [userRows_, setUserRows_] = useState([]);
-    useEffect(() => { getAllUsersInfo_(); }, []);
+    useEffect(() => {
+        getAllUsersInfo_();
+    }, []);
 
     const getAllUsersInfo_ = () => {
         getData("/api/getAllUsers")
@@ -129,9 +134,7 @@ export default function AdminUser() {
         },
         { field: 'email', headerName: 'Email', flex: 2 },
         {
-            field: 'isenabled',
-            headerName: 'Status',
-            flex: 1,
+            field: 'isenabled', headerName: 'Status', flex: 1,
             renderCell: (params) => {
                 return (
                     <div className="userListEnable">
@@ -143,15 +146,9 @@ export default function AdminUser() {
                 )
             }
         },
+        { field: 'root', headerName: 'root', flex: 2, },
         {
-            field: 'root',
-            headerName: 'root',
-            flex: 2,
-        },
-        {
-            field: 'action',
-            headerName: 'Action',
-            flex: 1,
+            field: 'action', headerName: 'Action', flex: 1,
             renderCell: (params) => {
                 const userListEditOpen = (data) => {
                     let data_ = JSON.parse(JSON.stringify(data));
@@ -161,8 +158,12 @@ export default function AdminUser() {
                 }
                 return (
                     <>
-                        <Edit className="userListEdit" onClick={() => userListEditOpen(params.row)} />
-
+                        <Button
+                            variant="text"
+                            startIcon={<Edit />}
+                            themeColor='success'
+                            onClick={() => userListEditOpen(params.row)}
+                        />
                         {userListEditModalShow ?
                             <ModalEditUser show={userListEditModalShow} onHide={() => setUserListEditModalShow(false)}
                                 editData={userListEditData} getAllUsersInfo={getAllUsersInfo_} /> : ''
@@ -186,12 +187,12 @@ export default function AdminUser() {
         <div className="adminUser">
             <div className="adminUserWrapper">
                 <div className="adminUserBody adminUserBodySignUp">
-                        <a href="#" className="itemTitle" onClick={() => { setWrapperOn(!wrapperOn) }}>
-                            成員新增
-                            <Eject className={wrapperOn ? 'itemIconRotate active' : 'itemIconRotate noActive'} />
-                        </a>
+                    <a href="#" className="itemTitle" onClick={() => { setWrapperOn(!wrapperOn) }}>
+                        成員新增
+                        <Eject className={wrapperOn ? 'itemIconRotate active' : 'itemIconRotate noActive'} />
+                    </a>
                     <div className={wrapperOn ? 'adminUserBodySignUpWrapper active' : 'adminUserBodySignUpWrapper noActive'}>
-                        <Form onSubmit={signUp}>
+                        <Form>
                             <div className="adminUserBodySignUpWrapperItem">
                                 <div className="adminUserBodySignUpWrapperLeft">
                                     <div className="signUpItemTitle">基本資料</div>
@@ -264,7 +265,11 @@ export default function AdminUser() {
                                 </div>
                             </div>
                             <div className="adminUserBodySignUpItem adminUserBodySignUpItemBtn">
-                                <Button className="btn btn-main " type="submit"  >
+                                <Button
+                                    variant="contained"
+                                    onClick={signUp}
+                                    isLoading={isLoadingSingUp}
+                                >
                                     Sign Up
                                 </Button>
                             </div>

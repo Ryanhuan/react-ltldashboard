@@ -81,7 +81,7 @@ input[type=number]::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
-/* nput(number) css style end */
+/* input(number) css style end */
 
 /* ========================================================================== */
 
@@ -91,7 +91,6 @@ input[type=number] {
     font-weight: 600;
     font-size: 24px;
     color: var(--fontSubColor);
-    padding-bottom: 10px;
     cursor: pointer;
     text-decoration: none;
 } 
@@ -116,7 +115,14 @@ input[type=number] {
 
 /* ========================================================================== */
 
-
 .btn{
     margin: 5px 5px;
 }
+
+/* ========================================================================== */
+
+.matDataList{
+    height:635px;
+}
+
+/* ========================================================================== */

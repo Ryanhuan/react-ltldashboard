@@ -5,12 +5,14 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
-import Button from 'react-bootstrap/Button'
+// import Button from 'react-bootstrap/Button'
 import { Eject, DeleteOutline, Edit } from '@material-ui/icons';
 import { DataGrid } from '@mui/x-data-grid';
 import { CustomModal } from '../../../components/modal/customModal';
 import Swal from 'sweetalert2';
 import { postData } from "../../../api";
+import Button from '../../../components/button/Button';
+
 
 export class AdminMatManage extends Component {
     constructor(props) {
@@ -36,7 +38,9 @@ export class AdminMatManage extends Component {
                 show: false,
                 title: '',
                 data: {},
-            }
+            },
+            isLoadingInsert: false,
+            isLoadingSearch: false,
         };
         //bind
         this.insertData = this.insertData.bind(this);
@@ -301,12 +305,22 @@ export class AdminMatManage extends Component {
             { field: 'quality', headerName: '質地', flex: 1 },
             { field: 'price_per', headerName: '單價(元)', flex: 1 },
             {
-                field: 'actions', headerName: 'Actions', flex: 1,
+                field: 'actions', headerName: 'Actions', flex: 2,
                 renderCell: (params) => {
                     return (
                         <>
-                            <Edit className="matGridEdit" onClick={(e) => modalOpen(e, params.row)} />
-                            <DeleteOutline className="matGridDelete" onClick={(e) => handleDelete(e, params.row)} />
+                            <Button
+                                variant="text"
+                                startIcon={<Edit />}
+                                themeColor='success'
+                                onClick={(e) => modalOpen(e, params.row)}
+                            />
+                            <Button
+                                variant="text"
+                                startIcon={<DeleteOutline />}
+                                themeColor='error'
+                                onClick={(e) => handleDelete(e, params.row)}
+                            />
                             {this.state.modal.show ?
                                 <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
                                     modalCols={modalCols} submitForm={(e, data) => { submitForm(e, data) }}
@@ -396,9 +410,26 @@ export class AdminMatManage extends Component {
                                     </Row>
 
                                     <Row className="justify-content-md-center insertRow">
-                                        <Col xs={3} md={3}>
-                                            <Button className="btn" variant="outline-primary" onClick={this.insertData}>新增</Button>
-                                            <Button className="btn" variant="outline-secondary" name="insertData" onClick={this.dataClear}>清除新增</Button>
+                                        <Col xs={6} md={2}>
+                                            <Button
+                                                variant="contained"
+                                                onClick={this.insertData}
+                                                isLoading={this.state.isLoadingInsert}
+                                            >
+                                                新增
+                                            </Button>
+                                        </Col>
+                                        <Col xs={6} md={2}>
+                                            <Button
+                                                variant="contained"
+                                                themeColor="success"
+                                                name="insertData"
+                                                onClick={this.dataClear}
+                                            >
+                                                清除新增
+                                            </Button>
+                                            {/* <Button className="btn" variant="outline-primary" onClick={this.insertData}>新增</Button> */}
+                                            {/* <Button className="btn" variant="outline-secondary" name="insertData" onClick={this.dataClear}>清除新增</Button> */}
                                         </Col>
                                     </Row>
                                 </Container>
@@ -471,9 +502,29 @@ export class AdminMatManage extends Component {
                                     </Row>
 
                                     <Row className="justify-content-md-center insertRow">
-                                        <Col xs={3} md={3}>
-                                            <Button className="btn" variant="outline-primary" onClick={this.searchData}>搜尋</Button>
-                                            <Button className="btn" variant="outline-secondary" name="searchData" onClick={this.dataClear}>清除搜尋</Button>
+                                        {/* <Col xs={3} md={3}> */}
+                                            {/* <Button className="btn" variant="outline-primary" onClick={this.searchData}>搜尋</Button> */}
+                                            {/* <Button className="btn" variant="outline-secondary" name="searchData" onClick={this.dataClear}>清除搜尋</Button> */}
+                                        {/* </Col> */}
+
+                                        <Col xs={6} md={2}>
+                                            <Button
+                                                variant="contained"
+                                                onClick={this.searchData}
+                                                isLoading={this.state.isLoadingSearch}
+                                            >
+                                                搜尋
+                                            </Button>
+                                        </Col>
+                                        <Col xs={6} md={2}>
+                                            <Button
+                                                variant="contained"
+                                                themeColor="success"
+                                                name="searchData"
+                                                onClick={this.dataClear}
+                                            >
+                                                清除搜尋
+                                            </Button>
                                         </Col>
                                     </Row>
 

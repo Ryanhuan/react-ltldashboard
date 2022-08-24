@@ -24,22 +24,3 @@
 .searchWrapper.active {
     height: 300px;
 }
-
-.matDataList{
-    height:635px;
-}
-
-.matGridEdit{
-    color: var(--success);
-    cursor: pointer;
-}
-
-.matGridDelete{
-    color:  var(--error);
-    cursor: pointer;
-}
-
-.matGridEdit:hover,
-.matGridDelete:hover{
-    color : var(--hoverColor) ;
-}

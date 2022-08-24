@@ -6,13 +6,11 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
 import { DeleteOutline, Edit, Eject } from '@material-ui/icons';
 import { CustomModal } from '../../../components/modal/customModal';
 import { postData } from "../../../api";
-
-import { useSelectOption } from "../../../hooks/useSelectOption"
-
+import { getSelectOption } from '../../../utility.ts'
+import Button from '../../../components/button/Button'
 
 import Swal from 'sweetalert2';
 
@@ -34,39 +32,30 @@ export class AdminProductCode extends Component {
                 show: false,
                 title: '',
                 data: {},
-            }
+            },
+            isLoadingInsert: false,
         };
         //bind
         this.insertData = this.insertData.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.WrapperOpen = this.WrapperOpen.bind(this);
         this.dataClear = this.dataClear.bind(this);
-
     }
-
 
     componentDidMount() {
         this._getSelectOption();
     }
 
-
-
-
     //get query select option
     async _getSelectOption() {
-        let _SelectOption = [{ value: '', label: '==請選擇==' },];
-        let _res = await postData("/api/getCodeTypeKind/product");
-        if (_res.msg === "getCodeTypeKind_OK") {
-            _res.data.forEach(ele => {
-                _SelectOption.push(ele);
-            })
-        }
+        let _SelectOption = await getSelectOption('product');
         this.setState({ SelectOption: _SelectOption })
     }
 
     //材料新增材料
     async insertData(event) {
         event.preventDefault();
+        this.setState({ isLoadingInsert: !this.state.isLoadingInsert});
         if (this.state.insertData.label === '') {
             Swal.fire({
                 position: 'bottom-end',
@@ -120,6 +109,7 @@ export class AdminProductCode extends Component {
                 })
             }
         }
+        this.setState({ isLoadingInsert: !this.state.isLoadingInsert});
     }
 
 
@@ -224,18 +214,10 @@ export class AdminProductCode extends Component {
                 if (result.isConfirmed) {
                     let _res = await postData("/api/editCodeData", data);
                     if (_res.status === 'editCodeData_OK') {
-                        Swal.fire(
-                            '完成修改!',
-                            '修改成功.',
-                            'success'
-                        )
+                        Swal.fire('完成修改!', '修改成功.', 'success')
                         this._getGridData([this.state.SearchTypeCode]);
                     } else {
-                        Swal.fire(
-                            'Fail!',
-                            _res.msg,
-                            'error'
-                        )
+                        Swal.fire('Fail!', _res.msg, 'error')
                     }
                 }
             })
@@ -257,23 +239,14 @@ export class AdminProductCode extends Component {
                 if (result.isConfirmed) {
                     let _res = await postData("/api/deleteCodeData", data);
                     if (_res.status === 'deleteCodeData_OK') {
-                        Swal.fire(
-                            '完成刪除!',
-                            '刪除成功.',
-                            'success'
-                        )
+                        Swal.fire('完成刪除!', '刪除成功.', 'success')
                         this._getGridData([this.state.SearchTypeCode]);
                     } else {
-                        Swal.fire(
-                            'Fail!',
-                            _res.msg,
-                            'error'
-                        )
+                        Swal.fire('Fail!', _res.msg, 'error')
                     }
                 }
             })
         }
-
 
         const _tmpModalCols = this.state.SearchTypeCode === 'product_catena' || this.state.SearchTypeCode === 'product_single' ?
             { field: 'mark', headerName: '描述', type: 'text', className: 'mb-2 col-12' }
@@ -284,7 +257,6 @@ export class AdminProductCode extends Component {
             _tmpModalCols
         ]
 
-
         const _tmpCols = this.state.SearchTypeCode === 'product_catena' || this.state.SearchTypeCode === 'product_single' ?
             { field: 'mark', headerName: '描述', flex: 2 }
             : { field: '', headerName: '', hide: true };
@@ -294,12 +266,22 @@ export class AdminProductCode extends Component {
             { field: 'label', headerName: '項目', flex: 2 },
             _tmpCols,
             {
-                field: 'actions', headerName: 'Actions', flex: 1,
+                field: 'actions', headerName: 'Actions', flex: 2,
                 renderCell: (params) => {
                     return (
                         <>
-                            <Edit className="productGridEdit" onClick={(e) => modalOpen(e, params.row)} />
-                            <DeleteOutline className="productGridDelete" onClick={(e) => handleDelete(e, params.row)} />
+                           <Button
+                                variant="text"
+                                startIcon={<Edit />}
+                                themeColor='success'
+                                onClick={(e) => modalOpen(e, params.row)} 
+                            />
+                            <Button
+                                variant="text"
+                                startIcon={<DeleteOutline />}
+                                themeColor='error'
+                                onClick={(e) => handleDelete(e, params.row)} 
+                            />
                             {this.state.modal.show ?
                                 <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
                                     modalCols={modalCols} submitForm={(e, data) => { submitForm(e, data) }}
@@ -353,15 +335,26 @@ export class AdminProductCode extends Component {
                                                 </div>
                                             </Col> : ''
                                         }
-
                                     </Row>
 
                                     <Row className="justify-content-md-center">
-                                        <Col xs={6} md={{ span: 1, offset: 1 }}>
-                                            <Button className="btn" variant="outline-primary" onClick={this.insertData}>新增</Button>
+                                        <Col xs={6} md={2}>
+                                            <Button
+                                                variant="contained"
+                                                onClick={this.insertData}
+                                                isLoading={this.state.isLoadingInsert}
+                                            >
+                                                新增
+                                            </Button>
                                         </Col>
                                         <Col xs={6} md={2}>
-                                            <Button className="btn" variant="outline-secondary" name="insertData" onClick={this.dataClear}>清除新增</Button>
+                                            <Button
+                                                variant="contained"
+                                                themeColor="success"
+                                                onClick={this.dataClear}
+                                            >
+                                                清除新增
+                                            </Button>
                                         </Col>
                                     </Row>
                                 </Container>

@@ -6,11 +6,13 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
+// import Button from 'react-bootstrap/Button'
 import { DeleteOutline, Edit, Eject } from '@material-ui/icons';
 import { CustomModal } from '../../../components/modal/customModal';
 import { postData } from "../../../api";
 import Swal from 'sweetalert2';
+import Button from '../../../components/button/Button'
+import { getSelectOption } from '../../../utility.ts'
 
 export class AdminMatCode extends Component {
     constructor(props) {
@@ -30,7 +32,8 @@ export class AdminMatCode extends Component {
                 show: false,
                 title: '',
                 data: {},
-            }
+            },
+            isLoadingInsert: false,
         };
         //bind
         this.insertData = this.insertData.bind(this);
@@ -45,19 +48,21 @@ export class AdminMatCode extends Component {
 
     //get query select option
     async _getSelectOption() {
-        let _SelectOption = [{ value: '', label: '==請選擇==' },];
-        let _res = await postData("/api/getCodeTypeKind/ma");
-        if (_res.msg === "getCodeTypeKind_OK") {
-            _res.data.forEach(ele => {
-                _SelectOption.push(ele);
-            })
-        }
+        // let _SelectOption = [{ value: '', label: '==請選擇==' },];
+        // let _res = await postData("/api/getCodeTypeKind/ma");
+        // if (_res.msg === "getCodeTypeKind_OK") {
+        //     _res.data.forEach(ele => {
+        //         _SelectOption.push(ele);
+        //     })
+        // }
+        let _SelectOption = await getSelectOption('ma');
         this.setState({ SelectOption: _SelectOption })
     }
 
     //材料新增材料
     async insertData(event) {
         event.preventDefault();
+        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
         if (this.state.insertData.label === '') {
             Swal.fire({
                 position: 'bottom-end',
@@ -103,6 +108,7 @@ export class AdminMatCode extends Component {
                 })
             }
         }
+        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
     }
 
     handleChange(event) {
@@ -206,18 +212,10 @@ export class AdminMatCode extends Component {
                 if (result.isConfirmed) {
                     let _res = await postData("/api/editCodeData", data);
                     if (_res.status === 'editCodeData_OK') {
-                        Swal.fire(
-                            '完成修改!',
-                            '修改成功.',
-                            'success'
-                        )
+                        Swal.fire('完成修改!', '修改成功.', 'success')
                         this._getGridData([this.state.SearchTypeCode]);
                     } else {
-                        Swal.fire(
-                            'Fail!',
-                            _res.msg,
-                            'error'
-                        )
+                        Swal.fire('Fail!', _res.msg, 'error')
                     }
                 }
             })
@@ -239,18 +237,10 @@ export class AdminMatCode extends Component {
                 if (result.isConfirmed) {
                     let _res = await postData("/api/deleteCodeData", data);
                     if (_res.status === 'deleteCodeData_OK') {
-                        Swal.fire(
-                            '完成刪除!',
-                            '刪除成功.',
-                            'success'
-                        )
+                        Swal.fire('完成刪除!', '刪除成功.', 'success')
                         this._getGridData([this.state.SearchTypeCode]);
                     } else {
-                        Swal.fire(
-                            'Fail!',
-                            _res.msg,
-                            'error'
-                        )
+                        Swal.fire('Fail!', _res.msg, 'error')
                     }
                 }
             })
@@ -268,8 +258,18 @@ export class AdminMatCode extends Component {
                 renderCell: (params) => {
                     return (
                         <>
-                            <Edit className="matGridEdit" onClick={(e) => modalOpen(e, params.row)} />
-                            <DeleteOutline className="matGridDelete" onClick={(e) => handleDelete(e, params.row)} />
+                            <Button
+                                variant="text"
+                                startIcon={<Edit />}
+                                themeColor='success'
+                                onClick={(e) => modalOpen(e, params.row)} 
+                            />
+                            <Button
+                                variant="text"
+                                startIcon={<DeleteOutline />}
+                                themeColor='error'
+                                onClick={(e) => handleDelete(e, params.row)} 
+                            />
                             {this.state.modal.show ?
                                 <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
                                     modalCols={modalCols} submitForm={(e, data) => { submitForm(e, data) }}
@@ -306,9 +306,23 @@ export class AdminMatCode extends Component {
                                         </Col>
                                     </Row>
                                     <Row className="justify-content-md-center">
-                                        <Col xs={3} md={3}>
-                                            <Button className="btn" variant="outline-primary" onClick={this.insertData}>新增</Button>
-                                            <Button className="btn" variant="outline-secondary" name="insertData" onClick={this.dataClear}>清除新增</Button>
+                                        <Col xs={6} md={2}>
+                                            <Button
+                                                variant="contained"
+                                                onClick={this.insertData}
+                                                isLoading={this.state.isLoadingInsert}
+                                            >
+                                                新增
+                                            </Button>
+                                        </Col>
+                                        <Col xs={6} md={2}>
+                                            <Button
+                                                variant="contained"
+                                                themeColor="success"
+                                                onClick={this.dataClear}
+                                            >
+                                                清除新增
+                                            </Button>
                                         </Col>
                                     </Row>
                                 </Container>
@@ -317,7 +331,7 @@ export class AdminMatCode extends Component {
 
                         <div className="adminMatCodeItem">
                             <div className="adminMatCodeItemTitle">
-                                <span className="adminMatCodeItemTitle">代碼查詢</span>
+                                <span className="itemTitle">代碼查詢</span>
                             </div>
                             <div className="adminMatCodeItemContainer">
                                 <Container>
