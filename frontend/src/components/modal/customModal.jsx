@@ -1,9 +1,11 @@
 import { Component } from "react";
 import './customModal.css'
 import Modal from 'react-bootstrap/Modal'
-import Button from 'react-bootstrap/Button'
+// import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
+import Button from '../button/Button'
+
 
 
 export class CustomModal extends Component {
@@ -24,9 +26,9 @@ export class CustomModal extends Component {
 
     //計算單價
     if ((_name === 'price' && _modalData.data.num !== '') || _name === 'num') {
-        let tmpPrice = _modalData.data.price / _modalData.data.num;
-        _modalData.data.price_per = Math.round(tmpPrice * 10) / 10;
-        console.log(_modalData.data);
+      let tmpPrice = _modalData.data.price / _modalData.data.num;
+      _modalData.data.price_per = Math.round(tmpPrice * 10) / 10;
+      console.log(_modalData.data);
     }
 
     this.setState({ modalData: _modalData })
@@ -73,7 +75,7 @@ export class CustomModal extends Component {
 
     return (
       <Modal show={this.props.show} onHide={this.props.onHide} aria-labelledby="contained-modal-title-vcenter" centered>
-        <Form onSubmit={(e) => { this.props.submitForm(e, this.props.modalData.data) }}>
+        <Form>
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter" className="modalTitle">
               {this.props.modalData.title || ''}
@@ -85,8 +87,20 @@ export class CustomModal extends Component {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button className="btn btn-outline-secondary" onClick={this.props.onHide}>取消</Button>
-            <Button className="btn btn-outline-primary" type="submit">確定</Button>
+            <Button
+              variant="contained"
+              themeColor="secondary"
+              onClick={this.props.onHide}
+            >
+              取消
+            </Button>
+            <Button
+              variant="contained"
+              themeColor="primary"
+              onClick={(e) => { this.props.submitForm(e, this.props.modalData.data) }}
+            >
+              確定
+            </Button>
           </Modal.Footer>
         </Form>
       </Modal>
