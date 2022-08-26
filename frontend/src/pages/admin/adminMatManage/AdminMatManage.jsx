@@ -5,7 +5,6 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
-// import Button from 'react-bootstrap/Button'
 import { Eject, DeleteOutline, Edit } from '@material-ui/icons';
 import { DataGrid } from '@mui/x-data-grid';
 import { CustomModal } from '../../../components/modal/customModal';
@@ -88,6 +87,7 @@ export class AdminMatManage extends Component {
     //材料新增材料
     async insertData(event) {
         event.preventDefault();
+        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
         // console.log(this.state.insertData);
         if (this.state.insertData.id === '' || this.state.insertData.id === null) {
             Swal.fire({
@@ -137,11 +137,13 @@ export class AdminMatManage extends Component {
                 })
             }
         }
+        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
     }
 
     //材料搜尋材料
     async searchData(event) {
         event.preventDefault();
+        this.setState({ isLoadingSearch: !this.state.isLoadingSearch });
         if (this.state.searchData.lowPricePer > this.state.searchData.highPrice) {
             Swal.fire(
                 'No No!',
@@ -151,6 +153,7 @@ export class AdminMatManage extends Component {
         } else {
             this._getMatData(this.state.searchData);
         }
+        this.setState({ isLoadingSearch: !this.state.isLoadingSearch });
     }
 
     // insert & search data onchange
@@ -233,18 +236,10 @@ export class AdminMatManage extends Component {
                 if (result.isConfirmed) {
                     let _res = await postData("/api/editMatData", data);
                     if (_res.status === 'editMatData_OK') {
-                        Swal.fire(
-                            '完成修改!',
-                            '修改成功.',
-                            'success'
-                        )
+                        Swal.fire('完成修改!', '修改成功.', 'success')
                         this._getMatData({});
                     } else {
-                        Swal.fire(
-                            'Fail!',
-                            _res.msg,
-                            'error'
-                        )
+                        Swal.fire('Fail!', _res.msg, 'error')
                     }
                 }
             })
@@ -266,18 +261,10 @@ export class AdminMatManage extends Component {
                 if (result.isConfirmed) {
                     let _res = await postData("/api/deleteMatData", data);
                     if (_res.status === 'deleteMatData_OK') {
-                        Swal.fire(
-                            '完成刪除!',
-                            '刪除成功.',
-                            'success'
-                        )
+                        Swal.fire('完成刪除!', '刪除成功.', 'success')
                         this._getMatData({});
                     } else {
-                        Swal.fire(
-                            'Fail!',
-                            _res.msg,
-                            'error'
-                        )
+                        Swal.fire('Fail!', _res.msg, 'error')
                     }
                 }
             })
@@ -428,8 +415,6 @@ export class AdminMatManage extends Component {
                                             >
                                                 清除新增
                                             </Button>
-                                            {/* <Button className="btn" variant="outline-primary" onClick={this.insertData}>新增</Button> */}
-                                            {/* <Button className="btn" variant="outline-secondary" name="insertData" onClick={this.dataClear}>清除新增</Button> */}
                                         </Col>
                                     </Row>
                                 </Container>
@@ -502,11 +487,6 @@ export class AdminMatManage extends Component {
                                     </Row>
 
                                     <Row className="justify-content-md-center insertRow">
-                                        {/* <Col xs={3} md={3}> */}
-                                            {/* <Button className="btn" variant="outline-primary" onClick={this.searchData}>搜尋</Button> */}
-                                            {/* <Button className="btn" variant="outline-secondary" name="searchData" onClick={this.dataClear}>清除搜尋</Button> */}
-                                        {/* </Col> */}
-
                                         <Col xs={6} md={2}>
                                             <Button
                                                 variant="contained"

@@ -1,19 +1,18 @@
 import './adminProductAdd.css'
 import './hashtag.css'
 import { Component, createRef } from 'react'
+import styled from 'styled-components';
+
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
-import Button from 'react-bootstrap/Button'
 import { postData } from "../../../api";
 
-import Figure from 'react-bootstrap/Figure';
-// import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-// import Popover from 'react-bootstrap/Popover';
-// import Tooltip from 'react-bootstrap/Tooltip';
-// import Overlay from 'react-bootstrap/Overlay';
+import Button from '../../../components/button/Button'
+import Upload from '../../../components/upload/Upload'
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -34,13 +33,14 @@ export class AdminProductAdd extends Component {
                 catenaBelong: '', singleBelong: '', catenaIntro: '', productIntro: '', otherIntro: '',
                 scheduledDate: null, LimitDateBeg: null, LimitDateEnd: null,
             },
-            SelectOption: {
+            selectOption: {
                 product_kind: [],
                 product_status: [],
                 product_catena: [],
                 product_single: [],
             },
             hashtags: [],
+            fileList: [],// upload
         };
         this.target = createRef(null);
 
@@ -54,21 +54,17 @@ export class AdminProductAdd extends Component {
         this.handleHashtagsDrag = this.handleHashtagsDrag.bind(this);
         this.handleHashtagsClick = this.handleHashtagsClick.bind(this);
         this.onClearAllHashtags = this.onClearAllHashtags.bind(this);
-
-
-
     }
 
 
     componentDidMount() {
         this._getSelectOption();
-
     }
 
 
     //get select Option 
     async _getSelectOption() {
-        let qryTmp = Object.keys(this.state.SelectOption);
+        let qryTmp = Object.keys(this.state.selectOption);
         let _SelectOption = [];
         //get Select Option res 
         let _res = await postData("/api/getSelectOption", qryTmp);
@@ -81,7 +77,7 @@ export class AdminProductAdd extends Component {
                 }
             })
         })
-        this.setState({ SelectOption: _SelectOption })
+        this.setState({ selectOption: _SelectOption })
     }
 
     //判斷obj是否為空
@@ -91,17 +87,13 @@ export class AdminProductAdd extends Component {
 
     async handleDataChange(event) {
         event.preventDefault();
-
         // console.log(event.target.value);
         let _insertData = this.state.insertData;
-
         //將庫存type轉成string
-        if(event.target.name === 'inventory'){
+        if (event.target.name === 'inventory') {
             event.target.value = event.target.value.toString();
         }
-
         _insertData[event.target.name] = event.target.value;
-
         this.setState({ insertData: _insertData });
 
         // handle catenaBelong 
@@ -110,7 +102,7 @@ export class AdminProductAdd extends Component {
                 // get code mark
                 let _res = await postData("/api/getCodeMark/product_catena/" + this.state.insertData.catenaBelong);
                 _insertData.catenaIntro = _res.data.mark;
-            }else{
+            } else {
                 _insertData.catenaIntro = '';
             }
             this.setState({ insertData: _insertData });
@@ -121,36 +113,19 @@ export class AdminProductAdd extends Component {
                 // get code mark
                 let _res = await postData("/api/getCodeMark/product_single/" + this.state.insertData.singleBelong);
                 _insertData.productIntro = _res.data.mark;
-            }else{
-                _insertData.productIntro ='';
+            } else {
+                _insertData.productIntro = '';
             }
             this.setState({ insertData: _insertData });
         }
 
         //handle
         if (event.target.name === 'status') {
-            if (this.state.insertData.status==='NoInventory'){
-                this.state.insertData.inventory='0';
+            if (this.state.insertData.status === 'NoInventory') {
+                this.state.insertData.inventory = '0';
             }
             this.setState({ insertData: _insertData });
         }
-
-        // // Convert the FileList into an array and iterate
-        // let files = Array.from(event.target.files).map(file => {
-        //     // Define a new file reader
-        //     let reader = new FileReader();
-        //     // Create a new promise
-        //     return new Promise(resolve => {
-        //         // Resolve the promise after reading file
-        //         reader.onload = () => resolve(reader.result);
-        //         // Reade the file as a text
-        //         reader.readAsText(file);
-        //     });
-        // });
-
-        // // At this point you'll have an array of results
-        // let res = await Promise.all(files);
-        // console.log(res);
 
     }
 
@@ -164,50 +139,10 @@ export class AdminProductAdd extends Component {
     async handleSubmit(event) {
         event.preventDefault()
         console.log(this.state.insertData);
-        // const url = 'http://localhost:3000/uploadFile';
-        // const formData = new FormData();
-        // formData.append('file', file);
-        // formData.append('fileName', file.name);
-        // const config = {
-        //   headers: {
-        //     'content-type': 'multipart/form-data',
-        //   },
-        // };
-        // axios.post(url, formData, config).then((response) => {
-        //   console.log(response.data);
-        // });
 
         // let _res = await postData('/api/insertProductData',res);
 
     }
-
-    async upload(e){
-        
-        // Convert the FileList into an array and iterate
-        let files = Array.from(e.target.files).map(file => {
-            
-            // Define a new file reader
-            let reader = new FileReader();
-            
-            // Create a new promise
-            return new Promise(resolve => {
-                
-                // Resolve the promise after reading file
-                reader.onload = () => resolve(reader.result);
-                
-                // Reade the file as a text
-                reader.readAsText(file);
-                
-            });
-            
-        });
-        
-        // At this point you'll have an array of results
-        let res = await Promise.all(files);
-        console.log(res);
-        
-    }
-
 
     //hashtag beg
     handleHashtagsDelete(i) {
@@ -248,6 +183,85 @@ export class AdminProductAdd extends Component {
         //hashtag end
 
 
+        // Picture Wall beg
+        const PictureWallWrapper = styled.div`
+            display: grid;
+            grid-template-columns: repeat(3, 150px);
+            grid-gap: 8px;
+        `;
+
+        const PictureWallUpload = styled.div`
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+            height: 150px;
+            border: 1px dashed #DDD;
+            border-radius: 4px;
+            cursor: pointer;
+            &:hover {
+            border: 1px dashed ${(props) => props.theme.color.primary};
+            }
+        `;
+
+        const PictureItem = styled.div`
+            width: 150px;
+            height: 150px;
+            position: relative;
+            .picture-item__delete-button {
+                display: none;
+            }
+            &:hover {
+                .picture-item__delete-button {
+                display: flex;
+                }
+            }
+        `;
+
+        const DeleteButtonMask = styled.div`
+            position: absolute;
+            background: #1d1010aa;
+            color: #FFF;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            left: 0px;
+            top: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        const handleOnPreview = (files) => {
+            for (let ele of files) {
+                // const file = files[0];
+                const file = ele;
+                const reader = new FileReader();
+                reader.addEventListener('load', () => {
+                    // convert image file to base64 string
+                    this.setState((prev) => ({
+                        fileList: [...prev.fileList,
+                        {
+                            seq: prev.fileList.length + 1,
+                            id: file.size,
+                            imageUrl: reader.result,
+                        }]
+                    }));
+                }, false);
+                if (file) {reader.readAsDataURL(file);}
+            }
+        };
+
+        const handleDeleteItem = (fileId) => {
+            this.setState((prev) => ({
+                fileList: prev.fileList.filter((item) => item.id !== fileId)
+            }));
+        };
+
+        // Picture Wall end
+
+
 
         return (
             <div className="adminProductAdd">
@@ -266,7 +280,7 @@ export class AdminProductAdd extends Component {
                                             <Col xs={12} md={6}>
                                                 <FloatingLabel controlId="floatingSelectStatus" label="商品狀態">
                                                     <Form.Select aria-label="Floating label select" name='status' value={this.state.insertData.status} onChange={this.handleDataChange} >
-                                                        {this.state.SelectOption.product_status.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
+                                                        {this.state.selectOption.product_status.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                     </Form.Select>
                                                 </FloatingLabel>
                                             </Col>
@@ -275,7 +289,7 @@ export class AdminProductAdd extends Component {
                                             <Col xs={12} md={6}>
                                                 <FloatingLabel controlId="floatingSelectKind" label="商品種類">
                                                     <Form.Select aria-label="Floating label select" name='kind' value={this.state.insertData.kind} onChange={this.handleDataChange} >
-                                                        {this.state.SelectOption.product_kind.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
+                                                        {this.state.selectOption.product_kind.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                     </Form.Select>
                                                 </FloatingLabel>
                                             </Col>
@@ -376,7 +390,7 @@ export class AdminProductAdd extends Component {
                                             <Col xs={12} md={6}>
                                                 <FloatingLabel controlId="floatingSelectCatenaBelong" label="所屬系列" className="mb-1 ">
                                                     <Form.Select aria-label="Floating label select" name='catenaBelong' value={this.state.insertData.catenaBelong} onChange={this.handleDataChange} >
-                                                        {this.state.SelectOption.product_catena.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
+                                                        {this.state.selectOption.product_catena.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                     </Form.Select>
                                                 </FloatingLabel>
                                             </Col>
@@ -397,7 +411,7 @@ export class AdminProductAdd extends Component {
                                             <Col xs={12} md={6}>
                                                 <FloatingLabel controlId="floatingSelectProductBelong" label="所屬單品" className="mb-1 ">
                                                     <Form.Select aria-label="Floating label select" name='singleBelong' value={this.state.insertData.singleBelong} onChange={this.handleDataChange} >
-                                                        {this.state.SelectOption.product_single.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
+                                                        {this.state.selectOption.product_single.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                     </Form.Select>
                                                 </FloatingLabel>
                                             </Col>
@@ -432,7 +446,7 @@ export class AdminProductAdd extends Component {
                                     </Container>
                                 </div>
                             </div>
-                         
+
 
                             <div className="adminProductItem">
                                 <div className="adminProductItemTitle">
@@ -442,26 +456,33 @@ export class AdminProductAdd extends Component {
                                     <Container>
                                         <Row>
                                             <Col xs={12} md={12}>
-                                                <Form.Group controlId="formFileMultiple" className="mb-3">
-                                                    <Form.Control 
-                                                        type="file" 
-                                                        accept="image/jpg,image/jpeg,image/png"
+                                                <PictureWallWrapper>
+                                                    {
+                                                        this.state.fileList.map((file) => (
+                                                            <PictureItem key={file.seq}>
+                                                                {file.seq}
+                                                                <img src={file.imageUrl} alt=""
+                                                                    width={150} height={150} style={{ objectFit: 'cover' }} />
+                                                                <DeleteButtonMask
+                                                                    className="picture-item__delete-button"
+                                                                    onClick={() => handleDeleteItem(file.id)}
+                                                                >
+                                                                    <DeleteOutlineIcon />
+                                                                </DeleteButtonMask>
+                                                            </PictureItem>
+                                                        ))
+                                                    }
+                                                    <Upload
+                                                        accept='image/,.jpg,.png,.jpeg'
                                                         multiple
-                                                        // onChange = {this.upload} 
-                                                    />
-                                                </Form.Group>
-                                            </Col>
-                                            <Col xs={12} md={12}>
-                                                <Figure>
-                                                    <Figure.Image
-                                                        width={171}
-                                                        height={180}
-                                                        alt="171x180"
-                                                    />
-                                                    <Figure.Caption>
-                                                        Nulla vitae elit libero, a pharetra augue mollis interdum.
-                                                    </Figure.Caption>
-                                                </Figure>
+                                                        onChange={handleOnPreview}
+                                                    >
+                                                        <PictureWallUpload>
+                                                            <div style={{ fontSize: 32 }}>＋</div>
+                                                            <div>上傳照片</div>
+                                                        </PictureWallUpload>
+                                                    </Upload>
+                                                </PictureWallWrapper>
                                             </Col>
                                         </Row>
 

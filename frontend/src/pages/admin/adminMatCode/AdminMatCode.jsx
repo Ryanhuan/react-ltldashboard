@@ -6,7 +6,6 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
-// import Button from 'react-bootstrap/Button'
 import { DeleteOutline, Edit, Eject } from '@material-ui/icons';
 import { CustomModal } from '../../../components/modal/customModal';
 import { postData } from "../../../api";
@@ -48,13 +47,6 @@ export class AdminMatCode extends Component {
 
     //get query select option
     async _getSelectOption() {
-        // let _SelectOption = [{ value: '', label: '==請選擇==' },];
-        // let _res = await postData("/api/getCodeTypeKind/ma");
-        // if (_res.msg === "getCodeTypeKind_OK") {
-        //     _res.data.forEach(ele => {
-        //         _SelectOption.push(ele);
-        //     })
-        // }
         let _SelectOption = await getSelectOption('ma');
         this.setState({ SelectOption: _SelectOption })
     }
