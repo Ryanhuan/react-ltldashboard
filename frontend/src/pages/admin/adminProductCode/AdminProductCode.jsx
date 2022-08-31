@@ -55,7 +55,7 @@ export class AdminProductCode extends Component {
     //材料新增材料
     async insertData(event) {
         event.preventDefault();
-        this.setState({ isLoadingInsert: !this.state.isLoadingInsert});
+        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
         if (this.state.insertData.label === '') {
             Swal.fire({
                 position: 'bottom-end',
@@ -109,7 +109,7 @@ export class AdminProductCode extends Component {
                 })
             }
         }
-        this.setState({ isLoadingInsert: !this.state.isLoadingInsert});
+        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
     }
 
 
@@ -270,17 +270,17 @@ export class AdminProductCode extends Component {
                 renderCell: (params) => {
                     return (
                         <>
-                           <Button
+                            <Button
                                 variant="text"
                                 startIcon={<Edit />}
                                 themeColor='success'
-                                onClick={(e) => modalOpen(e, params.row)} 
+                                onClick={(e) => modalOpen(e, params.row)}
                             />
                             <Button
                                 variant="text"
                                 startIcon={<DeleteOutline />}
                                 themeColor='error'
-                                onClick={(e) => handleDelete(e, params.row)} 
+                                onClick={(e) => handleDelete(e, params.row)}
                             />
                             {this.state.modal.show ?
                                 <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
@@ -338,7 +338,7 @@ export class AdminProductCode extends Component {
                                     </Row>
 
                                     <Row className="justify-content-md-center">
-                                        <Col xs={6} md={2}>
+                                        <Col xs={12} md={{ span: 6, offset: 3 }} className="btnGroup">
                                             <Button
                                                 variant="contained"
                                                 onClick={this.insertData}
@@ -346,8 +346,6 @@ export class AdminProductCode extends Component {
                                             >
                                                 新增
                                             </Button>
-                                        </Col>
-                                        <Col xs={6} md={2}>
                                             <Button
                                                 variant="contained"
                                                 themeColor="success"

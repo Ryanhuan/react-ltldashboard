@@ -11,8 +11,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import { postData } from "../../../api";
 
 import Button from '../../../components/button/Button'
-import Upload from '../../../components/upload/Upload'
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import PicWall from '../../../components/upload/PicWall'
 
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -41,7 +40,9 @@ export class AdminProductAdd extends Component {
             },
             hashtags: [],
             fileList: [],// upload
+            maList: [], // 使用材料清單
         };
+
         this.target = createRef(null);
 
         //bind
@@ -54,6 +55,9 @@ export class AdminProductAdd extends Component {
         this.handleHashtagsDrag = this.handleHashtagsDrag.bind(this);
         this.handleHashtagsClick = this.handleHashtagsClick.bind(this);
         this.onClearAllHashtags = this.onClearAllHashtags.bind(this);
+
+        this.onChangePicWall = this.onChangePicWall.bind(this);
+
     }
 
 
@@ -126,7 +130,6 @@ export class AdminProductAdd extends Component {
             }
             this.setState({ insertData: _insertData });
         }
-
     }
 
     async handleDatePickerChange(newValue, targetName) {
@@ -171,8 +174,15 @@ export class AdminProductAdd extends Component {
     };
     //hashtag end
 
+    onChangePicWall(fileList) {
+        this.setState({ fileList: [...fileList] });
+    }
+
 
     render() {
+
+
+
 
         //hashtag beg
         const KeyCodes = {
@@ -183,58 +193,60 @@ export class AdminProductAdd extends Component {
         //hashtag end
 
 
+
         // Picture Wall beg
-        const PictureWallWrapper = styled.div`
-            display: grid;
-            grid-template-columns: repeat(3, 150px);
-            grid-gap: 8px;
-        `;
+        // const PictureWallWrapper = styled.div`
+        //     display: grid;
+        //     grid-template-columns: repeat(3, 150px);
+        //     grid-gap: 8px;
+        // `;
 
-        const PictureWallUpload = styled.div`
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 150px;
-            height: 150px;
-            border: 1px dashed #DDD;
-            border-radius: 4px;
-            cursor: pointer;
-            &:hover {
-            border: 1px dashed ${(props) => props.theme.color.primary};
-            }
-        `;
+        // const PictureWallUpload = styled.div`
+        //     display: flex;
+        //     flex-direction: column;
+        //     align-items: center;
+        //     justify-content: center;
+        //     width: 150px;
+        //     height: 150px;
+        //     border: 1px dashed #DDD;
+        //     border-radius: 4px;
+        //     cursor: pointer;
+        //     &:hover {
+        //     border: 1px dashed ${(props) => props.theme.color.primary};
+        //     }
+        // `;
 
-        const PictureItem = styled.div`
-            width: 150px;
-            height: 150px;
-            position: relative;
-            .picture-item__delete-button {
-                display: none;
-            }
-            &:hover {
-                .picture-item__delete-button {
-                display: flex;
-                }
-            }
-        `;
+        // const PictureItem = styled.div`
+        //     width: 150px;
+        //     height: 150px;
+        //     position: relative;
+        //     .picture-item__delete-button {
+        //         display: none;
+        //     }
+        //     &:hover {
+        //         .picture-item__delete-button {
+        //         display: flex;
+        //         }
+        //     }
+        // `;
 
-        const DeleteButtonMask = styled.div`
-            position: absolute;
-            background: #1d1010aa;
-            color: #FFF;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
-            left: 0px;
-            top: 0px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        `;
+        // const DeleteButtonMask = styled.div`
+        //     position: absolute;
+        //     background: #1d1010aa;
+        //     color: #FFF;
+        //     cursor: pointer;
+        //     width: 100%;
+        //     height: 100%;
+        //     left: 0px;
+        //     top: 0px;
+        //     display: flex;
+        //     align-items: center;
+        //     justify-content: center;
+        // `;
 
         const handleOnPreview = (files) => {
             for (let ele of files) {
+                // console.log(files);
                 // const file = files[0];
                 const file = ele;
                 const reader = new FileReader();
@@ -243,13 +255,12 @@ export class AdminProductAdd extends Component {
                     this.setState((prev) => ({
                         fileList: [...prev.fileList,
                         {
-                            seq: prev.fileList.length + 1,
-                            id: file.size,
+                            id: file.size + Math.floor(Math.random() * 1000).toString(),
                             imageUrl: reader.result,
                         }]
                     }));
                 }, false);
-                if (file) {reader.readAsDataURL(file);}
+                if (file) { reader.readAsDataURL(file); }
             }
         };
 
@@ -268,6 +279,8 @@ export class AdminProductAdd extends Component {
                 <div className="adminProductAddWrapper">
                     <div className="adminProductBody">
                         <div className="adminProductBodyLeft">
+
+                            {/* 基本資料 */}
                             <div className="adminProductItem">
                                 <div className="adminProductItemWrapper">
                                     <Container>
@@ -352,6 +365,8 @@ export class AdminProductAdd extends Component {
                                     </Container>
                                 </div>
                             </div>
+
+                            {/* Hashtags */}
                             <div className="adminProductItem">
                                 <div className="adminProductItemTitle">
                                     新增 Hashtags
@@ -361,6 +376,7 @@ export class AdminProductAdd extends Component {
                                         <Row>
                                             <Col xs={12} md={12}>
                                                 <ReactTags
+                                                    autofocus={false}
                                                     // suggestions={suggestions}
                                                     placeholder='Add hashtags'
                                                     tags={this.state.hashtags}
@@ -380,6 +396,7 @@ export class AdminProductAdd extends Component {
                                 </div>
                             </div>
 
+                            {/* 系列 */}
                             <div className="adminProductItem">
                                 <div className="adminProductItemTitle">
 
@@ -447,7 +464,7 @@ export class AdminProductAdd extends Component {
                                 </div>
                             </div>
 
-
+                            {/* PIC WALL */}
                             <div className="adminProductItem">
                                 <div className="adminProductItemTitle">
                                     商品照上傳
@@ -456,33 +473,12 @@ export class AdminProductAdd extends Component {
                                     <Container>
                                         <Row>
                                             <Col xs={12} md={12}>
-                                                <PictureWallWrapper>
-                                                    {
-                                                        this.state.fileList.map((file) => (
-                                                            <PictureItem key={file.seq}>
-                                                                {file.seq}
-                                                                <img src={file.imageUrl} alt=""
-                                                                    width={150} height={150} style={{ objectFit: 'cover' }} />
-                                                                <DeleteButtonMask
-                                                                    className="picture-item__delete-button"
-                                                                    onClick={() => handleDeleteItem(file.id)}
-                                                                >
-                                                                    <DeleteOutlineIcon />
-                                                                </DeleteButtonMask>
-                                                            </PictureItem>
-                                                        ))
-                                                    }
-                                                    <Upload
-                                                        accept='image/,.jpg,.png,.jpeg'
-                                                        multiple
-                                                        onChange={handleOnPreview}
-                                                    >
-                                                        <PictureWallUpload>
-                                                            <div style={{ fontSize: 32 }}>＋</div>
-                                                            <div>上傳照片</div>
-                                                        </PictureWallUpload>
-                                                    </Upload>
-                                                </PictureWallWrapper>
+                                                <PicWall
+                                                    fileList={this.state.fileList}
+                                                    handleOnPreview={handleOnPreview}
+                                                    handleDeleteItem={handleDeleteItem}
+                                                    onChangePicWall={this.onChangePicWall}
+                                                ></PicWall>
                                             </Col>
                                         </Row>
 
@@ -490,6 +486,7 @@ export class AdminProductAdd extends Component {
                                 </div>
 
                             </div>
+
                         </div>
 
                         <div className="adminProductBodyRight">

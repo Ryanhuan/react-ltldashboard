@@ -119,6 +119,10 @@ input[type=number] {
     margin: 5px 5px;
 }
 
+.btnGroup Button{
+    margin-left: 5px;
+}
+
 /* ========================================================================== */
 
 .matDataList{

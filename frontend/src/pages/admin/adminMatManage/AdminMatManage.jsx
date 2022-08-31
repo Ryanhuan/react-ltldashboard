@@ -397,7 +397,7 @@ export class AdminMatManage extends Component {
                                     </Row>
 
                                     <Row className="justify-content-md-center insertRow">
-                                        <Col xs={6} md={2}>
+                                        <Col xs={12} md={{ span: 6, offset: 3 }} className="btnGroup">
                                             <Button
                                                 variant="contained"
                                                 onClick={this.insertData}
@@ -405,8 +405,6 @@ export class AdminMatManage extends Component {
                                             >
                                                 新增
                                             </Button>
-                                        </Col>
-                                        <Col xs={6} md={2}>
                                             <Button
                                                 variant="contained"
                                                 themeColor="success"
@@ -487,7 +485,7 @@ export class AdminMatManage extends Component {
                                     </Row>
 
                                     <Row className="justify-content-md-center insertRow">
-                                        <Col xs={6} md={2}>
+                                        <Col xs={12} md={{ span: 6, offset: 3 }} className="btnGroup">
                                             <Button
                                                 variant="contained"
                                                 onClick={this.searchData}
@@ -495,8 +493,6 @@ export class AdminMatManage extends Component {
                                             >
                                                 搜尋
                                             </Button>
-                                        </Col>
-                                        <Col xs={6} md={2}>
                                             <Button
                                                 variant="contained"
                                                 themeColor="success"

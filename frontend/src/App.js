@@ -45,7 +45,7 @@ function App() {
                 <Topbar />
                 <Routes>
                   {pageSettings.Admin.map((route, index) => (
-                    <Route exact key={index} path={route.href} element={
+                    <Route key={index} path={route.href} element={
                         <>
                           <span className="PageTitle">{route.pageTitle}</span>
                           {route.element}

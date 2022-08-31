@@ -254,13 +254,13 @@ export class AdminMatCode extends Component {
                                 variant="text"
                                 startIcon={<Edit />}
                                 themeColor='success'
-                                onClick={(e) => modalOpen(e, params.row)} 
+                                onClick={(e) => modalOpen(e, params.row)}
                             />
                             <Button
                                 variant="text"
                                 startIcon={<DeleteOutline />}
                                 themeColor='error'
-                                onClick={(e) => handleDelete(e, params.row)} 
+                                onClick={(e) => handleDelete(e, params.row)}
                             />
                             {this.state.modal.show ?
                                 <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
@@ -298,7 +298,7 @@ export class AdminMatCode extends Component {
                                         </Col>
                                     </Row>
                                     <Row className="justify-content-md-center">
-                                        <Col xs={6} md={2}>
+                                        <Col xs={12} md={{ span: 6, offset: 3 }} className="btnGroup">
                                             <Button
                                                 variant="contained"
                                                 onClick={this.insertData}
@@ -306,8 +306,6 @@ export class AdminMatCode extends Component {
                                             >
                                                 新增
                                             </Button>
-                                        </Col>
-                                        <Col xs={6} md={2}>
                                             <Button
                                                 variant="contained"
                                                 themeColor="success"
