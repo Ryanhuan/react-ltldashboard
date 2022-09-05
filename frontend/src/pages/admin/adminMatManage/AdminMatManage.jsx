@@ -19,8 +19,8 @@ export class AdminMatManage extends Component {
         //declare
         this.state = {
             WrapperOpen: {
-                insertWrapper: false,
-                searchWrapper: false,
+                isInsertWrapper: false,
+                isSearchWrapper: false,
             },
             insertData: {
                 id: '', type: '', name: '', size: '', quality: '', store_name: '', price: '', num: '', price_per: '', memo: '',
@@ -34,7 +34,7 @@ export class AdminMatManage extends Component {
             },
             gridData: [],
             modal: {
-                show: false,
+                isShow: false,
                 title: '',
                 data: {},
             },
@@ -308,8 +308,8 @@ export class AdminMatManage extends Component {
                                 themeColor='error'
                                 onClick={(e) => handleDelete(e, params.row)}
                             />
-                            {this.state.modal.show ?
-                                <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
+                            {this.state.modal.isShow ?
+                                <CustomModal show={this.state.modal.isShow} onHide={modalOnHide} modalData={this.state.modal}
                                     modalCols={modalCols} submitForm={(e, data) => { submitForm(e, data) }}
                                 /> : ''
                             }
@@ -325,10 +325,10 @@ export class AdminMatManage extends Component {
                     <div className="adminMatManageBody">
                         {/* insert */}
                         <div className="adminMatManageItem">
-                            <a href="/#" className="itemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
+                            <a href="/#" className="itemTitle" name="isInsertWrapper" onClick={this.WrapperOpen}>
                                 材料新增
-                                <Eject className={this.state.WrapperOpen.insertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
-                            <div className={this.state.WrapperOpen.insertWrapper ? 'adminMatManageItemWrapper active' : 'adminMatManageItemWrapper'}>
+                                <Eject className={this.state.WrapperOpen.isInsertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                            <div className={this.state.WrapperOpen.isInsertWrapper ? 'adminMatManageItemWrapper active' : 'adminMatManageItemWrapper'}>
                                 <Container>
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={4}>
@@ -421,10 +421,10 @@ export class AdminMatManage extends Component {
 
                         {/* search */}
                         <div className="adminMatManageItem">
-                            <a href="/#" className="itemTitle" name="searchWrapper" onClick={this.WrapperOpen}>
+                            <a href="/#" className="itemTitle" name="isSearchWrapper" onClick={this.WrapperOpen}>
                                 材料搜尋
-                                <Eject className={this.state.WrapperOpen.searchWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
-                            <div className={this.state.WrapperOpen.searchWrapper ? 'adminMatManageItemWrapper searchWrapper active' : 'adminMatManageItemWrapper searchWrapper'}>
+                                <Eject className={this.state.WrapperOpen.isSearchWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                            <div className={this.state.WrapperOpen.isSearchWrapper ? 'adminMatManageItemWrapper searchWrapper active' : 'adminMatManageItemWrapper searchWrapper'}>
                                 <Container>
                                     <Row className="justify-content-md-center insertRow">
                                         <Col xs={12} md={3}>

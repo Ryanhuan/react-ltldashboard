@@ -20,7 +20,7 @@ export class AdminProductCode extends Component {
         //declare
         this.state = {
             WrapperOpen: {
-                insertWrapper: false,
+                isInsertWrapper: false,
             },
             SearchTypeCode: '',
             SelectOption: [],
@@ -29,7 +29,7 @@ export class AdminProductCode extends Component {
             },
             gridData: [],
             modal: {
-                show: false,
+                isShow: false,
                 title: '',
                 data: {},
             },
@@ -183,20 +183,22 @@ export class AdminProductCode extends Component {
 
 
     render() {
-
         const modalOpen = (event, data) => {
             event.preventDefault();
+            console.log("open!!!!");
             let _data = JSON.parse(JSON.stringify(data));
             let _modal = this.state.modal;
             _modal.data = _data;
             _modal.title = "修改";
-            _modal.show = !_modal.show;
+            _modal.isShow = !_modal.isShow;
+
+            console.log(_modal);
             this.setState({ modal: _modal });
         }
 
         const modalOnHide = () => {
             let _modal = this.state.modal;
-            _modal.show = !_modal.show;
+            _modal.isShow = !_modal.isShow;
             this.setState({ modal: _modal });
         }
 
@@ -282,11 +284,13 @@ export class AdminProductCode extends Component {
                                 themeColor='error'
                                 onClick={(e) => handleDelete(e, params.row)}
                             />
-                            {this.state.modal.show ?
-                                <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
+                            {this.state.modal.isShow ?
+                                <CustomModal isShow={this.state.modal.isShow} onHide={modalOnHide} modalData={this.state.modal}
                                     modalCols={modalCols} submitForm={(e, data) => { submitForm(e, data) }}
                                 /> : ''
                             }
+                            <div>{this.state.modal.isShow}</div>
+                            
                         </>
                     )
                 }
@@ -298,10 +302,10 @@ export class AdminProductCode extends Component {
                 <div className="adminProductCodeWrapper">
                     <div className="adminProductCodeBody">
                         <div className="adminProductCodeItem">
-                            <a href="/#" className="itemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
+                            <a href="/#" className="itemTitle" name="isInsertWrapper" onClick={this.WrapperOpen}>
                                 代碼新增
-                                <Eject className={this.state.WrapperOpen.insertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
-                            <div className={this.state.WrapperOpen.insertWrapper ? 'adminProductCodeItemWrapper active' : 'adminProductCodeItemWrapper'}>
+                                <Eject className={this.state.WrapperOpen.isInsertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                            <div className={this.state.WrapperOpen.isInsertWrapper ? 'adminProductCodeItemWrapper active' : 'adminProductCodeItemWrapper'}>
                                 <Container>
                                     <Row className="justify-content-md-center">
                                         <Col xs={12} md={3}>

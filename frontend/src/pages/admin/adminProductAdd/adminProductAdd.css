@@ -27,6 +27,11 @@
     color:  var(--fontSubColor);
 }
 
+.maListItemCol{
+    font-size: 18px;
+    margin:auto;
+}
+
 /* datepicker */
 .css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
     background: var(--white) !important;

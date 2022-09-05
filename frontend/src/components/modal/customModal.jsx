@@ -1,7 +1,6 @@
 import { Component } from "react";
 import './customModal.css'
 import Modal from 'react-bootstrap/Modal'
-// import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from '../button/Button'
@@ -74,7 +73,7 @@ export class CustomModal extends Component {
 
 
     return (
-      <Modal show={this.props.show} onHide={this.props.onHide} aria-labelledby="contained-modal-title-vcenter" centered>
+      <Modal show={this.props.isShow} onHide={this.props.onHide} aria-labelledby="contained-modal-title-vcenter" centered>
         <Form>
           <Modal.Header closeButton>
             <Modal.Title id="contained-modal-title-vcenter" className="modalTitle">

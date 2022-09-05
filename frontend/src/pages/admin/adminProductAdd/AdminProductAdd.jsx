@@ -1,22 +1,24 @@
 import './adminProductAdd.css'
 import './hashtag.css'
-import { Component, createRef } from 'react'
-import styled from 'styled-components';
+import { Component } from 'react'
+// import { ModalMaList } from './modalMaList/ModalMaList'
 
-import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
+import Container from 'react-bootstrap/Container'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
-import { postData } from "../../../api";
-
-import Button from '../../../components/button/Button'
-import PicWall from '../../../components/upload/PicWall'
 
 import TextField from '@mui/material/TextField';
+import { Clear, Search } from '@material-ui/icons';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
+import { postData } from "../../../api";
+import Button from '../../../components/button/Button'
+import PicWall from '../../../components/upload/PicWall'
+import Loading from '../../../components/loading/Loading'
 
 //hashtag   
 import { WithContext as ReactTags } from 'react-tag-input';
@@ -26,7 +28,7 @@ export class AdminProductAdd extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            show: false,
+            isLoading: false,
             insertData: {
                 name: '', kind: '', size: '', inventory: '', status: '',
                 catenaBelong: '', singleBelong: '', catenaIntro: '', productIntro: '', otherIntro: '',
@@ -43,11 +45,14 @@ export class AdminProductAdd extends Component {
             maList: [], // 使用材料清單
         };
 
-        this.target = createRef(null);
+        // this.target = createRef(null);
 
         //bind
         this.handleDataChange = this.handleDataChange.bind(this);
         this.handleDatePickerChange = this.handleDatePickerChange.bind(this);
+
+        this.onChangePicWall = this.onChangePicWall.bind(this);
+        this.insertMaListItem = this.insertMaListItem.bind(this);
 
         //hashtag  
         this.handleHashtagsDelete = this.handleHashtagsDelete.bind(this);
@@ -55,9 +60,6 @@ export class AdminProductAdd extends Component {
         this.handleHashtagsDrag = this.handleHashtagsDrag.bind(this);
         this.handleHashtagsClick = this.handleHashtagsClick.bind(this);
         this.onClearAllHashtags = this.onClearAllHashtags.bind(this);
-
-        this.onChangePicWall = this.onChangePicWall.bind(this);
-
     }
 
 
@@ -138,7 +140,6 @@ export class AdminProductAdd extends Component {
         this.setState({ insertData: _insertData });
     }
 
-
     async handleSubmit(event) {
         event.preventDefault()
         console.log(this.state.insertData);
@@ -178,72 +179,24 @@ export class AdminProductAdd extends Component {
         this.setState({ fileList: [...fileList] });
     }
 
+    insertMaListItem() {
+        this.setState((prev) => ({
+            maList: [...prev.maList, {}]
+        }));
+    }
+
 
     render() {
 
-
-
-
-        //hashtag beg
+        //hashtag beg=========================================
         const KeyCodes = {
             comma: 188,
             enter: 13
         };
         const delimiters = [KeyCodes.comma, KeyCodes.enter];
-        //hashtag end
+        //hashtag end=========================================
 
-
-
-        // Picture Wall beg
-        // const PictureWallWrapper = styled.div`
-        //     display: grid;
-        //     grid-template-columns: repeat(3, 150px);
-        //     grid-gap: 8px;
-        // `;
-
-        // const PictureWallUpload = styled.div`
-        //     display: flex;
-        //     flex-direction: column;
-        //     align-items: center;
-        //     justify-content: center;
-        //     width: 150px;
-        //     height: 150px;
-        //     border: 1px dashed #DDD;
-        //     border-radius: 4px;
-        //     cursor: pointer;
-        //     &:hover {
-        //     border: 1px dashed ${(props) => props.theme.color.primary};
-        //     }
-        // `;
-
-        // const PictureItem = styled.div`
-        //     width: 150px;
-        //     height: 150px;
-        //     position: relative;
-        //     .picture-item__delete-button {
-        //         display: none;
-        //     }
-        //     &:hover {
-        //         .picture-item__delete-button {
-        //         display: flex;
-        //         }
-        //     }
-        // `;
-
-        // const DeleteButtonMask = styled.div`
-        //     position: absolute;
-        //     background: #1d1010aa;
-        //     color: #FFF;
-        //     cursor: pointer;
-        //     width: 100%;
-        //     height: 100%;
-        //     left: 0px;
-        //     top: 0px;
-        //     display: flex;
-        //     align-items: center;
-        //     justify-content: center;
-        // `;
-
+        // Picture Wall beg=========================================
         const handleOnPreview = (files) => {
             for (let ele of files) {
                 // console.log(files);
@@ -269,15 +222,17 @@ export class AdminProductAdd extends Component {
                 fileList: prev.fileList.filter((item) => item.id !== fileId)
             }));
         };
-
-        // Picture Wall end
-
+        // Picture Wall end=========================================
 
 
         return (
             <div className="adminProductAdd">
+                {this.state.isLoading ? <Loading /> : ''}
+                {/* adminProductAddWrapper */}
                 <div className="adminProductAddWrapper">
+                    {/* adminProductBody */}
                     <div className="adminProductBody">
+                        {/* adminProductBodyLeft */}
                         <div className="adminProductBodyLeft">
 
                             {/* 基本資料 */}
@@ -366,36 +321,6 @@ export class AdminProductAdd extends Component {
                                 </div>
                             </div>
 
-                            {/* Hashtags */}
-                            <div className="adminProductItem">
-                                <div className="adminProductItemTitle">
-                                    新增 Hashtags
-                                </div>
-                                <div className="adminProductItemWrapper">
-                                    <Container>
-                                        <Row>
-                                            <Col xs={12} md={12}>
-                                                <ReactTags
-                                                    autofocus={false}
-                                                    // suggestions={suggestions}
-                                                    placeholder='Add hashtags'
-                                                    tags={this.state.hashtags}
-                                                    delimiters={delimiters}
-                                                    handleDelete={this.handleHashtagsDelete}
-                                                    handleAddition={this.handleHashtagsAddition}
-                                                    handleDrag={this.handleHashtagsDrag}
-                                                    handleTagClick={this.handleHashtagsClick}
-                                                    inputFieldPosition="top"
-                                                    // autocomplete
-                                                    clearAll
-                                                    onClearAll={this.onClearAllHashtags}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    </Container>
-                                </div>
-                            </div>
-
                             {/* 系列 */}
                             <div className="adminProductItem">
                                 <div className="adminProductItemTitle">
@@ -464,6 +389,36 @@ export class AdminProductAdd extends Component {
                                 </div>
                             </div>
 
+                            {/* Hashtags */}
+                            <div className="adminProductItem">
+                                <div className="adminProductItemTitle">
+                                    新增 Hashtags
+                                </div>
+                                <div className="adminProductItemWrapper">
+                                    <Container>
+                                        <Row>
+                                            <Col xs={12} md={12}>
+                                                <ReactTags
+                                                    autofocus={false}
+                                                    // suggestions={suggestions}
+                                                    placeholder='Add hashtags'
+                                                    tags={this.state.hashtags}
+                                                    delimiters={delimiters}
+                                                    handleDelete={this.handleHashtagsDelete}
+                                                    handleAddition={this.handleHashtagsAddition}
+                                                    handleDrag={this.handleHashtagsDrag}
+                                                    handleTagClick={this.handleHashtagsClick}
+                                                    inputFieldPosition="top"
+                                                    // autocomplete
+                                                    clearAll
+                                                    onClearAll={this.onClearAllHashtags}
+                                                />
+                                            </Col>
+                                        </Row>
+                                    </Container>
+                                </div>
+                            </div>
+
                             {/* PIC WALL */}
                             <div className="adminProductItem">
                                 <div className="adminProductItemTitle">
@@ -488,11 +443,13 @@ export class AdminProductAdd extends Component {
                             </div>
 
                         </div>
+                        {/* adminProductBodyLeft end */}
 
+                        {/* adminProductBodyRight */}
                         <div className="adminProductBodyRight">
                             <div className="adminProductItem">
 
-                                <div className="adminProductItemWrapper">
+                                <div className="adminProductItemWrapper" style={{ minWidth: '600px' }}>
                                     <Container>
                                         <Row>
                                             <Col xs={12} md={4}>
@@ -504,76 +461,82 @@ export class AdminProductAdd extends Component {
                                         <div className="adminProductItemTitle">
                                             使用材料
                                         </div>
-                                        <Row>
-                                            <Col xs={1} md={1}>
-                                                index1
-                                            </Col>
-                                            <Col xs={2} md={2}>
-                                                <FloatingLabel controlId="floatingInputX1" label="金具" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="金具" name='id' />
-                                                </FloatingLabel>
-                                            </Col>
-                                            <Col xs={2} md={2}>
-                                                <FloatingLabel controlId="floatingInputX3" label="尺寸" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="尺寸" name='id' />
-                                                </FloatingLabel>
-                                            </Col>
-                                            <Col xs={2} md={2}>
-                                                <FloatingLabel controlId="floatingInputX2" label="Num" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="Num" name='id' />
-                                                </FloatingLabel>
-                                            </Col>
-                                            <Col xs={2} md={2}>
-                                                單價 1
-                                            </Col>
-                                            <Col xs={2} md={2}>
-                                                小計 2
+                                        <Row style={{ paddingBottom: '10px' }}>
+                                            <Col xs={12} md={{ span: 3, offset: 9 }}>
+                                                <Button
+                                                    variant="contained"
+                                                    themeColor="success"
+                                                    onClick={this.insertMaListItem}
+                                                >
+                                                    新增
+                                                </Button>
                                             </Col>
                                         </Row>
-                                        <Row>
-                                            <Col xs={1} md={1}>
-                                                index2
-                                            </Col>
+                                        {
+                                            this.state.maList.map((item, index) => (
+                                                <Row key={index}>
+                                                    <Col xs={1} md={1} className="maListItemCol" style={{ width: '10px' }}>
+                                                        <Button
+                                                            variant="contained"
+                                                            themeColor="error"
+                                                            onClick={this.insertMaListItem}
+                                                            style={{
+                                                                marginRight: '10px',
+                                                                borderRadius: 50,
+                                                                minWidth: '30px',
+                                                                height: '30px'
+                                                            }}
+                                                        >
+                                                            <Clear />
+                                                        </Button>
+                                                    </Col>
 
-                                            <Col xs={2} md={2}>
-                                                <FloatingLabel controlId="floatingInputX1" label=" 半貴石:" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="半貴石:" name='id' />
-                                                </FloatingLabel>
-                                            </Col>
-                                            <Col xs={2} md={2}>
-                                                <FloatingLabel controlId="floatingInputX3" label="尺寸" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="尺寸" name='id' />
-                                                </FloatingLabel>
-                                            </Col>
-                                            <Col xs={2} md={2}>
-                                                <FloatingLabel controlId="floatingInputX2" label="Num" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="Num" name='id' />
-                                                </FloatingLabel>
-                                            </Col>
-                                            <Col xs={2} md={2}>
-                                                單價 1
-                                            </Col>
-                                            <Col xs={2} md={2}>
-                                                小計 2
-                                            </Col>
-                                        </Row>
+                                                    <Col xs={2} md={3} style={{ display: 'flex' }}>
+                                                        <Button
+                                                            variant="text"
+                                                            themeColor="success"
+                                                            onClick={this.insertMaListItem}
+                                                            style={{
+                                                                margin: '14px 5px 0 5px',
+                                                                borderRadius: 50,
+                                                                minWidth: '50px'
+                                                            }}
+                                                        >
+                                                            <Search />
+                                                        </Button>
+                                                        <FloatingLabel controlId="floatingInputItemName" label="名稱" className="mb-1 ">
+                                                            <Form.Control type="text" placeholder="名稱" name='itemName' value={item.itemName} disabled />
+                                                        </FloatingLabel>
 
-
+                                                    </Col>
+                                                    <Col xs={2} md={2}>
+                                                        <FloatingLabel controlId="floatingInputItemSize" label="尺寸" className="mb-1 ">
+                                                            <Form.Control type="text" placeholder="尺寸" name='itemSize' value={item.itemSize} />
+                                                        </FloatingLabel>
+                                                    </Col>
+                                                    <Col xs={2} md={2}>
+                                                        <FloatingLabel controlId="floatingInputItemNum" label="數量" className="mb-1 ">
+                                                            <Form.Control type="text" placeholder="數量" name='itemNum' value={item.itemNum} />
+                                                        </FloatingLabel>
+                                                    </Col>
+                                                    <Col xs={2} md={2} className="maListItemCol">
+                                                        單價 :
+                                                    </Col>
+                                                    <Col xs={2} md={2} className="maListItemCol">
+                                                        小計 :
+                                                    </Col>
+                                                </Row>
+                                            ))
+                                        }
                                         <Row>
                                             <Col xs={12} md={{ span: 3, offset: 9 }}>
-                                                {/* <Button className="btn" variant="outline-secondary" name="Add">Add</Button> */}
-                                                {/* <Button ref={this.target} onClick={() => this.setState({ show: !this.state.show })}>
-                                                    Add
-                                                </Button> */}
-                                                {/* <Overlay target={this.target.current} show={this.state.show} placement="bottom">
-                                                    {(props) => (
-                                                        <Tooltip id="overlay-example" {...props}>
-                                                            <a href="">半貴石</a>
-                                                            <br></br>
-                                                            <a href="">金具</a>
-                                                        </Tooltip>
-                                                    )}
-                                                </Overlay> */}
+                                                <Button
+                                                    variant="contained"
+                                                    themeColor="success"
+                                                    onClick={this.insertMaListItem}
+                                                >
+                                                    新增
+                                                </Button>
                                             </Col>
                                         </Row>
 
@@ -590,13 +553,19 @@ export class AdminProductAdd extends Component {
                                 </div>
 
                             </div>
+                            {/* <ModalMaList /> */}
+                            {/* 
+                            <ModalMaList show={this.state.modal.isShow} onHide={modalOnHide} modalData={this.state.modal}
+                                    submitForm={(e, data) => { submitForm(e, data) }}
+                                /> : '' */}
+                                
                         </div>
-
-
+                        {/* adminProductBodyRight end */}
                     </div>
-
+                    {/* adminProductBody end */}
                 </div>
-            </div>
+                {/* adminProductAddWrapper end */}
+            </div >
         )
     }
 }

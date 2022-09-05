@@ -4,7 +4,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import { DataGrid } from '@mui/x-data-grid';
 import { AccountCircle, CheckCircleOutline, HighlightOff, Edit, Eject } from '@material-ui/icons';
 import './adminUser.css'
-import { ModalEditUser } from './ModalEditUser/ModalEditUser';
+import { ModalEditUser } from './modalEditUser/ModalEditUser';
 import { postData, getData, getUserId } from "../../../api";
 import Swal from 'sweetalert2';
 

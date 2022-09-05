@@ -19,7 +19,7 @@ export class AdminMatCode extends Component {
         //declare
         this.state = {
             WrapperOpen: {
-                insertWrapper: false,
+                isInsertWrapper: false,
             },
             SearchTypeCode: '',
             SelectOption: [],
@@ -28,7 +28,7 @@ export class AdminMatCode extends Component {
             },
             gridData: [],
             modal: {
-                show: false,
+                isShow: false,
                 title: '',
                 data: {},
             },
@@ -180,13 +180,13 @@ export class AdminMatCode extends Component {
             let _modal = this.state.modal;
             _modal.data = _data;
             _modal.title = "修改";
-            _modal.show = !_modal.show;
+            _modal.isShow = !_modal.isShow;
             this.setState({ modal: _modal });
         }
 
         const modalOnHide = () => {
             let _modal = this.state.modal;
-            _modal.show = !_modal.show;
+            _modal.isShow = !_modal.isShow;
             this.setState({ modal: _modal });
         }
 
@@ -262,8 +262,8 @@ export class AdminMatCode extends Component {
                                 themeColor='error'
                                 onClick={(e) => handleDelete(e, params.row)}
                             />
-                            {this.state.modal.show ?
-                                <CustomModal show={this.state.modal.show} onHide={modalOnHide} modalData={this.state.modal}
+                            {this.state.modal.isShow ?
+                                <CustomModal isShow={this.state.modal.isShow} onHide={modalOnHide} modalData={this.state.modal}
                                     modalCols={modalCols} submitForm={(e, data) => { submitForm(e, data) }}
                                 /> : ''
                             }
@@ -278,10 +278,10 @@ export class AdminMatCode extends Component {
                 <div className="adminMatCodeWrapper">
                     <div className="adminMatCodeBody">
                         <div className="adminMatCodeItem">
-                            <a href="/#" className="itemTitle" name="insertWrapper" onClick={this.WrapperOpen}>
+                            <a href="/#" className="itemTitle" name="isInsertWrapper" onClick={this.WrapperOpen}>
                                 代碼新增
-                                <Eject className={this.state.WrapperOpen.insertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
-                            <div className={this.state.WrapperOpen.insertWrapper ? 'adminMatCodeItemWrapper active' : 'adminMatCodeItemWrapper'}>
+                                <Eject className={this.state.WrapperOpen.isInsertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                            <div className={this.state.WrapperOpen.isInsertWrapper ? 'adminMatCodeItemWrapper active' : 'adminMatCodeItemWrapper'}>
                                 <Container>
                                     <Row className="justify-content-md-center">
                                         <Col xs={12} md={4}>
