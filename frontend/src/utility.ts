@@ -11,3 +11,8 @@ export async function getSelectOption(type: string) {
     // setSelectOption(_SelectOption);
     return _SelectOption;
 }
+
+//判斷obj是否為空
+export async function checkEmpty(o) {
+    return (o !== null && o !== undefined && o !== '') ? true : false;
+}

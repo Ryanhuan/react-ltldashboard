@@ -1,0 +1,48 @@
+.productWrapper {
+    padding: 10px;
+}
+
+.adminProductBody {
+    display: flex;
+}
+
+.adminProductItem {
+    margin: 0px 20px 20px 20px;
+    padding: 25px;
+
+    /* background: rgba(255, 240, 205 , 0.6); */
+    background:var(--background-color);
+    /* background: linear-gradient(160deg, rgba(255, 240, 205, 0.8), rgba(255, 240, 205, 0.2)); */
+
+    -webkit-box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+    box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+    border-radius: 10px;
+}
+
+.adminProductItemTitle{
+    font-size: 24px;
+    font-weight: 400;
+    /* padding: 10px; */
+    margin: 10px;
+    color:  var(--fontSubColor);
+}
+
+.maListItemCol{
+    font-size: 18px;
+    margin:auto;
+}
+
+/* datepicker */
+.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
+    background: var(--white) !important;
+}
+
+
+
+.adminProductBodyLeft .adminProductItem{
+    max-width: 30vw;
+}
+
+@media screen and (max-width: 1573px){
+    
+}

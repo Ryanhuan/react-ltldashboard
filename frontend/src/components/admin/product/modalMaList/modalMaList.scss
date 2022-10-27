@@ -1,0 +1,119 @@
+.modal {
+    margin-left: -20vw;
+
+    .modal-content {
+        width: auto;
+        background-color: var(--white);
+        border: 0px;
+        border-radius: 0.3rem;
+        outline: 0;
+
+        Form {
+            width: 60vw;
+
+            .modalBody {
+                display: flex;
+
+                .searchItem {
+                    padding: 20px;
+
+                    .searchItemWrapper {
+                        height: 0px;
+                        transition: 0.8s;
+                        overflow: hidden;
+
+                        &.active {
+                            height: 25vh;
+                            padding-top: 10px;
+                            transition: 0.5s;
+                            -webkit-box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+                            box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+                            border-radius: 10px;
+                        }
+
+                        .insertRow {
+                            padding: 5px 0;
+                        }
+
+                        .btnGroup {
+                            width: auto;
+                        }
+                    }
+                }
+
+                .grid {
+                    height: 40vh;
+                }
+
+                .selectedListBox {
+                    width: 15vw;
+                    max-height: 70vh;
+                    overflow: scroll;
+                    color: var(--black2);
+                    background: var(--background-color);
+                    font-size: 18px;
+                    border-radius: 10px;
+
+                    &::-webkit-scrollbar {
+                        width: 5px;
+                        height: 10px;
+                        background-color: var(--background-color);
+                        -webkit-border-radius: 10px;
+                        border-radius: 10px;
+                        margin: 80px 0 5px 0;
+                    }
+
+                    &::-webkit-scrollbar-thumb {
+                        background: var(--hoverColor);
+                    }
+
+                    .selectedListItems {
+                        display: flex;
+                        margin: 10px;
+
+                        &>div {
+                            padding: 8px;
+                        }
+
+                        .selectedListItemIcon {
+                            align-self: center;
+                            color: var(--error);
+                            padding: 3px;
+                            border-radius: 10px;
+                            cursor: pointer;
+
+                            &:hover {
+                                background-color: var(--error);
+
+                                color: var(--white);
+                            }
+                        }
+
+                        .selectedListItem {
+                            .selectedListItemId {
+                                padding: 2px;
+                            }
+
+                            .selectedListItemName {
+                                padding: 2px;
+                            }
+                        }
+
+
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+}
+
+
+@media screen and (max-width: 766px) {
+    .searchWrapper.active {
+        height: 530px;
+    }
+}

@@ -57,6 +57,7 @@
     ]
   },
   "devDependencies": {
-    "autoprefixer": "^9.8.8"
+    "autoprefixer": "^9.8.8",
+    "sass": "^1.55.0"
   }
 }
