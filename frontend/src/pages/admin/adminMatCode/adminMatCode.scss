@@ -1,0 +1,30 @@
+.adminMatCode {
+    .adminWrapper {
+        .adminItems {
+            padding: 20px;
+
+            .adminItemWrapper {
+                height: 0px;
+                transition: 0.5s;
+                overflow: hidden;
+            }
+        
+            .adminItemWrapper.active {
+                padding-top: 10px;
+                height: 150px;
+                transition: 0.5s;
+                -webkit-box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+                box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+                border-radius: 10px;
+            }
+
+            .adminItemsContainer {
+                padding: 10px 0;
+
+                .matCodeDataList {
+                    height: 635px;
+                }
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import './adminMatCode.css'
+import './adminMatCode.scss'
 import { Component } from 'react'
 import { DataGrid } from '@mui/x-data-grid';
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
@@ -16,13 +16,12 @@ import { getSelectOption } from '../../../utility.ts'
 export class AdminMatCode extends Component {
     constructor(props) {
         super(props);
-        //declare
         this.state = {
-            WrapperOpen: {
+            wrapperOpen: {
                 isInsertWrapper: false,
             },
-            SearchTypeCode: '',
-            SelectOption: [],
+            searchTypeCode: '',
+            selectOption: [],
             insertData: {
                 type: '', label: '',
             },
@@ -34,11 +33,16 @@ export class AdminMatCode extends Component {
             },
             isLoadingInsert: false,
         };
-        //bind
+        // #region [bind]
         this.insertData = this.insertData.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.WrapperOpen = this.WrapperOpen.bind(this);
+        this.wrapperOpen = this.wrapperOpen.bind(this);
         this.dataClear = this.dataClear.bind(this);
+        this.modalOpen = this.modalOpen.bind(this);
+        this.modalOnHide = this.modalOnHide.bind(this);
+        this.submitForm = this.submitForm.bind(this);
+        this.handleGridDelete = this.handleGridDelete.bind(this);
+        // #endregion
     }
 
     componentDidMount() {
@@ -47,8 +51,8 @@ export class AdminMatCode extends Component {
 
     //get query select option
     async _getSelectOption() {
-        let _SelectOption = await getSelectOption('ma');
-        this.setState({ SelectOption: _SelectOption })
+        let _selectOption = await getSelectOption('ma');
+        this.setState({ selectOption: _selectOption })
     }
 
     //材料新增材料
@@ -77,7 +81,7 @@ export class AdminMatCode extends Component {
                     showConfirmButton: false,
                     timer: 1500
                 })
-                this._getGridData([this.state.SearchTypeCode]);
+                this._getGridData([this.state.searchTypeCode]);
             } else if (_res.msg === 'code_ChkRepeated') {
                 //失敗 代碼重複
                 Swal.fire({
@@ -107,7 +111,7 @@ export class AdminMatCode extends Component {
         event.preventDefault();
         let _name = event.target.name;
         this.setState({ [_name]: event.target.value });
-        if (_name === 'SearchTypeCode') { this._getGridData(event.target.value); }
+        if (_name === 'searchTypeCode') { this._getGridData(event.target.value); }
     }
 
     // insert & search data onchange
@@ -152,12 +156,11 @@ export class AdminMatCode extends Component {
     }
 
     // wrapper switch
-    WrapperOpen(event) {
+    wrapperOpen(event) {
         event.preventDefault();
-        let wrapperName = event.target.name;
-        let _WrapperOpen = this.state.WrapperOpen;
-        _WrapperOpen[wrapperName] = !_WrapperOpen[wrapperName];
-        this.setState({ WrapperOpen: _WrapperOpen });
+        this.setState((prev) => ({
+            wrapperOpen: { ...prev.wrapperOpen, [event.target.name]: !prev.wrapperOpen[event.target.name] }
+        }));
     }
 
     //clear
@@ -171,73 +174,82 @@ export class AdminMatCode extends Component {
     }
 
 
+    // #region [Modal]
+    modalOpen(event, data) {
+        event.preventDefault();
+        this.setState((prev) => ({
+            modal: { ...prev.modal, 
+                data: JSON.parse(JSON.stringify(data)) ,
+                title:'修改',
+                isShow: !prev.modal.isShow 
+            }
+        }));
+    }
+
+    modalOnHide() {
+        this.setState((prev) => ({
+            modal: { ...prev.modal, isShow: !prev.modal.isShow }
+        }));
+    }
+
+    async submitForm(event, data) {
+        event.preventDefault();
+        Swal.fire({
+            title: '確定要修改?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '確定',
+            cancelButtonText: '取消'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                let _res = await postData("/api/editCodeData", data);
+                if (_res.status === 'editCodeData_OK') {
+                    Swal.fire('完成修改!', '修改成功.', 'success')
+                    this._getGridData([this.state.searchTypeCode]);
+                } else {
+                    Swal.fire('Fail!', _res.msg, 'error')
+                }
+            }
+        })
+        this.modalOnHide();
+    }
+
+    // #endregion
+
+    // #region [Grid]
+    // delete
+    async handleGridDelete(event, data) {
+        event.preventDefault();
+        Swal.fire({
+            title: '確定要刪除?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '確定',
+            cancelButtonText: '取消'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                let _res = await postData("/api/deleteCodeData", data);
+                if (_res.status === 'deleteCodeData_OK') {
+                    Swal.fire('完成刪除!', '刪除成功.', 'success')
+                    this._getGridData([this.state.searchTypeCode]);
+                } else {
+                    Swal.fire('Fail!', _res.msg, 'error')
+                }
+            }
+        })
+    }
+
+    // #endregion
 
     render() {
+        const { modal, selectOption, wrapperOpen, insertData, isLoadingInsert, searchTypeCode, gridData } = this.state;
 
-        const modalOpen = (event, data) => {
-            event.preventDefault();
-            let _data = JSON.parse(JSON.stringify(data));
-            let _modal = this.state.modal;
-            _modal.data = _data;
-            _modal.title = "修改";
-            _modal.isShow = !_modal.isShow;
-            this.setState({ modal: _modal });
-        }
-
-        const modalOnHide = () => {
-            let _modal = this.state.modal;
-            _modal.isShow = !_modal.isShow;
-            this.setState({ modal: _modal });
-        }
-
-        const submitForm = async (event, data) => {
-            event.preventDefault();
-            Swal.fire({
-                title: '確定要修改?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '確定',
-                cancelButtonText: '取消'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    let _res = await postData("/api/editCodeData", data);
-                    if (_res.status === 'editCodeData_OK') {
-                        Swal.fire('完成修改!', '修改成功.', 'success')
-                        this._getGridData([this.state.SearchTypeCode]);
-                    } else {
-                        Swal.fire('Fail!', _res.msg, 'error')
-                    }
-                }
-            })
-            modalOnHide();
-        }
-
-        //grid delete
-        const handleDelete = async (event, data) => {
-            event.preventDefault();
-            Swal.fire({
-                title: '確定要刪除?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '確定',
-                cancelButtonText: '取消'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    let _res = await postData("/api/deleteCodeData", data);
-                    if (_res.status === 'deleteCodeData_OK') {
-                        Swal.fire('完成刪除!', '刪除成功.', 'success')
-                        this._getGridData([this.state.SearchTypeCode]);
-                    } else {
-                        Swal.fire('Fail!', _res.msg, 'error')
-                    }
-                }
-            })
-        }
-
+        // #region [Grid]
+        //grid 
         const modalCols = [
             { field: 'label', headerName: '項目', type: 'text', className: 'mb-6 col-6' },
         ]
@@ -254,17 +266,17 @@ export class AdminMatCode extends Component {
                                 variant="text"
                                 startIcon={<Edit />}
                                 themeColor='success'
-                                onClick={(e) => modalOpen(e, params.row)}
+                                onClick={(e) => this.modalOpen(e, params.row)}
                             />
                             <Button
                                 variant="text"
                                 startIcon={<DeleteOutline />}
                                 themeColor='error'
-                                onClick={(e) => handleDelete(e, params.row)}
+                                onClick={(e) => this.handleGridDelete(e, params.row)}
                             />
                             {this.state.modal.isShow ?
-                                <CustomModal isShow={this.state.modal.isShow} onHide={modalOnHide} modalData={this.state.modal}
-                                    modalCols={modalCols} submitForm={(e, data) => { submitForm(e, data) }}
+                                <CustomModal isShow={modal.isShow} onHide={this.modalOnHide} modalData={modal}
+                                    modalCols={modalCols} submitForm={(e, data) => { this.submitForm(e, data) }}
                                 /> : ''
                             }
                         </>
@@ -273,84 +285,72 @@ export class AdminMatCode extends Component {
             },
         ];
 
+        // #endregion
+
         return (
             <div className="adminMatCode">
-                <div className="adminMatCodeWrapper">
-                    <div className="adminMatCodeBody">
-                        <div className="adminMatCodeItem">
-                            <a href="/#" className="itemTitle" name="isInsertWrapper" onClick={this.WrapperOpen}>
-                                代碼新增
-                                <Eject className={this.state.WrapperOpen.isInsertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
-                            <div className={this.state.WrapperOpen.isInsertWrapper ? 'adminMatCodeItemWrapper active' : 'adminMatCodeItemWrapper'}>
-                                <Container>
-                                    <Row className="justify-content-md-center">
-                                        <Col xs={12} md={4}>
-                                            <FloatingLabel controlId="floatingSelectType" label="類別">
-                                                <Form.Select aria-label="Floating label select" name='type' value={this.state.insertData.type} onChange={(e) => { this.handleDataChange(e, "insertData") }} >
-                                                    {this.state.SelectOption.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
-                                                </Form.Select>
-                                            </FloatingLabel>
-                                        </Col>
-                                        <Col xs={12} md={4}>
-                                            <FloatingLabel controlId="floatingInputLabel" label="項目" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="項目" name='label' value={this.state.insertData.label} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
-                                            </FloatingLabel>
-                                        </Col>
-                                    </Row>
-                                    <Row className="justify-content-md-center">
-                                        <Col xs={12} md={{ span: 6, offset: 3 }} className="btnGroup">
-                                            <Button
-                                                variant="contained"
-                                                onClick={this.insertData}
-                                                isLoading={this.state.isLoadingInsert}
-                                            >
-                                                新增
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                themeColor="success"
-                                                onClick={this.dataClear}
-                                            >
-                                                清除新增
-                                            </Button>
-                                        </Col>
-                                    </Row>
-                                </Container>
+                <div className="adminWrapper">
+                    <div className="adminItems">
+                        <a href="/#" className="itemTitle" name="isInsertWrapper" onClick={this.wrapperOpen}>
+                            代碼新增
+                            <Eject className={wrapperOpen.isInsertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                        <div className={wrapperOpen.isInsertWrapper ? 'adminItemWrapper active' : 'adminItemWrapper'}>
+                            <Container>
+                                <Row className="justify-content-md-center">
+                                    <Col xs={12} md={4}>
+                                        <FloatingLabel controlId="floatingSelectType" label="類別">
+                                            <Form.Select aria-label="Floating label select" name='type' value={insertData.type} onChange={(e) => { this.handleDataChange(e, "insertData") }} >
+                                                {selectOption.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
+                                            </Form.Select>
+                                        </FloatingLabel>
+                                    </Col>
+                                    <Col xs={12} md={4}>
+                                        <FloatingLabel controlId="floatingInputLabel" label="項目" className="mb-1 ">
+                                            <Form.Control type="text" placeholder="項目" name='label' value={insertData.label} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
+                                        </FloatingLabel>
+                                    </Col>
+                                </Row>
+                                <Row className="justify-content-md-center">
+                                    <Col xs={12} md={{ span: 6, offset: 3 }} className="btnGroup">
+                                        <Button variant="contained" onClick={this.insertData} isLoading={isLoadingInsert} >新增</Button>
+                                        <Button variant="contained" themeColor="success" onClick={this.dataClear} >清除新增</Button>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
+                    </div>
+
+                    <div className="adminItems">
+                        <div className="adminItemsTitle">
+                            <span className="itemTitle">代碼查詢</span>
+                        </div>
+                        <div className="adminItemsContainer">
+                            <Container>
+                                <Row>
+                                    <Col xs={12} md={3}>
+                                        <FloatingLabel controlId="floatingSelectSearch" label="Search">
+                                            <Form.Select aria-label="Floating label select" name='searchTypeCode' value={searchTypeCode} onChange={this.handleChange} >
+                                                {selectOption.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
+                                            </Form.Select>
+                                        </FloatingLabel>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
+
+                        <div className="adminItemsContainer">
+                            <div className="matCodeDataList">
+                                <DataGrid
+                                    rows={gridData}
+                                    columns={columns}
+                                    pageSize={10}
+                                    rowsPerPageOptions={[10]}
+                                    disableSelectionOnClick
+                                    getRowId={(row) => row.seq}
+                                />
                             </div>
                         </div>
 
-                        <div className="adminMatCodeItem">
-                            <div className="adminMatCodeItemTitle">
-                                <span className="itemTitle">代碼查詢</span>
-                            </div>
-                            <div className="adminMatCodeItemContainer">
-                                <Container>
-                                    <Row>
-                                        <Col xs={12} md={3}>
-                                            <FloatingLabel controlId="floatingSelectSearch" label="Search">
-                                                <Form.Select aria-label="Floating label select" name='SearchTypeCode' value={this.state.SearchTypeCode} onChange={this.handleChange} >
-                                                    {this.state.SelectOption.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
-                                                </Form.Select>
-                                            </FloatingLabel>
-                                        </Col>
-                                    </Row>
-                                </Container>
-                            </div>
-
-                            <div className="adminMatCodeItemContainer">
-                                <div className="matCodeDataList">
-                                    <DataGrid
-                                        rows={this.state.gridData}
-                                        columns={columns}
-                                        pageSize={10}
-                                        rowsPerPageOptions={[10]}
-                                        disableSelectionOnClick
-                                        getRowId={(row) => row.seq}
-                                    />
-                                </div>
-                            </div>
-
-                        </div>
                     </div>
                 </div>
             </div>

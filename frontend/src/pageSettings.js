@@ -1,10 +1,10 @@
 import loadable from '@loadable/component'; //lazy loading
 
-//class
+//function Component
 const Home = loadable(() => import('./pages/home/Home'));
 const AdminUser = loadable(() => import('./pages/admin/adminUser/AdminUser'));
 
-//Component
+//class Component
 const AdminMatManage = loadable(() => import('./pages/admin/adminMatManage/AdminMatManage'), {
     resolveComponent: (components) => components.AdminMatManage,
 });
