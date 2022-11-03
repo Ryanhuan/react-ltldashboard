@@ -68,7 +68,7 @@ export default function Login() {
 
                         <div className="row">
                             <div className="loginWrapperBodyItem loginWrapperBodyItemBtn">
-                                <Button className="btn btn-main" type="submit"  >
+                                <Button className="btn btnMain" type="submit"  >
                                     Login
                                 </Button>
                             </div>

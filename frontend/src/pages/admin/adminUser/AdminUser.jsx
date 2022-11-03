@@ -6,9 +6,8 @@ import { AccountCircle, CheckCircleOutline, HighlightOff, Edit, Eject } from '@m
 import './adminUser.css'
 import { ModalEditUser } from './modalEditUser/ModalEditUser';
 import { postData, getData, getUserId } from "../../../api";
-import Swal from 'sweetalert2';
-
 import Button from '../../../components/button/Button'
+import { customAlert } from '../../../components/customAlert/customAlert';
 
 
 export default function AdminUser() {
@@ -60,7 +59,7 @@ export default function AdminUser() {
 
             const signUpData = await postData("/api/signup", { email, password, username, _root, op_user });
             if (signUpData.msg === 'SingUp_OK') {
-                Swal.fire({
+                customAlert.fire({
                     position: 'bottom-end',
                     width: 400,
                     icon: 'success',
@@ -73,7 +72,7 @@ export default function AdminUser() {
                 //get all users info to update user's grid 
                 getAllUsersInfo_();
             } else if (signUpData.msg === 'Email_Is_Exist') {
-                Swal.fire({
+                customAlert.fire({
                     position: 'bottom-end',
                     width: 400,
                     icon: 'error',
@@ -82,7 +81,7 @@ export default function AdminUser() {
                     timer: 1500
                 })
             } else {
-                Swal.fire({
+                customAlert.fire({
                     position: 'bottom-end',
                     width: 400,
                     icon: 'error',

@@ -82,7 +82,7 @@ const StyledButton = styled.button`
   transition: color 0.2s, background-color 0.2s, border 0.2s, opacity 0.2s ease-in-out;
 
   &:hover {
-    opacity: 0.9;
+    opacity: 0.6;
   }
   &:active {
     opacity: 0.7;
@@ -178,7 +178,8 @@ Button.propTypes = {
   /**
   * name
   */
-   name: PropTypes.string,
+  name: PropTypes.string,
+
 };
 
 Button.defaultProps = {

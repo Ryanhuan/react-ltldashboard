@@ -1,12 +1,12 @@
-
-.sidebar{
+.sidebar {
     flex: 1;
     max-width: 300px;
-    max-height: 100%;
     position: relative;
-} 
+    height: auto;
+    max-height: 100%;
+}
 
-h3{
+h3 {
     font-size: 16px !important;
 }
 
@@ -23,7 +23,7 @@ h3{
 .sidebar.active {
     max-width: 80px;
     transition: 0.5s;
-} 
+}
 
 .sidebarWrapper.active {
     width: 80px;
@@ -32,33 +32,33 @@ h3{
 
 .sidebarWrapper.active .logo {
     left: 30px !important;
-    width:0;
-    transition:all 0.5s;
+    width: 0;
+    transition: all 0.5s;
 }
 
-.sidebarWrapper.active .logo img{
-    transition:all 0.5s; 
+.sidebarWrapper.active .logo img {
+    transition: all 0.5s;
     opacity: 0;
-    width:0;
+    width: 0;
     /* display:none; */
 }
 
-.sidebarWrapper.active .logo .logoTitle{
-    transition:all 0.5s;
+.sidebarWrapper.active .logo .logoTitle {
+    transition: all 0.5s;
     opacity: 0;
     /* display:none; */
 
 }
 
-.sidebarMenuTitle{
+.sidebarMenuTitle {
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: relative;
-    height:100px;
+    height: 100px;
 }
 
-.toggle{
+.toggle {
     position: relative;
     width: 60px;
     height: 60px;
@@ -68,64 +68,54 @@ h3{
     align-items: center;
 }
 
-.toggleIcon{
+.toggleIcon {
     font-size: 48px !important;
     color: var(--black2);
     transition: 0.5s;
 }
 
-.toggle.active{
-    /* left:-100px; */
-    /* position:absolute; */
+.toggle.active {
     transition: 0.5s;
-    /* top:50%; */
-    /* right: -50px; */
-    /* transform: translateY(-50%); */
 }
 
-.logo{
+.logo {
     width: auto;
     display: flex;
     align-items: center;
     margin: 20px 0;
     height: 100px;
-    transition: 0.5s; 
+    transition: 0.5s;
 }
 
 .logo img {
     display: block;
     height: 50px;
-    bottom:10px;
+    bottom: 10px;
     font-weight: bold;
-    /* font-size: 10px; */
     cursor: pointer;
-    /* transition-delay: 3s; */
-    transition:all 0.5s;
+    transition: all 0.5s;
     opacity: 1;
 }
 
-.logoTitle{
+.logoTitle {
     white-space: nowrap;
     position: relative;
     display: block;
-    font-weight:bold;
+    font-weight: bold;
     color: var(--white);
     margin-top: 16px;
     margin-left: 10px;
     font-size: 24px;
-    transition:all 0.5s;
+    transition: all 0.5s;
     opacity: 1;
 }
 
-.sidebarTitle{
-    color:var(--black2);
-    /* padding-left: 1px; */
+.sidebarTitle {
+    color: var(--black2);
 
 }
 
-.sidebarWrapper.active .sidebarTitle{
-    /* width: 40px; */
-    /* padding-left: 1px; */
+.sidebarWrapper.active .sidebarTitle {
     white-space: nowrap;
 }
 
@@ -137,7 +127,7 @@ h3{
 
 
 .sidebarListItem,
-.sidebarListItem .active{
+.sidebarListItem .active {
     position: relative;
     width: 100%;
     list-style: none;
@@ -169,16 +159,15 @@ h3{
 .sidebarListItem:hover,
 .sidebarListItem.hovered,
 .sidebarListItem .active,
-a:hover{
-    color: var(--mainColor)!important;
+a:hover {
+    color: var(--mainColor) !important;
 }
 
 
 .sidebarListLink,
-.sidebarListLink.active  { 
+.sidebarListLink.active {
     position: relative;
     display: block;
-    /* padding: 0 10px; */
     height: 40px;
     line-height: 40px;
     text-align: start;
@@ -189,11 +178,9 @@ a:hover{
     margin-right: 20px;
     display: block;
     min-width: 50px;
-    /* height: 60px; */
     line-height: 75px;
     text-align: center;
-} 
-
+}
 
 
 
@@ -201,7 +188,7 @@ a:hover{
 
 .sidebarListItem:hover::before,
 .sidebarListItem.hovered::before,
-.sidebarListItem .active::before{
+.sidebarListItem .active::before {
     content: '';
     position: absolute;
     right: 0;
@@ -221,17 +208,16 @@ a:hover{
     position: absolute;
     right: 0;
     bottom: -60px;
-    width:  60px;
+    width: 60px;
     height: 60px;
     background: transparent;
-    /* background: black; */
     border-radius: 50%;
     box-shadow: 35px -35px 0 10px var(--white);
     pointer-events: none;
 }
 
 
-.sidebarFooter{
+.sidebarFooter {
     font-size: 12px;
     position: relative;
     bottom: 0px;
@@ -241,8 +227,8 @@ a:hover{
     padding: 10px;
 }
 
- /* responsive design */
- /* @media(max-width:991px) {
+/* responsive design */
+/* @media(max-width:991px) {
     .sidebarWrapper {
         left: -300px;
     }

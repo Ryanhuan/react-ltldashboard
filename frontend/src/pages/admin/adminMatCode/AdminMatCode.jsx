@@ -7,11 +7,11 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import { DeleteOutline, Edit, Eject } from '@material-ui/icons';
-import { CustomModal } from '../../../components/modal/customModal';
 import { postData } from "../../../api";
-import Swal from 'sweetalert2';
 import Button from '../../../components/button/Button'
 import { getSelectOption } from '../../../utility.ts'
+import { CustomModal } from '../../../components/modal/customModal';
+import { customAlert } from '../../../components/customAlert/customAlert';
 
 export class AdminMatCode extends Component {
     constructor(props) {
@@ -27,9 +27,7 @@ export class AdminMatCode extends Component {
             },
             gridData: [],
             modal: {
-                isShow: false,
-                title: '',
-                data: {},
+                isShow: false, title: '', data: {},
             },
             isLoadingInsert: false,
         };
@@ -60,7 +58,7 @@ export class AdminMatCode extends Component {
         event.preventDefault();
         this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
         if (this.state.insertData.label === '') {
-            Swal.fire({
+            customAlert.fire({
                 position: 'bottom-end',
                 width: 400,
                 icon: 'error',
@@ -73,7 +71,7 @@ export class AdminMatCode extends Component {
             let _res = await postData("/api/insertCodeData", this.state.insertData);
             if (_res.status === 'insertCodeData_OK') {
                 //成功
-                Swal.fire({
+                customAlert.fire({
                     position: 'bottom-end',
                     width: 400,
                     icon: 'success',
@@ -84,7 +82,7 @@ export class AdminMatCode extends Component {
                 this._getGridData([this.state.searchTypeCode]);
             } else if (_res.msg === 'code_ChkRepeated') {
                 //失敗 代碼重複
-                Swal.fire({
+                customAlert.fire({
                     position: 'bottom-end',
                     width: 400,
                     icon: 'error',
@@ -94,7 +92,7 @@ export class AdminMatCode extends Component {
                 })
             } else {
                 //失敗 其他錯誤
-                Swal.fire({
+                customAlert.fire({
                     position: 'bottom-end',
                     width: 400,
                     icon: 'error',
@@ -142,7 +140,7 @@ export class AdminMatCode extends Component {
                 }
                 this.setState({ gridData: _gridData });
             } else {
-                Swal.fire({
+                customAlert.fire({
                     position: 'bottom-end',
                     width: 400,
                     icon: 'error',
@@ -178,10 +176,11 @@ export class AdminMatCode extends Component {
     modalOpen(event, data) {
         event.preventDefault();
         this.setState((prev) => ({
-            modal: { ...prev.modal, 
-                data: JSON.parse(JSON.stringify(data)) ,
-                title:'修改',
-                isShow: !prev.modal.isShow 
+            modal: {
+                ...prev.modal,
+                data: JSON.parse(JSON.stringify(data)),
+                title: '修改',
+                isShow: !prev.modal.isShow
             }
         }));
     }
@@ -194,22 +193,22 @@ export class AdminMatCode extends Component {
 
     async submitForm(event, data) {
         event.preventDefault();
-        Swal.fire({
+        customAlert.fire({
             title: '確定要修改?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
+            cancelButtonText: '取消',
             confirmButtonText: '確定',
-            cancelButtonText: '取消'
         }).then(async (result) => {
             if (result.isConfirmed) {
                 let _res = await postData("/api/editCodeData", data);
                 if (_res.status === 'editCodeData_OK') {
-                    Swal.fire('完成修改!', '修改成功.', 'success')
+                    customAlert.fire('完成修改!', '修改成功.', 'success')
                     this._getGridData([this.state.searchTypeCode]);
                 } else {
-                    Swal.fire('Fail!', _res.msg, 'error')
+                    customAlert.fire('Fail!', _res.msg, 'error')
                 }
             }
         })
@@ -222,7 +221,7 @@ export class AdminMatCode extends Component {
     // delete
     async handleGridDelete(event, data) {
         event.preventDefault();
-        Swal.fire({
+        customAlert.fire({
             title: '確定要刪除?',
             icon: 'warning',
             showCancelButton: true,
@@ -234,10 +233,10 @@ export class AdminMatCode extends Component {
             if (result.isConfirmed) {
                 let _res = await postData("/api/deleteCodeData", data);
                 if (_res.status === 'deleteCodeData_OK') {
-                    Swal.fire('完成刪除!', '刪除成功.', 'success')
+                    customAlert.fire('完成刪除!', '刪除成功.', 'success')
                     this._getGridData([this.state.searchTypeCode]);
                 } else {
-                    Swal.fire('Fail!', _res.msg, 'error')
+                    customAlert.fire('Fail!', _res.msg, 'error')
                 }
             }
         })
@@ -262,22 +261,11 @@ export class AdminMatCode extends Component {
                 renderCell: (params) => {
                     return (
                         <>
-                            <Button
-                                variant="text"
-                                startIcon={<Edit />}
-                                themeColor='success'
-                                onClick={(e) => this.modalOpen(e, params.row)}
-                            />
-                            <Button
-                                variant="text"
-                                startIcon={<DeleteOutline />}
-                                themeColor='error'
-                                onClick={(e) => this.handleGridDelete(e, params.row)}
-                            />
+                            <Button variant="text" startIcon={<Edit />} themeColor='success' onClick={(e) => this.modalOpen(e, params.row)} />
+                            <Button variant="text" startIcon={<DeleteOutline />} themeColor='error' onClick={(e) => this.handleGridDelete(e, params.row)} />
                             {this.state.modal.isShow ?
                                 <CustomModal isShow={modal.isShow} onHide={this.modalOnHide} modalData={modal}
-                                    modalCols={modalCols} submitForm={(e, data) => { this.submitForm(e, data) }}
-                                /> : ''
+                                    modalCols={modalCols} submitForm={(e, data) => { this.submitForm(e, data) }} /> : null
                             }
                         </>
                     )

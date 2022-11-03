@@ -1,6 +1,7 @@
-import './adminProductAdd.css'
+import './adminProductAdd.scss'
 import { Component } from 'react'
 import { Product } from '../../../components/admin/product/Product'
+import { customAlert } from '../../../components/customAlert/customAlert';
 
 export class AdminProductAdd extends Component {
     constructor(props) {
@@ -13,7 +14,7 @@ export class AdminProductAdd extends Component {
         return (
             <div className="adminProductAdd">
                 {/* adminProductAddWrapper */}
-                <div className="adminProductAddWrapper">
+                <div className="adminWrapper">
                     <Product />
                 </div>
                 {/* adminProductAddWrapper end */}

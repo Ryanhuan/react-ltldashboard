@@ -1,6 +1,7 @@
 
-import './adminProductManage.css'
+import './adminProductManage.scss'
 import { Component } from 'react'
+import { customAlert } from '../../../components/customAlert/customAlert';
 
 
 export class AdminProductManage extends Component {
@@ -15,9 +16,9 @@ export class AdminProductManage extends Component {
     render() {
         return (
             <div className="adminProductManage">
-                <div className="adminProductManageWrapper">
-                    <div className="adminMatManageBody">
-                        <div className="adminMatManageItem">
+                <div className="adminWrapper">
+                    <div className="adminItems">
+                        <div className="adminItemWrapper">
                             <a href="/#" className="itemTitle" name="insertWrapper" onClick={this.WrapperOpen}>材料新增</a>
                         </div>
                     </div>

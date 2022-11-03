@@ -162,7 +162,7 @@ export default function Sidebar() {
 
         <div className="sidebarFooter">
           <div className="sidebarFooterContainer">
-            Copyright © RuiHuan 2022 <br /> All rights reserved <br />
+            Copyright©RuiHuan2022<br /> All rights reserved <br />
           </div>
         </div>
       </div>

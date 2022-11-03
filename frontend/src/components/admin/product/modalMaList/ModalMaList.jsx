@@ -3,27 +3,27 @@ import { Component } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
-import { DataGrid } from '@mui/x-data-grid';
-
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-
 import Button from '../../../button/Button'
+import { DataGrid } from '@mui/x-data-grid';
+import { Eject, AddBox, CancelPresentation, AddCircleOutline, RemoveCircleOutline } from '@material-ui/icons';
 import { postData } from "../../../../api";
-import { Eject, AddBox, CancelPresentation } from '@material-ui/icons';
+import { customAlert } from '../../../customAlert/customAlert';
 
 export class ModalMaList extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            ...this.props,
             wrapperOpen: {
                 isSearchWrapper: true,
             },
             searchData: {
                 id: '', type: '', name: '', size: '', quality: '', storeName: '', lowPrice: '', highPrice: '', lowPricePer: '', highPricePer: '',
             },
-            SelectOption: {
+            selectOption: {
                 ma_type: [{ value: '', label: '==請選擇==' },],
                 ma_quality: [{ value: '', label: '==請選擇==' },],
             },
@@ -37,45 +37,54 @@ export class ModalMaList extends Component {
         this.wrapperOpen = this.wrapperOpen.bind(this);
         this.handleDataChange = this.handleDataChange.bind(this);
         this._getMatGridData = this._getMatGridData.bind(this);
+        this.addToSelectedList = this.addToSelectedList.bind(this);
+        this.increaseCntItem = this.increaseCntItem.bind(this);
+        this.decreaseCntItem = this.decreaseCntItem.bind(this);
+
         //func
         this._getMatGridData(this.state.searchData);
         this._getSelectOption();
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        // console.log("prevProps",prevProps);
+        // console.log("prevState",prevState);
+        if (prevState.data !== this.props.data) {
+            // maList has been updated ,then update selectedList data
+            this.state.selectedList = this.props.data;
+        }
+    }
+
+
+
     async _getMatGridData(qryData) {
-        // console.log("getMatGridData!!!");
         let _res = await postData("/api/getMatData", qryData);
         let _gridData = _res.data;
         delete _gridData.guid;
         for (let i = 0; i < _gridData.length; i++) {
             _gridData[i].seq = (i + 1);
         }
-        // console.log(_gridData);
         this.setState({ gridData: [..._gridData] });
     }
 
     //get select Option 
     async _getSelectOption() {
-        //copy state.SelectOption
-        let _SelectOption = this.state.SelectOption;
-        //qry from state.SelectOption
-        let qryTmp = Object.keys(_SelectOption);
-        //get Select Option res 
+        let _selectOption = this.state.selectOption;
+        let qryTmp = Object.keys(_selectOption);
         let _res = await postData("/api/getSelectOption", qryTmp);
-        //update Select Option data
         qryTmp.forEach(ele => {
             _res.data[ele].forEach(ele_res => {
-                if (ele_res.value !== '**') { _SelectOption[ele].push(ele_res) }
+                if (ele_res.value !== '**') { _selectOption[ele].push(ele_res) }
             })
         })
     }
 
-    //材料搜尋材料
+    //材料搜尋
     async searchData(event) {
         event.preventDefault();
         this.setState({ isLoadingSearch: true });
         if (this.state.searchData.lowPricePer > this.state.searchData.highPrice) {
-            Swal.fire(
+            customAlert.fire(
                 'No No!',
                 '最低單價不可高於最高單價',
                 'error'
@@ -115,20 +124,29 @@ export class ModalMaList extends Component {
         this.setState({ [action]: _action });
     }
 
-    // handleDataChange(event) {
-    //     event.preventDefault();
-    //     let _name = event.target.name;
-    //     let _modalData = this.state.modalData;
-    //     _modalData.data[_name] = event.target.value;
-    //     this.setState({ modalData: _modalData })
-    // }
-
+    // 新增品項
     addToSelectedList(event, data) {
         event.preventDefault();
-        this.setState((prev) => ({
-            selectedList: [...prev.selectedList, { ...data }]
-        }))
+        let _selectedList = this.state.selectedList;
+        if (_selectedList.length == 0) {
+            _selectedList.push({ ...data, cntNum: 1 })
+        } else {
+            let _res = _selectedList.filter(function (item, index, array) {
+                if (item.id == data.id) {
+                    item.cntNum = item.cntNum + 1;
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            if (_res == false) {
+                _selectedList.push({ ...data, cntNum: 1 })
+            }
+        }
+        this.setState({ selectedList: [..._selectedList] })
     }
+
+    // 刪除品項
     deleteSelectedList(event, data, index) {
         event.preventDefault();
         this.setState({
@@ -136,9 +154,25 @@ export class ModalMaList extends Component {
         });
     }
 
+    // 增加數量
+    increaseCntItem(event, index) {
+        event.preventDefault();
+        let _selectedList = this.state.selectedList;
+        _selectedList[index].cntNum = _selectedList[index].cntNum >= 50 ? _selectedList[index].cntNum : _selectedList[index].cntNum + 1;
+        this.setState({ selectedList: [..._selectedList] })
+    }
 
+    // 減少數量
+    decreaseCntItem(event, index) {
+        event.preventDefault();
+        let _selectedList = this.state.selectedList;
+        _selectedList[index].cntNum = _selectedList[index].cntNum <= 1 ? _selectedList[index].cntNum : _selectedList[index].cntNum + 1;
+        this.setState({ selectedList: [..._selectedList] })
+    }
 
     render() {
+
+        const { wrapperOpen, searchData, selectOption, isLoadingSearch, gridData, selectedList } = this.state;
 
         const columns = [
             { field: 'id', headerName: 'ID' },
@@ -153,12 +187,8 @@ export class ModalMaList extends Component {
                 renderCell: (params) => {
                     return (
                         <>
-                            <Button
-                                variant="text"
-                                startIcon={<AddBox />}
-                                themeColor='success'
-                                onClick={(e) => this.addToSelectedList(e, params.row)}
-                            />
+                            <Button variant="text" startIcon={<AddBox />} themeColor='success'
+                                onClick={(e) => this.addToSelectedList(e, params.row)} />
                         </>
                     )
                 }
@@ -182,31 +212,31 @@ export class ModalMaList extends Component {
                             <div className="searchItem">
                                 <a href="/#" className="itemTitle" name="isSearchWrapper" onClick={this.wrapperOpen}>
                                     材料搜尋
-                                    <Eject className={this.state.wrapperOpen.isSearchWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
-                                <div className={this.state.wrapperOpen.isSearchWrapper ? 'searchItemWrapper active' : 'searchItemWrapper '}>
+                                    <Eject className={wrapperOpen.isSearchWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
+                                <div className={wrapperOpen.isSearchWrapper ? 'searchItemWrapper active' : 'searchItemWrapper '}>
                                     <Container>
 
                                         <Row className="justify-content-md-center insertRow">
                                             <Col xs={12} md={3}>
                                                 <FloatingLabel controlId="floatingInputIdSearch" label="ID" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="ID" name='id' value={this.state.searchData.id} onChange={(e) => { this.handleDataChange(e, "search") }} />
+                                                    <Form.Control type="text" placeholder="ID" name='id' value={searchData.id} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                                 </FloatingLabel>
                                             </Col>
                                             <Col xs={12} md={3}>
                                                 <FloatingLabel controlId="floatingSelectTypeSearch" label="類別">
-                                                    <Form.Select aria-label="Floating label select" name='type' value={this.state.searchData.type} onChange={(e) => { this.handleDataChange(e, "search") }} >
-                                                        {this.state.SelectOption.ma_type.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
+                                                    <Form.Select aria-label="Floating label select" name='type' value={searchData.type} onChange={(e) => { this.handleDataChange(e, "search") }} >
+                                                        {selectOption.ma_type.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                     </Form.Select>
                                                 </FloatingLabel>
                                             </Col>
                                             <Col xs={12} md={3}>
                                                 <FloatingLabel controlId="floatingInputNameSearch" label="品名" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="品名" name='name' value={this.state.searchData.name} onChange={(e) => { this.handleDataChange(e, "search") }} />
+                                                    <Form.Control type="text" placeholder="品名" name='name' value={searchData.name} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                                 </FloatingLabel>
                                             </Col>
                                             <Col xs={12} md={3}>
                                                 <FloatingLabel controlId="floatingInputSizeSearch" label="尺寸" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="尺寸" name='size' value={this.state.searchData.size} onChange={(e) => { this.handleDataChange(e, "search") }} />
+                                                    <Form.Control type="text" placeholder="尺寸" name='size' value={searchData.size} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                                 </FloatingLabel>
                                             </Col>
                                         </Row>
@@ -214,45 +244,32 @@ export class ModalMaList extends Component {
                                         <Row className="justify-content-md-center insertRow">
                                             <Col xs={12} md={3}>
                                                 <FloatingLabel controlId="floatingSelectQualitySearch" label="質地">
-                                                    <Form.Select aria-label="Floating label select" name='quality' value={this.state.searchData.quality} onChange={(e) => { this.handleDataChange(e, "search") }} >
-                                                        {this.state.SelectOption.ma_quality.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
+                                                    <Form.Select aria-label="Floating label select" name='quality' value={searchData.quality} onChange={(e) => { this.handleDataChange(e, "search") }} >
+                                                        {selectOption.ma_quality.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                     </Form.Select>
                                                 </FloatingLabel>
                                             </Col>
                                             <Col xs={12} md={3}>
                                                 <FloatingLabel controlId="floatingInputStoreNameSearch" label="店家" className="mb-1 ">
-                                                    <Form.Control type="text" placeholder="店家" name='storeName' value={this.state.searchData.storeName} onChange={(e) => { this.handleDataChange(e, "search") }} />
+                                                    <Form.Control type="text" placeholder="店家" name='storeName' value={searchData.storeName} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                                 </FloatingLabel>
                                             </Col>
                                             <Col xs={12} md={3}>
                                                 <FloatingLabel controlId="floatingInputLowPricePerSearch" label="最低單價" className="mb-1 ">
-                                                    <Form.Control type="number" placeholder="最低單價" name='lowPricePer' value={this.state.searchData.lowPricePer || ''} onChange={(e) => { this.handleDataChange(e, "search") }} />
+                                                    <Form.Control type="number" placeholder="最低單價" name='lowPricePer' value={searchData.lowPricePer || ''} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                                 </FloatingLabel>
                                             </Col>
                                             <Col xs={12} md={3}>
                                                 <FloatingLabel controlId="floatingInputHighPricePerSearch" label="最高單價" className="mb-1 ">
-                                                    <Form.Control type="number" placeholder="最高單價" name='highPricePer' value={this.state.searchData.highPricePer || ''} onChange={(e) => { this.handleDataChange(e, "search") }} />
+                                                    <Form.Control type="number" placeholder="最高單價" name='highPricePer' value={searchData.highPricePer || ''} onChange={(e) => { this.handleDataChange(e, "search") }} />
                                                 </FloatingLabel>
                                             </Col>
                                         </Row>
 
                                         <Row className="justify-content-md-center">
                                             <Col xs={12} md={6} className="btnGroup">
-                                                <Button
-                                                    variant="contained"
-                                                    onClick={this.searchData}
-                                                    isLoading={this.state.isLoadingSearch}
-                                                >
-                                                    搜尋
-                                                </Button>
-                                                <Button
-                                                    variant="contained"
-                                                    themeColor="success"
-                                                    name="searchData"
-                                                    onClick={this.dataClear}
-                                                >
-                                                    清除搜尋
-                                                </Button>
+                                                <Button variant="contained" onClick={this.searchData} isLoading={isLoadingSearch}>搜尋 </Button>
+                                                <Button variant="contained" themeColor="success" name="searchData" onClick={this.dataClear}>清除搜尋</Button>
                                             </Col>
                                         </Row>
 
@@ -264,7 +281,7 @@ export class ModalMaList extends Component {
                                     <Col>
                                         <div className="grid">
                                             <DataGrid
-                                                rows={this.state.gridData}
+                                                rows={gridData}
                                                 columns={columns}
                                                 pageSize={10}
                                                 rowsPerPageOptions={[10]}
@@ -275,44 +292,55 @@ export class ModalMaList extends Component {
                                 </Row>
                             </Container>
                         </div>
+
                         <div className="modalItem selectedListBox">
-                            {
-                                this.state.selectedList.map((ele, index) => (
-                                    <div className="selectedListItems" key={index}>
-                                        <div className="selectedListItemIcon">
-                                            <CancelPresentation onClick={(e) => this.deleteSelectedList(e, ele, index)} />
-                                        </div>
-                                        <div className="selectedListItem">
-                                            <div className="selectedListItemId">
-                                                {ele.id}
+                            <Container>
+                                <Row>
+                                    <div className="selectedListBoxHeader" >
+                                        <Col xs={2} md={2}> {/* space */} </Col>
+                                        <Col xs={5} md={5} >
+                                            <div className="selectedListBoxHeaderItem">
+                                                <div className="selectedListBoxHeaderId"> ID </div>
+                                                <div className="selectedListBoxHeaderName"> NAME </div>
                                             </div>
-                                            <div className="selectedListItemName">
-                                                {ele.name}
-                                            </div>
-                                        </div>
-
+                                        </Col>
+                                        <Col xs={5} md={5} >
+                                            <div className="selectedListBoxHeaderNum"> 數量 </div>
+                                        </Col>
                                     </div>
-                                ))
-
-                            }
-
+                                </Row>
+                                <Row>
+                                    {
+                                        selectedList.map((ele, index) => (
+                                            <div className="selectedListItemWrapper" key={index}>
+                                                <div className="selectedListItems" >
+                                                    <Col xs={2} md={2} className="selectedListItem selectedListItemIconLeft" >
+                                                        <Button variant="text" startIcon={<CancelPresentation />} themeColor='error'
+                                                            onClick={(e) => this.deleteSelectedList(e, ele, index)} />
+                                                    </Col>
+                                                    <Col xs={5} md={5} className="selectedListItem">
+                                                        <div className="selectedListItemId"> {ele.id} </div>
+                                                        <div className="selectedListItemName"> {ele.name} </div>
+                                                    </Col>
+                                                    <Col xs={6} md={6} className="selectedListItem selectedListItemIconRight">
+                                                        <Button variant="text" startIcon={<RemoveCircleOutline />} themeColor='main'
+                                                            onClick={(e) => { this.decreaseCntItem(e, index) }} />
+                                                        <span className="cntNumStyle"> {ele.cntNum} </span>
+                                                        <Button variant="text" startIcon={<AddCircleOutline />} themeColor='main'
+                                                            onClick={(e) => { this.increaseCntItem(e, index) }} />
+                                                    </Col>
+                                                </div>
+                                            </div>
+                                        ))
+                                    }
+                                </Row>
+                            </Container>
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button
-                            variant="contained"
-                            themeColor="secondary"
-                            onClick={this.props.onHide}
-                        >
-                            取消
-                        </Button>
-                        <Button
-                            variant="contained"
-                            themeColor="primary"
-                            onClick={(e) => { this.props.submitForm(e, this.state.selectedList) }}
-                        >
-                            確定
-                        </Button>
+                        <Button variant="contained" themeColor="secondary" onClick={this.props.onHide} >取消</Button>
+                        <Button variant="contained" themeColor="primary"
+                            onClick={(e) => { this.props.submitForm(e, selectedList) }}>確定</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

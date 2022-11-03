@@ -1,19 +1,18 @@
 import { Component } from "react";
-import './modalEditUser.css'
+import './modalEditUser.scss'
 import Modal from 'react-bootstrap/Modal'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-import { postData ,getUserId } from "../../../../api";
+import { postData, getUserId } from "../../../../api";
+import { customAlert } from '../../../../components/customAlert/customAlert';
 
-import Swal from 'sweetalert2'
 
 export class ModalEditUser extends Component {
   constructor(props) {
     super(props)
-
     this.state = {
       email: props.editData.email,
       isenabled: props.editData.isenabled,
@@ -26,13 +25,13 @@ export class ModalEditUser extends Component {
         { id: '05', name: '訂單管理', value: 'list', check: false },
         { id: '06', name: '管理主頁', value: 'manage', check: false }]
     };
-    
+
     //get and set now user root 
     this.state.root.split(',').forEach(ele => {
       for (let i = 0; i < this.state.rootData.length; i++) {
         let x = this.state.rootData[i].value.indexOf(ele)
-        if(x!==-1){
-          this.state.rootData[i].check=true;
+        if (x !== -1) {
+          this.state.rootData[i].check = true;
         }
       }
     });
@@ -60,17 +59,17 @@ export class ModalEditUser extends Component {
   submitForm = async e => {
     e.preventDefault();
 
-   //process data
-   const root_tmp=[];
-   for(var ele in this.state.rootData) {
-       if(this.state.rootData[ele].check) root_tmp.push(this.state.rootData[ele].value)
+    //process data
+    const root_tmp = [];
+    for (var ele in this.state.rootData) {
+      if (this.state.rootData[ele].check) root_tmp.push(this.state.rootData[ele].value)
     }
-   let _root=root_tmp.toString();
-   let op_user=getUserId()?.email||'user';
+    let _root = root_tmp.toString();
+    let op_user = getUserId()?.email || 'user';
 
-    const _postUserEdit = await postData("/api/editUser",{ ...this.state,_root,op_user });
+    const _postUserEdit = await postData("/api/editUser", { ...this.state, _root, op_user });
     _postUserEdit.msg === 'Edit_User_OK' ?
-      Swal.fire({
+      customAlert.fire({
         position: 'bottom-end',
         width: 400,
         icon: 'success',
@@ -78,7 +77,7 @@ export class ModalEditUser extends Component {
         showConfirmButton: false,
         timer: 1500
       })
-      : Swal.fire({
+      : customAlert.fire({
         position: 'bottom-end',
         width: 400,
         icon: 'error',
@@ -116,7 +115,7 @@ export class ModalEditUser extends Component {
             <Container>
               <Row>
                 <Col xs={12} md={12} className="modalItem">
-                  <Form.Check 
+                  <Form.Check
                     type="switch"
                     id="custom-switch"
                     label="IsEnabled"
@@ -140,8 +139,8 @@ export class ModalEditUser extends Component {
             </Container>
           </Modal.Body>
           <Modal.Footer>
-            <Button className="btn btn-outline-secondary"onClick={this.props.onHide}>Close</Button>
-            <Button className="btn btn-outline-primary"type="submit">Save</Button>
+            <Button className="btn btn-outline-secondary" onClick={this.props.onHide}>Close</Button>
+            <Button className="btn btn-outline-primary" type="submit">Save</Button>
           </Modal.Footer>
         </Form>
       </Modal>

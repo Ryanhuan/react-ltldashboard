@@ -1,0 +1,56 @@
+.product {
+    .productWrapper {
+        padding: 10px;
+        display: flex;
+
+        .adminProductItem {
+            margin: 0px 20px 20px 20px;
+            padding: 25px;
+            background: var(--background-color);
+            -webkit-box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+            box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
+            border-radius: 10px;
+        }
+
+        .adminProductItemTitle {
+            font-size: 24px;
+            font-weight: 400;
+            margin: 10px;
+            color: var(--fontSubColor);
+        }
+
+        .maListItemCol {
+            font-size: 18px;
+            margin: auto;
+        }
+
+        /* datepicker */
+        .css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
+            background: var(--white) !important;
+        }
+
+        .adminProductBodyLeft {
+            width: 30vw;
+            min-width: 400px;
+            max-width: 30vw;
+
+            .adminProductItem {
+                width: 100%;
+
+            }
+        }
+
+        .adminProductBodyRight {
+            width: 50vw;
+            min-width: 700px;
+            padding-left: 30px;
+
+            .adminProductItem {
+                width: 100%;
+            }
+        }
+    }
+}
+
+
+@media screen and (max-width: 1573px) {}

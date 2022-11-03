@@ -35,7 +35,6 @@ export default function Topbar() {
                         <NavDropdown.Divider />
                         <NavDropdown.Item eventKey="4.4" className="NavDropdownItem" onClick={Logout}>Logout</NavDropdown.Item>
                     </NavDropdown>
-
                 </div>
             </div>
         </div>
