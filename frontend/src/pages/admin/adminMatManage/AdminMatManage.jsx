@@ -324,7 +324,7 @@ export class AdminMatManage extends Component {
                         <a href="/#" className="itemTitle" name="isInsertWrapper" onClick={this.wrapperOpen}>
                             材料新增
                             <Eject className={wrapperOpen.isInsertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
-                        <div className={wrapperOpen.isInsertWrapper ? 'adminItemWrapper active' : 'adminItemWrapper'}>
+                        <div className={wrapperOpen.isInsertWrapper ? 'adminItemWrapper active neumorphismFlat' : 'adminItemWrapper'}>
                             <Container>
                                 <Row className="justify-content-md-center insertRow">
                                     <Col xs={12} md={4}>
@@ -407,7 +407,7 @@ export class AdminMatManage extends Component {
                         <a href="/#" className="itemTitle" name="isSearchWrapper" onClick={this.wrapperOpen}>
                             材料搜尋
                             <Eject className={wrapperOpen.isSearchWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
-                        <div className={wrapperOpen.isSearchWrapper ? 'adminItemWrapper search active' : 'adminItemWrapper search'}>
+                        <div className={wrapperOpen.isSearchWrapper ? 'adminItemWrapper search active neumorphismFlat' : 'adminItemWrapper search'}>
                             <Container>
                                 <Row className="justify-content-md-center insertRow">
                                     <Col xs={12} md={3}>

@@ -99,13 +99,13 @@ export class Product extends Component {
             insertData: { ...prev.insertData, productItemsTotalPrice: tmpTotalPrice, productProfit: (prev.insertData.productPrice - tmpTotalPrice) }
         }));
     }
-    
+
     componentDidUpdate(prevProps, prevState) {
         // console.log("prevProps",prevProps);
         // console.log("prevState", prevState);
 
         // maList has been updated
-        if (prevState.maList !== this.state.maList ) {
+        if (prevState.maList !== this.state.maList) {
             // update modal data
             this.setState({ modal: { ...this.state.modal, data: this.state.maList } }
                 // , this.log(this.state.modal.data)
@@ -351,7 +351,8 @@ export class Product extends Component {
                     <div className="adminProductBodyLeft">
 
                         {/* 基本資料 */}
-                        <div className="adminProductItem">
+                        <div className="adminProductItem neumorphismFlat">
+                            <div className="adminProductItemTitle"> </div>
                             <div className="adminProductItemWrapper">
                                 <Container>
                                     <Row>
@@ -437,10 +438,8 @@ export class Product extends Component {
                         </div>
 
                         {/* 系列 */}
-                        <div className="adminProductItem">
-                            <div className="adminProductItemTitle">
-
-                            </div>
+                        <div className="adminProductItem neumorphismFlat">
+                            <div className="adminProductItemTitle"> </div>
                             <div className="adminProductItemWrapper">
                                 <Container>
                                     <Row>
@@ -502,10 +501,8 @@ export class Product extends Component {
                         </div>
 
                         {/* Hashtags */}
-                        {/* <div className="adminProductItem">
-                                <div className="adminProductItemTitle">
-                                    新增 Hashtags
-                                </div>
+                        {/* <div className="adminProductItem neumorphismFlat">
+                                <div className="adminProductItemTitle"> 新增 Hashtags </div>
                                 <div className="adminProductItemWrapper">
                                     <Container>
                                         <Row>
@@ -531,10 +528,8 @@ export class Product extends Component {
                             </div> */}
 
                         {/* PIC WALL */}
-                        <div className="adminProductItem">
-                            <div className="adminProductItemTitle">
-                                商品照上傳
-                            </div>
+                        <div className="adminProductItem neumorphismFlat">
+                            <div className="adminProductItemTitle"> 商品照上傳 </div>
                             <div className="adminProductItemWrapper">
                                 <Container>
                                     <Row>
@@ -556,9 +551,13 @@ export class Product extends Component {
 
                     {/* adminProductBodyRight */}
                     <div className="adminProductBodyRight">
-                        <div className="adminProductItem">
+                        
+                      
 
+                        <div className="adminProductItem neumorphismFlat">
+                            <div className="adminProductItemTitle"> </div>
                             <div className="adminProductItemWrapper" style={{ minWidth: '600px' }}>
+
                                 <Container>
                                     <Row>
                                         <Col xs={12} md={4}>
@@ -605,10 +604,14 @@ export class Product extends Component {
                             </div>
 
                         </div>
-                        {/* <ModalMaList /> */}
 
+                        {/* <ModalMaList /> */}
                         <ModalMaList isShow={this.state.modal.isShow} onHide={this.modalOnHide} data={this.state.modal.data}
                             submitForm={(e, data) => { this.submitForm(e, data) }} />
+
+                        <div className="adminProductSendBtn neumorphismFlat">
+                            <Button variant="contained" themeColor="mainColor" onClick={this.insertMaListItem}>Send</Button>
+                        </div>
 
                     </div>
                     {/* adminProductBodyRight end */}

@@ -185,12 +185,12 @@ export default function AdminUser() {
     return (
         <div className="adminUser">
             <div className="adminUserWrapper">
-                <div className="adminUserBody adminUserBodySignUp">
+                <div className="adminUserBody">
                     <a href="#" className="itemTitle" onClick={() => { setWrapperOn(!wrapperOn) }}>
                         成員新增
                         <Eject className={wrapperOn ? 'itemIconRotate active' : 'itemIconRotate noActive'} />
                     </a>
-                    <div className={wrapperOn ? 'adminUserBodySignUpWrapper active' : 'adminUserBodySignUpWrapper noActive'}>
+                    <div className={wrapperOn ? 'adminUserBodySignUpWrapper active neumorphismFlat' : 'adminUserBodySignUpWrapper'}>
                         <Form>
                             <div className="adminUserBodySignUpWrapperItem">
                                 <div className="adminUserBodySignUpWrapperLeft">

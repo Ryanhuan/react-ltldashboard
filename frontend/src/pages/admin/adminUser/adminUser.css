@@ -16,24 +16,23 @@
     width: 100% !important;
 }
 
-.adminUserBodySignUpWrapper,
-.adminUserBodySignUpWrapper.noActive {
+.adminUserBodySignUpWrapper {
     height: 0px;
     overflow: hidden;
     transition:0.5s;
+    padding: 10px 20px 0px 20px;
+    margin-top: 10px;
 }
 
 .adminUserBodySignUpWrapper.active {
-    margin-top: 20px;
-    padding: 20px;
+    /* padding: 20px; */
     height: 280px;
     transition: 0.5s;
-    -webkit-box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
-    box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
-    border-radius:10px;
+  
 }
 
 .adminUserBodySignUpWrapperItem{
+    margin-top: 10px;
     display: flex;
 }
 

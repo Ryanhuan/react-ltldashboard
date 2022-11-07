@@ -301,7 +301,7 @@ export class AdminProductCode extends Component {
                         <a href="/#" className="itemTitle" name="isInsertWrapper" onClick={this.wrapperOpen}>
                             代碼新增
                             <Eject className={wrapperOpen.isInsertWrapper ? 'itemIconRotate active' : 'itemIconRotate noActive'} /></a>
-                        <div className={wrapperOpen.isInsertWrapper ? 'adminItemWrapper active' : 'adminItemWrapper'}>
+                        <div className={wrapperOpen.isInsertWrapper ? 'adminItemWrapper active neumorphismFlat' : 'adminItemWrapper'}>
                             <Container>
                                 <Row className="justify-content-md-center">
                                     <Col xs={12} md={3}>

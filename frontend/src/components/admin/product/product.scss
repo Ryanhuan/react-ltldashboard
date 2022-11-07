@@ -7,9 +7,7 @@
             margin: 0px 20px 20px 20px;
             padding: 25px;
             background: var(--background-color);
-            -webkit-box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
-            box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.28);
-            border-radius: 10px;
+           
         }
 
         .adminProductItemTitle {
@@ -44,10 +42,19 @@
             width: 50vw;
             min-width: 700px;
             padding-left: 30px;
+            display: flex;
+            flex-direction: column;
+
+            .adminProductSendBtn {
+                padding: 10px;
+                align-self: flex-end;
+                background-color:var(--mainColor);
+            }
 
             .adminProductItem {
                 width: 100%;
             }
+
         }
     }
 }
