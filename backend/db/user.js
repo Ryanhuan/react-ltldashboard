@@ -2,7 +2,7 @@
 
 var Sequelize = require('sequelize');
 var db = require("./database");
-var object = db.define("member", {
+var object = db.define("user", {
     email: {
         field: "email",
         type: Sequelize.STRING,
@@ -10,10 +10,6 @@ var object = db.define("member", {
     displayname: {
         field: "displayname",
         type: Sequelize.STRING(20),
-    },
-    photourl: {
-        field: "photourl",
-        type: Sequelize.STRING,
     },
     isemailnotification: {
         field: "isemailnotification",
@@ -27,7 +23,6 @@ var object = db.define("member", {
         field: "root",
         type: Sequelize.STRING,
     },
-
     cr_date: {
         field: "cr_date",
         type: Sequelize.STRING(7),

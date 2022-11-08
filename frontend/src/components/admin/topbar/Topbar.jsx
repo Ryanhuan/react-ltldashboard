@@ -6,8 +6,9 @@ import { AccountCircle} from '@material-ui/icons';
 export default function Topbar() {
     let navigate = useNavigate();
     const userId=JSON.parse(localStorage.getItem('userId'));
-    const isPhoto= userId.photourl?true:false;
-
+    // const isPhoto= userId.photourl?true:false;
+    const isPhoto= false; // TODO: 待補 user photo
+    
     const Logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userId');

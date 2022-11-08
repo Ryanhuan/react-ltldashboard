@@ -1,10 +1,5 @@
-const db = require('../db/database');
-const m_db = require("./m_db");
-const utility = require("../public/javascripts/utility");
-const bcrypt = require("bcrypt");
-
-var Sequelize = require('sequelize');
-const Op = Sequelize.Op;
+const m_db = require("../../model/m_db");
+const utility = require("../../public/javascripts/utility");
 
 module.exports = {
 
@@ -21,20 +16,18 @@ module.exports = {
                 qry.code_type = type;
             }
             var options = {
-                order: [
-                    ["code_type"],
-                    ["code_seq1"],
-                    ["code_seq2"]
-                ]
+                order: [["code_type"], ["code_seq1"], ["code_seq2"]]
             }
+
             await m_db.query("publiccode", qry, options, function (err, result) {
                 result = JSON.stringify(result);
-                err != null ? rtn.msg = err : rtn.status = "OK", rtn.data = result;
+                err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : (rtn.ack = "OK", rtn.data = result);
             })
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("getCodeInfo err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },
@@ -49,23 +42,14 @@ module.exports = {
         try {
             var qry = {};
             var options = {
-                order: [
-                    ["code_type"],
-                    ["code_seq1"],
-                    ["code_seq2"]
-                ],
+                order: [["code_type"], ["code_seq1"], ["code_seq2"]],
                 attributes: ['code_type', 'code_seq1', 'code_desc1']
             }
 
             let _res;
             await m_db.query("publiccode", qry, options, function (err, result) {
                 result = JSON.parse(JSON.stringify(result));
-                if (err != null) {
-                    rtn.status = 'Fail';
-                    rtn.msg = err;
-                } else {
-                    _res = result;
-                }
+                err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : _res = result;
             })
 
             let _tmp = [];
@@ -79,64 +63,52 @@ module.exports = {
                     }
                 }
             }
-            rtn.status = "OK"
+            rtn.ack = "OK"
             rtn.data = _tmp;
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("getCodeTypeKind err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },
 
-     /**
-     * Function description : 取得 code_seq1 最後序
-     * @param  {string} code_type  要查詢的code_type
-     * @param  {string} return 回傳最後seq
-     */
-      getCodeSeq1_seq: async function (code_type) {
+    /**
+    * Function description : 取得 code_seq1 最後序
+    * @param  {string} code_type  要查詢的code_type
+    * @param  {string} return 回傳最後seq
+    */
+    getCodeSeq1_seq: async function (code_type) {
         var rtn = {};
         try {
-            var qry = {
-                code_type: code_type,
-            };
-
-            var options = {
-                order: [
-                    ["code_type"],
-                    ["code_seq1"]
-                ],
-            }
-
+            var qry = { code_type: code_type, };
+            var options = { order: [["code_type"], ["code_seq1"]], }
             let _res;
             await m_db.query("publiccode", qry, options, function (err, result) {
                 result = JSON.parse(JSON.stringify(result));
-                if (err != null) {
-                    rtn.status = 'Fail';
-                    rtn.msg = err;
-                } else {
-                    _res = result;
-                }
+                err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : _res = result;
             })
 
             let _seq = '';
             for (let ele in _res) {
-                console.log("_res.length",_res.length);
+                // console.log("_res.length", _res.length);
                 if (_res.length == 1) {
                     //只有描述(code_seq1='**') 沒有其他 row data
                     _seq = '1';
                 } else {
-                    let _splitTmp = _res[_res.length-1].code_seq1.split('_');
-                    _seq = (Number(_splitTmp[_splitTmp.length-1]) + 1).toString();
+                    let _splitTmp = _res[_res.length - 1].code_seq1.split('_');
+                    _seq = (Number(_splitTmp[_splitTmp.length - 1]) + 1).toString();
                 }
             }
-          
-            rtn.status = "OK"
+
+            rtn.ack = "OK"
             rtn.data = _seq;
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("getCodeSeq1_seq err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },
@@ -150,10 +122,10 @@ module.exports = {
         try {
             let ChkRepeated = await _ChkRepeated(reqData);
 
-            if (!ChkRepeated.status) {
+            if (ChkRepeated.ack == 'FAIL') {
                 console.log("insertCode_ChkRepeated_fail");
-                rtn.status = 'Fail';
-                rtn.msg = ChkRepeated.msg;
+                rtn.ack = 'FAIL';
+                rtn.ackDesc = ChkRepeated.msg;
             } else {
                 var insertData = {};
                 insertData.code_type = reqData.type;
@@ -163,20 +135,14 @@ module.exports = {
                 insertData.cr_date = utility.get_today();
 
                 await m_db.insert(insertData, 'publiccode', function (err, result) {
-                    if (err != null) {
-                        console.log(err);
-                        rtn.status = 'Fail';
-                        rtn.msg = err;
-                    } else {
-                        rtn.status = 'OK';
-                        rtn.data = result;
-                    }
+                    err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : (rtn.ack = "OK", rtn.data = result);
                 })
             }
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("insertCodeData err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },
@@ -197,18 +163,13 @@ module.exports = {
             upData.up_date = utility.get_today();
 
             await m_db.update(upData, "publiccode", where, function (err, result) {
-                if (err != null) {
-                    console.log(err);
-                    rtn.status = 'Fail';
-                    rtn.msg = err.message;
-                } else {
-                    rtn.status = "OK";
-                }
+                err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : (rtn.ack = "OK");
             })
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("editCodeData err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },
@@ -221,17 +182,13 @@ module.exports = {
             where.guid = reqData.guid;
 
             await m_db.delete("publiccode", where, function (err, result) {
-                if (err != null) {
-                    rtn.status = "Fail";
-                    rtn.msg = err.message;
-                } else {
-                    rtn.status = "OK";
-                }
+                err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : (rtn.ack = "OK");
             })
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("deleteCodeData err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },
@@ -243,29 +200,25 @@ async function _ChkRepeated(data) {
         var options = {};
         var qry = {};
         qry.code_type = data.type;
-        let _res;
+        let _res = {};
         await m_db.query("publiccode", qry, options, function (err, result) {
-            if (err != null) {
-                rtn.status = false;
-                rtn.msg = err;
-            } else {
-                _res = JSON.parse(JSON.stringify(result));
-            }
+            err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : (_res = JSON.parse(JSON.stringify(result)));
         })
 
         for (let ele in _res) {
             if (_res[ele].code_seq1 == data.value || _res[ele].code_desc1 == data.label) {
-                rtn.status = false;
-                rtn.msg = 'code_ChkRepeated';
+                rtn.ack = 'FAIL';
+                rtn.ackDesc = 'code_ChkRepeated';
             } else {
-                rtn.status = true;
+                rtn.ack = 'OK';
             }
         }
 
         return rtn;
     } catch (err) {
-        rtn.status = false;
-        rtn.msg = err;
+        console.log("_ChkRepeated err:", err);
+        rtn.ack = 'FAIL';
+        rtn.ackDesc = err.message;
         return rtn;
     }
 

@@ -20,6 +20,7 @@ import Button from '../../../components/button/Button'
 import PicWall from '../../../components/upload/PicWall'
 import Loading from '../../../components/loading/Loading'
 import { checkEmpty } from '../../../utility.ts'
+import { customAlert, customToastTopEnd } from '../../customAlert/customAlert';
 
 //hashtag   
 import { WithContext as ReactTags } from 'react-tag-input';
@@ -66,6 +67,7 @@ export class Product extends Component {
         this.deleteMaListItem = this.deleteMaListItem.bind(this);
         this.modalOnHide = this.modalOnHide.bind(this);
         this.submitForm = this.submitForm.bind(this);
+        this.handleSubmitInsertData = this.handleSubmitInsertData.bind(this);
 
         // pic wall
         this.onChangePicWall = this.onChangePicWall.bind(this);
@@ -80,7 +82,6 @@ export class Product extends Component {
         this.onClearAllHashtags = this.onClearAllHashtags.bind(this);
     }
 
-
     componentDidMount() {
         this._getSelectOption();
     }
@@ -88,16 +89,24 @@ export class Product extends Component {
     log(tmpState) {
         console.log('log:', tmpState);
     }
+
     // 計算總計&利潤
     cntPriceAndProfit() {
-        let _maList = this.state.maList;
-        let tmpTotalPrice = 0;
-        for (let ele of _maList) {
-            tmpTotalPrice += Number(ele.cntNum * ele.price_per);
+        if (this.state.insertData.productPrice >= 0 || this.state.insertData.productPrice == undefined) {
+            let _maList = this.state.maList;
+            let tmpTotalPrice = 0;
+            for (let ele of _maList) {
+                tmpTotalPrice += Number(ele.cntNum * ele.price_per);
+            }
+
+            this.setState((prev) => (
+                {
+                    insertData: {
+                        ...prev.insertData, productItemsTotalPrice: tmpTotalPrice, productProfit: (Number(prev.insertData.productPrice) - tmpTotalPrice)
+                    }
+                }));
         }
-        this.setState((prev) => ({
-            insertData: { ...prev.insertData, productItemsTotalPrice: tmpTotalPrice, productProfit: (prev.insertData.productPrice - tmpTotalPrice) }
-        }));
+
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -117,23 +126,27 @@ export class Product extends Component {
     }
 
 
-
     //get select Option 
     async _getSelectOption() {
         let qryTmp = Object.keys(this.state.selectOption);
         let _SelectOption = [];
         //get Select Option res 
-        let _res = await postData("/api/getSelectOption", qryTmp);
+        let _res = await postData("/api/codeManage/getSelectOption", qryTmp);
         //update Select Option data
-        qryTmp.forEach(ele => {
-            _SelectOption[ele] = [{ value: '', label: '==請選擇==' },];
-            _res.data[ele].forEach(async ele_res => {
-                if (ele_res.value !== '**') {
-                    await _SelectOption[ele].push(ele_res)
-                }
+        if (_res.ack === 'OK') {
+            qryTmp.forEach(ele => {
+                _SelectOption[ele] = [{ value: '', label: '==請選擇==' },];
+                _res.data[ele].forEach(async ele_res => {
+                    if (ele_res.value !== '**') {
+                        await _SelectOption[ele].push(ele_res)
+                    }
+                })
             })
-        })
-        this.setState({ selectOption: _SelectOption })
+            this.setState({ selectOption: _SelectOption })
+        } else {
+            customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
+        }
+
     }
 
     async handleInsertDataChange(event) {
@@ -150,8 +163,8 @@ export class Product extends Component {
             case 'catenaBelong':
                 if (await checkEmpty(this.state.insertData.catenaBelong)) {
                     // get code mark
-                    let _res = await postData("/api/getCodeMark/product_catena/" + this.state.insertData.catenaBelong);
-                    _insertData.catenaIntro = _res.data.mark;
+                    let _res = await postData("/api/codeManage/getCodeMark/product_catena/" + this.state.insertData.catenaBelong);
+                    _res.ack === 'OK' ? _insertData.catenaIntro = _res.data.mark : customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
                 } else {
                     _insertData.catenaIntro = '';
                 }
@@ -160,8 +173,8 @@ export class Product extends Component {
             case 'singleBelong':
                 if (await checkEmpty(this.state.insertData.singleBelong)) {
                     // get code mark
-                    let _res = await postData("/api/getCodeMark/product_single/" + this.state.insertData.singleBelong);
-                    _insertData.productIntro = _res.data.mark;
+                    let _res = await postData("/api/codeManage/getCodeMark/product_single/" + this.state.insertData.singleBelong);
+                    _res.ack === 'OK' ? _insertData.productIntro = _res.data.mark : customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
                 } else {
                     _insertData.productIntro = '';
                 }
@@ -177,7 +190,9 @@ export class Product extends Component {
             // 計算利潤
             case 'productItemsTotalPrice':
             case 'productPrice':
-                _insertData.productProfit = _insertData.productPrice - _insertData.productItemsTotalPrice;
+                if (this.state.insertData.productPrice >= 0 || this.state.insertData.productPrice == undefined) {
+                    _insertData.productProfit = _insertData.productPrice - _insertData.productItemsTotalPrice;
+                }
                 break;
 
             default:
@@ -194,11 +209,11 @@ export class Product extends Component {
         this.setState({ insertData: _insertData });
     }
 
-    async handleSubmit(event) {
+    async handleSubmitInsertData(event) {
         event.preventDefault();
-        // console.log(this.state.insertData);
+        // console.log("insertData", this.state.insertData);
 
-        // let _res = await postData('/api/insertProductData',res);
+        // let _res = await postData('/api/product/insertProductData',res);
 
     }
 
@@ -551,8 +566,8 @@ export class Product extends Component {
 
                     {/* adminProductBodyRight */}
                     <div className="adminProductBodyRight">
-                        
-                      
+
+
 
                         <div className="adminProductItem neumorphismFlat">
                             <div className="adminProductItemTitle"> </div>
@@ -610,7 +625,7 @@ export class Product extends Component {
                             submitForm={(e, data) => { this.submitForm(e, data) }} />
 
                         <div className="adminProductSendBtn neumorphismFlat">
-                            <Button variant="contained" themeColor="mainColor" onClick={this.insertMaListItem}>Send</Button>
+                            <Button variant="contained" themeColor="mainColor" onClick={this.handleSubmitInsertData}>Send</Button>
                         </div>
 
                     </div>

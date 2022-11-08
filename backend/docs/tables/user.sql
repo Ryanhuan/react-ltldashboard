@@ -1,12 +1,11 @@
--- Table:member
--- Description: member(user and customer) 　　　　　
+-- Table: user
+-- Description: just for system user　　　　
 
 
-CREATE TABLE Member
+CREATE TABLE user
 (
 	email		character varying UNIQUE,		--email
 	displayName	character varying(20),			--姓名
-	photoURL	character varying,			--照片
 
 	IsEmailNotification	
 			boolean DEFAULT false,			--email 是否驗證
@@ -23,7 +22,7 @@ CREATE TABLE Member
 	
 );
 
-CREATE INDEX idx_Member ON Member(email);
+CREATE INDEX idx_User ON public.user(email,guid);
 
 
 

@@ -11,7 +11,7 @@ import { postData } from "../../../api";
 import Button from '../../../components/button/Button'
 import { getSelectOption } from '../../../utility.ts'
 import { CustomModal } from '../../../components/modal/customModal';
-import { customAlert } from '../../../components/customAlert/customAlert';
+import { customAlert, customToastTopEnd } from '../../../components/customAlert/customAlert';
 
 export class AdminMatCode extends Component {
     constructor(props) {
@@ -56,53 +56,25 @@ export class AdminMatCode extends Component {
     //材料新增材料
     async insertData(event) {
         event.preventDefault();
-        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
+        this.setState({ isLoadingInsert: true });
         if (this.state.insertData.label === '') {
-            customAlert.fire({
-                position: 'bottom-end',
-                width: 400,
-                icon: 'error',
-                title: '項目欄位 必填!',
-                showConfirmButton: false,
-                timer: 1500
-            })
+            customToastTopEnd.fire('No No!', '項目欄位 必填!', 'error')
         }
         else {
-            let _res = await postData("/api/insertCodeData", this.state.insertData);
-            if (_res.status === 'insertCodeData_OK') {
+            let _res = await postData("/api/codeManage/insertCodeData", this.state.insertData);
+            if (_res.ack === 'OK') {
                 //成功
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'success',
-                    title: '新增材料成功!',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                customToastTopEnd.fire('OK', '新增材料成功!', 'success')
                 this._getGridData([this.state.searchTypeCode]);
-            } else if (_res.msg === 'code_ChkRepeated') {
+            } else if (_res.ackDesc === 'code_ChkRepeated') {
                 //失敗 代碼重複
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: '代碼或代碼描述 重複!',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                customToastTopEnd.fire('No No!', '代碼或代碼描述 重複!', 'error')
             } else {
                 //失敗 其他錯誤
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: _res.msg,
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                customToastTopEnd.fire('No No!', _res.msg, 'error')
             }
         }
-        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
+        this.setState({ isLoadingInsert: false });
     }
 
     handleChange(event) {
@@ -127,8 +99,8 @@ export class AdminMatCode extends Component {
             this.setState({ gridData: [] });
         } else {
             let qryTmp = [data];
-            let _res = await postData("/api/getSelectOption", qryTmp);
-            if (_res.msg === 'getSelectOption_OK') {
+            let _res = await postData("/api/codeManage/getSelectOption", qryTmp);
+            if (_res.ack === 'OK') {
                 let _gridData = [];
                 //排除'**'
                 for (let ele in _res.data[data]) {
@@ -140,14 +112,7 @@ export class AdminMatCode extends Component {
                 }
                 this.setState({ gridData: _gridData });
             } else {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: 'Search fail',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                customToastTopEnd.fire('No No!', 'Search fail', 'error');
                 this.setState({ gridData: [] });
             }
         }
@@ -171,7 +136,11 @@ export class AdminMatCode extends Component {
         this.setState({ [_dataName]: _dataName });
     }
 
-
+    selectOptionChange(value, selectOptions) {
+        for (let ele in selectOptions) {
+            if (selectOptions[ele].label === value) { return selectOptions[ele].value }
+        }
+    }
     // #region [Modal]
     modalOpen(event, data) {
         event.preventDefault();
@@ -199,16 +168,16 @@ export class AdminMatCode extends Component {
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            cancelButtonText: '取消',
             confirmButtonText: '確定',
+            cancelButtonText: '取消'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                let _res = await postData("/api/editCodeData", data);
-                if (_res.status === 'editCodeData_OK') {
-                    customAlert.fire('完成修改!', '修改成功.', 'success')
+                let _res = await postData("/api/codeManage/editCodeData", data);
+                if (_res.ack === 'OK') {
+                    customToastTopEnd.fire('OK!', '修改成功!', 'success')
                     this._getGridData([this.state.searchTypeCode]);
                 } else {
-                    customAlert.fire('Fail!', _res.msg, 'error')
+                    customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error')
                 }
             }
         })
@@ -231,12 +200,12 @@ export class AdminMatCode extends Component {
             cancelButtonText: '取消'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                let _res = await postData("/api/deleteCodeData", data);
-                if (_res.status === 'deleteCodeData_OK') {
-                    customAlert.fire('完成刪除!', '刪除成功.', 'success')
+                let _res = await postData("/api/codeManage/deleteCodeData", data);
+                if (_res.ack === 'OK') {
+                    customToastTopEnd.fire('OK!', '刪除成功!', 'success')
                     this._getGridData([this.state.searchTypeCode]);
                 } else {
-                    customAlert.fire('Fail!', _res.msg, 'error')
+                    customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error')
                 }
             }
         })
@@ -263,7 +232,7 @@ export class AdminMatCode extends Component {
                         <>
                             <Button variant="text" startIcon={<Edit />} themeColor='success' onClick={(e) => this.modalOpen(e, params.row)} />
                             <Button variant="text" startIcon={<DeleteOutline />} themeColor='error' onClick={(e) => this.handleGridDelete(e, params.row)} />
-                            {this.state.modal.isShow ?
+                            {modal.isShow ?
                                 <CustomModal isShow={modal.isShow} onHide={this.modalOnHide} modalData={modal}
                                     modalCols={modalCols} submitForm={(e, data) => { this.submitForm(e, data) }} /> : null
                             }

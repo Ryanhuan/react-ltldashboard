@@ -1,7 +1,7 @@
 import './adminProductAdd.scss'
 import { Component } from 'react'
 import { Product } from '../../../components/admin/product/Product'
-import { customAlert } from '../../../components/customAlert/customAlert';
+import { customAlert, customToastTopEnd } from '../../../components/customAlert/customAlert';
 
 export class AdminProductAdd extends Component {
     constructor(props) {

@@ -31,27 +31,28 @@ module.exports.accessToken = {
 
             jwt.verify(token.accessToken, config.jwtKey, function (err, decoded) {
                 if (err != null) {
-                    rtn.result = false;
-                    rtn.msg = "AccessToken_Is_Denied"
+                    rtn.ack = 'FAIL';
+                    rtn.ackDesc = "AccessToken_Is_Denied"
                     return rtn;
                 } else {
                     decoded_accessToken = decoded;
                 }
             });
             if ((decoded_accessToken.exp) > (new Date().getTime())) {
-                rtn.result = true;
-                rtn.msg = "AccessToken_Is_Access";
-                rtn.decodeData=decoded_accessToken;
+                rtn.ack = 'OK';
+                rtn.ackDesc = "AccessToken_Is_Access";
+                rtn.decodeData = decoded_accessToken;
                 return rtn;
             } else {
-                rtn.result = false;
-                rtn.msg = "AccessToken_Is_Expired";
-                rtn.decodeData=decoded_accessToken;
+                rtn.ack = 'FAIL';
+                rtn.ackDesc = "AccessToken_Is_Expired";
+                rtn.decodeData = decoded_accessToken;
                 return rtn;
-            }    
+            }
         } catch (err) {
-            rtn.result = false;
-            rtn.msg = err.message;
+            console.log("verifyToken err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     }
@@ -84,26 +85,32 @@ module.exports.refreshToken = {
             var decoded_refreshToken;
             jwt.verify(token.refreshToken, config.jwtKey, function (err, decoded) {
                 if (err != null) {
-                    rtn.result = false;
-                    rtn.msg = "RefreshToken_Is_Denied"
+                    rtn.ack = 'FAIL';
+                    rtn.ackDesc = "RefreshToken_Is_Denied"
+                    // rtn.result = false;
+                    // rtn.msg = "RefreshToken_Is_Denied"
                     return rtn;
                 } else {
                     decoded_refreshToken = decoded;
                 }
             });
             if ((decoded_refreshToken.exp) > (new Date().getTime())) {
-                rtn.result = true;
-                rtn.msg = "RefreshToken_Is_Access"
-                rtn.decodeData=decoded_refreshToken;
+                rtn.ack = 'OK';
+                rtn.ackDesc = "RefreshToken_Is_Access"
+                rtn.decodeData = decoded_refreshToken;
+                // rtn.result = true;
+                // rtn.msg = "RefreshToken_Is_Access"
                 return rtn;
             } else {
-                rtn.result = false;
-                rtn.msg = "RefreshToken_Is_Expired";
+                rtn.ack = 'FAIL';
+                rtn.ackDesc = "RefreshToken_Is_Expired";
+                // rtn.result = false;
+                // rtn.msg = "RefreshToken_Is_Expired";
                 return rtn;
-            }    
+            }
         } catch (err) {
-            rtn.result = false;
-            rtn.msg = err.message;
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     }

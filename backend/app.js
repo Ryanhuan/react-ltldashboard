@@ -7,7 +7,7 @@ const cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
-var apiRouter = require('./routes/api');
+var apiRouter = require('./routes/api/index');
 
 var app = express();
 
@@ -48,9 +48,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
-
 
 
 

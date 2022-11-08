@@ -1,8 +1,9 @@
 'use strict'
 
+// for DB model
+
 var db = require('../db/database');
 var Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 
 var publiccode = require("../db/publiccode");
 

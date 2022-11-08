@@ -9,3 +9,19 @@ export const customAlert = Swal.mixin({
 })
 
 
+export const customToastTopEnd = Swal.mixin({
+    customClass: { container: 'swal_customToastTopEnd',
+                    title: 'swal_customToastTitle',
+                },
+    toast: true,
+    position: 'top-end',
+    width: 250,
+    showConfirmButton: false,
+    timer: 2000,
+    timerProgressBar: true,
+})
+
+// customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
+
+// customToastTopEnd.fire('OK!', '修改成功!', 'success');
+

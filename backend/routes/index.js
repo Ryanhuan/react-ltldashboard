@@ -9,7 +9,9 @@ router.get('/', function (req, res, next) {
   try {
     res.json('/main');
   } catch (err) {
-    rtn.msg = err.message;
+    rtn.ack = 'FAIL';
+    rtn.ackDesc = err.message;
+    console.log("index err:",err);
     res.json(rtn);
   }
 });

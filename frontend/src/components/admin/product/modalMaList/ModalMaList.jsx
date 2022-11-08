@@ -10,7 +10,7 @@ import Button from '../../../button/Button'
 import { DataGrid } from '@mui/x-data-grid';
 import { Eject, AddBox, CancelPresentation, AddCircleOutline, RemoveCircleOutline } from '@material-ui/icons';
 import { postData } from "../../../../api";
-import { customAlert } from '../../../customAlert/customAlert';
+import { customAlert, customToastTopEnd } from '../../../customAlert/customAlert';
 
 export class ModalMaList extends Component {
     constructor(props) {
@@ -58,25 +58,33 @@ export class ModalMaList extends Component {
 
 
     async _getMatGridData(qryData) {
-        let _res = await postData("/api/getMatData", qryData);
-        let _gridData = _res.data;
-        delete _gridData.guid;
-        for (let i = 0; i < _gridData.length; i++) {
-            _gridData[i].seq = (i + 1);
+        let _res = await postData("/api/mat/getMatData", qryData);
+        if (_res.ack === 'OK') {
+            let _gridData = _res.data;
+            delete _gridData.guid;
+            for (let i = 0; i < _gridData.length; i++) {
+                _gridData[i].seq = (i + 1);
+            }
+            this.setState({ gridData: [..._gridData] });
+        } else {
+            customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
         }
-        this.setState({ gridData: [..._gridData] });
     }
 
     //get select Option 
     async _getSelectOption() {
         let _selectOption = this.state.selectOption;
         let qryTmp = Object.keys(_selectOption);
-        let _res = await postData("/api/getSelectOption", qryTmp);
-        qryTmp.forEach(ele => {
-            _res.data[ele].forEach(ele_res => {
-                if (ele_res.value !== '**') { _selectOption[ele].push(ele_res) }
+        let _res = await postData("/api/codeManage/getSelectOption", qryTmp);
+        if (_res.ack === 'OK') {
+            qryTmp.forEach(ele => {
+                _res.data[ele].forEach(ele_res => {
+                    if (ele_res.value !== '**') { _selectOption[ele].push(ele_res) }
+                })
             })
-        })
+        } else {
+            customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
+        }
     }
 
     //材料搜尋
@@ -84,11 +92,7 @@ export class ModalMaList extends Component {
         event.preventDefault();
         this.setState({ isLoadingSearch: true });
         if (this.state.searchData.lowPricePer > this.state.searchData.highPrice) {
-            customAlert.fire(
-                'No No!',
-                '最低單價不可高於最高單價',
-                'error'
-            )
+            customToastTopEnd.fire('No No!', '最低單價不可高於最高單價', 'error')
         } else {
             this._getMatGridData(this.state.searchData);
         }

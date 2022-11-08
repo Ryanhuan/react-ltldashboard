@@ -1,6 +1,6 @@
-const db = require('../db/database');
-const m_db = require("./m_db");
-const utility = require("../public/javascripts/utility");
+const db = require('../../db/database');
+const m_db = require("../../model/m_db");
+const utility = require("../../public/javascripts/utility");
 var Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -38,8 +38,9 @@ module.exports = {
             // }
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("insertProduct err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },

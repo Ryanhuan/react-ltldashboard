@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form'
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import Button from 'react-bootstrap/Button'
 
-import { postData  } from "../../api";
+import { postData } from "../../api";
 
 
 
@@ -19,13 +19,14 @@ export default function Login() {
             alert("Email or password is not entered!");
         }
         else {
-            const loginData = await postData("/auth/signin",{ email, password });
-            if (loginData.msg === 'OK_LOGIN_SUCCESSFULLY') {
+            const loginData = await postData("/auth/signin", { email, password });
+            if (loginData.ack === 'OK') {
+                customToastTopEnd.fire('OK!', 'Login success!', 'success');
                 localStorage.setItem('token', JSON.stringify(loginData.token));
                 localStorage.setItem('userId', JSON.stringify(loginData.userId));
                 window.location.reload(false);
             } else {
-                alert(loginData.msg);
+                customToastTopEnd.fire('NO NO!', loginData.ackDesc, 'error');
             }
         }
     }
@@ -41,15 +42,8 @@ export default function Login() {
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <div className="row">
                                 <div className="loginWrapperBodyItem col-md-8 offset-md-2">
-                                    <FloatingLabel
-                                        controlId="floatingInput"
-                                        label="Email"
-                                        className="mb-3 ">
-                                            <Form.Control 
-                                                type="email" 
-                                                placeholder="name@example.com" 
-                                                onChange={e => setEmail(e.target.value)} 
-                                            />
+                                    <FloatingLabel controlId="floatingInput" label="Email" className="mb-3 ">
+                                        <Form.Control type="email" placeholder="name@example.com" onChange={e => setEmail(e.target.value)} />
                                     </FloatingLabel>
                                 </div>
                             </div>
@@ -58,9 +52,7 @@ export default function Login() {
                             <div className="row">
                                 <div className="loginWrapperBodyItem col-md-8 offset-md-2 ">
                                     <FloatingLabel controlId="floatingPassword" label="Password" className="mb-3">
-                                        <Form.Control type="password" placeholder="Password" 
-                                            onChange={e => setPassword(e.target.value)}
-                                        />
+                                        <Form.Control type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
                                     </FloatingLabel>
                                 </div>
                             </div>
@@ -68,9 +60,7 @@ export default function Login() {
 
                         <div className="row">
                             <div className="loginWrapperBodyItem loginWrapperBodyItemBtn">
-                                <Button className="btn btnMain" type="submit"  >
-                                    Login
-                                </Button>
+                                <Button className="btn btnMain" type="submit">Login</Button>
                             </div>
                         </div>
                     </Form>

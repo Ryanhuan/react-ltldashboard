@@ -1,6 +1,6 @@
-const db = require('../db/database');
-const m_db = require("./m_db");
-const utility = require("../public/javascripts/utility");
+const db = require('../../db/database');
+const m_db = require("../../model/m_db");
+const utility = require("../../public/javascripts/utility");
 var Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -16,30 +16,23 @@ module.exports = {
         try {
             let chkMatId = await checkMatId(reqData.id);
 
-            if (!chkMatId.status) {
+            if (chkMatId.ack == 'FAIL') {
                 console.log("insertMat_chkMatId_fail");
-                rtn.status = 'Fail';
-                rtn.msg = chkMatId.msg;
+                rtn = chkMatId;
             } else {
                 console.log("insertMat_chkMatId_ok");
                 var insertData = reqData;
                 insertData.cr_date = utility.get_today();
                 // console.log("insertData",insertData);
                 await m_db.insert(insertData, 'materials', function (err, result) {
-                    if (err != null) {
-                        console.log(err);
-                        rtn.status = 'Fail';
-                        rtn.msg = err;
-                    } else {
-                        rtn.status = 'OK';
-                        rtn.data = result;
-                    }
+                    err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : (rtn.ack = "OK", rtn.data = result);
                 })
             }
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("insertMat err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },
@@ -86,28 +79,22 @@ module.exports = {
                 }
                 qry.price_per[Op.lte] = reqData.highPricePer;
             }
-
+            
             await m_db.query("materials", qry, options, async function (err, result) {
-                if (err != null) {
-                    console.log("err", err);
-                    rtn.status = "Fail";
-                    rtn.msg = err;
-                } else {
-                    rtn.status = "OK";
-                    let _data = JSON.parse(JSON.stringify(result));
-                    rtn.data = _data;
-                }
+                err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) :
+                    (rtn.ack = "OK", rtn.data = JSON.parse(JSON.stringify(result)));
             })
 
-            for (let i = 0; i < rtn.data.length; i++) {
-                rtn.data[i].type = await codeDesc(rtn.data[i].type, "ma_type");
-                rtn.data[i].quality = await codeDesc(rtn.data[i].quality, "ma_quality");
+            for (let ele in rtn.data) {
+                rtn.data[ele].type = await codeDesc(rtn.data[ele].type, "ma_type");
+                rtn.data[ele].quality = await codeDesc(rtn.data[ele].quality, "ma_quality");
             }
 
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("queryMatData err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },
@@ -120,17 +107,13 @@ module.exports = {
             where.guid = reqData.guid;
 
             await m_db.delete("materials", where, function (err, result) {
-                if (err != null) {
-                    rtn.status = "Fail";
-                    rtn.msg = err.message;
-                } else {
-                    rtn.status = "OK";
-                }
+                err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : rtn.ack = "OK";
             })
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("deleteMatData err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     },
@@ -140,29 +123,28 @@ module.exports = {
         try {
             var where = {};
             where.guid = reqData.guid;
-            upData = {
-                ...reqData
-            }
+            upData = { ...reqData }
             upData.up_date = utility.get_today();
 
             await m_db.update(upData, "materials", where, function (err, result) {
                 if (err != null) {
                     console.log(err);
                     if (err = 'Validation error') {
-                        rtn.status = 'Fail';
-                        rtn.msg = 'ID_Repeated';
+                        rtn.ack = 'FAIL';
+                        rtn.ackDesc = 'ID_Repeated';
                     } else {
-                        rtn.status = 'Fail';
-                        rtn.msg = err.message;
+                        rtn.ack = 'FAIL';
+                        rtn.ackDesc = err.message;
                     }
                 } else {
-                    rtn.status = "OK";
+                    rtn.ack = "OK";
                 }
             })
             return rtn;
         } catch (err) {
-            rtn.status = 'Fail';
-            rtn.msg = err;
+            console.log("editMatData err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
             return rtn;
         }
     }
@@ -180,21 +162,22 @@ async function checkMatId(Id) {
         qry.id = Id;
         await m_db.query("materials", qry, options, function (err, result) {
             if (err != null) {
-                rtn.status = false;
-                rtn.msg = err;
+                rtn.ack = 'FAIL';
+                rtn.ackDesc = err.message;
             } else {
                 if (result.length == 0) {
-                    rtn.status = true;
+                    rtn.ack = 'OK';
                 } else {
-                    rtn.status = false;
-                    rtn.msg = "ID_Repeated";
+                    rtn.ack = 'FAIL';
+                    rtn.ackDesc = "ID_Repeated";
                 }
             }
         })
         return rtn;
     } catch (err) {
-        rtn.status = false;
-        rtn.msg = err;
+        console.log("function checkMatId err:", err);
+        rtn.ack = 'FAIL';
+        rtn.ackDesc = err.message;
         return rtn;
     }
 }

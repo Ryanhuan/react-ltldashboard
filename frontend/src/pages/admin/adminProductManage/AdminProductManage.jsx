@@ -1,7 +1,7 @@
 
 import './adminProductManage.scss'
 import { Component } from 'react'
-import { customAlert } from '../../../components/customAlert/customAlert';
+import { customAlert, customToastTopEnd } from '../../../components/customAlert/customAlert';
 
 
 export class AdminProductManage extends Component {

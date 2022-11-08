@@ -11,7 +11,7 @@ import { CustomModal } from '../../../components/modal/customModal';
 import { postData } from "../../../api";
 import { getSelectOption } from '../../../utility.ts'
 import Button from '../../../components/button/Button'
-import { customAlert } from '../../../components/customAlert/customAlert';
+import { customAlert, customToastTopEnd } from '../../../components/customAlert/customAlert';
 
 export class AdminProductCode extends Component {
     constructor(props) {
@@ -56,61 +56,26 @@ export class AdminProductCode extends Component {
     //材料新增材料
     async insertData(event) {
         event.preventDefault();
-        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
+        this.setState({ isLoadingInsert: true });
         if (this.state.insertData.label === '') {
-            customAlert.fire({
-                position: 'bottom-end',
-                width: 400,
-                icon: 'error',
-                title: '項目欄位 必填!',
-                showConfirmButton: false,
-                timer: 1500
-            })
+            customToastTopEnd.fire('NO NO!', '項目欄位 必填!', 'error')
         }
         // else if (this.state.insertData.value.match("^[a-zA-Z0-9 ]*$") == null) {
-        //     //check 
-        //     customAlert.fire({
-        //         position: 'bottom-end',
-        //         width: 400,
-        //         icon: 'error',
-        //         title: '代碼請輸入英文或數字!',
-        //         showConfirmButton: false,
-        //         timer: 1500
-        //     })
+        //   //check 
+        // customToastTopEnd.fire('NO NO!', '代碼請輸入英文或數字!', 'error')
         // } 
         else {
-            let _res = await postData("/api/insertCodeData", this.state.insertData);
-            if (_res.status === 'insertCodeData_OK') {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'success',
-                    title: '新增材料成功!',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+            let _res = await postData("/api/codeManage/insertCodeData", this.state.insertData);
+            if (_res.ack === 'OK') {
+                customToastTopEnd.fire('OK!', '新增材料成功!', 'success')
                 this._getGridData([this.state.searchTypeCode]);
-            } else if (_res.msg === 'code_ChkRepeated') {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: '代碼或代碼描述 重複!',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+            } else if (_res.ackDesc === 'code_ChkRepeated') {
+                customToastTopEnd.fire('NO NO!', '代碼或代碼描述 重複!', 'error')
             } else {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: _res.msg,
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error')
             }
         }
-        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
+        this.setState({ isLoadingInsert: false });
     }
 
 
@@ -136,8 +101,8 @@ export class AdminProductCode extends Component {
             this.setState({ gridData: [] });
         } else {
             let qryTmp = [data];
-            let _res = await postData("/api/getSelectOption", qryTmp);
-            if (_res.msg === 'getSelectOption_OK') {
+            let _res = await postData("/api/codeManage/getSelectOption", qryTmp);
+            if (_res.ack === 'OK') {
                 let _gridData = [];
                 //排除'**'
                 for (let ele in _res.data[data]) {
@@ -149,14 +114,7 @@ export class AdminProductCode extends Component {
                 }
                 this.setState({ gridData: _gridData });
             } else {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: 'Search fail',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                customToastTopEnd.fire('NO NO!', 'Search fail', 'error');
                 this.setState({ gridData: [] });
             }
         }
@@ -211,12 +169,12 @@ export class AdminProductCode extends Component {
             cancelButtonText: '取消'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                let _res = await postData("/api/editCodeData", data);
-                if (_res.status === 'editCodeData_OK') {
+                let _res = await postData("/api/codeManage/editCodeData", data);
+                if (_res.ack === 'OK') {
                     customAlert.fire('完成修改!', '修改成功.', 'success')
                     this._getGridData([this.state.searchTypeCode]);
                 } else {
-                    customAlert.fire('Fail!', _res.msg, 'error')
+                    customAlert.fire('Fail!', _res.ackDesc, 'error')
                 }
             }
         })
@@ -239,12 +197,12 @@ export class AdminProductCode extends Component {
             cancelButtonText: '取消'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                let _res = await postData("/api/deleteCodeData", data);
-                if (_res.status === 'deleteCodeData_OK') {
+                let _res = await postData("/api/codeManage/deleteCodeData", data);
+                if (_res.ack === 'OK') {
                     customAlert.fire('完成刪除!', '刪除成功.', 'success')
                     this._getGridData([this.state.searchTypeCode]);
                 } else {
-                    customAlert.fire('Fail!', _res.msg, 'error')
+                    customAlert.fire('Fail!', _res.ackDesc, 'error')
                 }
             }
         })

@@ -7,7 +7,7 @@ import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { postData, getUserId } from "../../../../api";
-import { customAlert } from '../../../../components/customAlert/customAlert';
+import { customAlert, customToastTopEnd } from '../../../../components/customAlert/customAlert';
 
 
 export class ModalEditUser extends Component {
@@ -67,24 +67,11 @@ export class ModalEditUser extends Component {
     let _root = root_tmp.toString();
     let op_user = getUserId()?.email || 'user';
 
-    const _postUserEdit = await postData("/api/editUser", { ...this.state, _root, op_user });
-    _postUserEdit.msg === 'Edit_User_OK' ?
-      customAlert.fire({
-        position: 'bottom-end',
-        width: 400,
-        icon: 'success',
-        title: 'Edit user success',
-        showConfirmButton: false,
-        timer: 1500
-      })
-      : customAlert.fire({
-        position: 'bottom-end',
-        width: 400,
-        icon: 'error',
-        title: 'Edit user fail',
-        showConfirmButton: false,
-        timer: 1500
-      })
+    const _postUserEdit = await postData("/api/user/editUser", { ...this.state, _root, op_user });
+    _postUserEdit.ack === 'OK' ?
+      customToastTopEnd.fire('OK!', 'Edit user success!', 'success')
+      : customToastTopEnd.fire('NO NO!', 'Edit user fail', 'error')
+
     this.props.onHide();//close popup
     this.props.getAllUsersInfo();//get parents user grid 
   }

@@ -7,7 +7,7 @@ import './adminUser.css'
 import { ModalEditUser } from './modalEditUser/ModalEditUser';
 import { postData, getData, getUserId } from "../../../api";
 import Button from '../../../components/button/Button'
-import { customAlert } from '../../../components/customAlert/customAlert';
+import { customAlert, customToastTopEnd } from '../../../components/customAlert/customAlert';
 
 
 export default function AdminUser() {
@@ -57,38 +57,17 @@ export default function AdminUser() {
             let _root = root_tmp.toString();
             let op_user = getUserId()?.email || 'user';
 
-            const signUpData = await postData("/api/signup", { email, password, username, _root, op_user });
-            if (signUpData.msg === 'SingUp_OK') {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'success',
-                    title: 'Sign up success',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+            const signUpData = await postData("/api/user/signup", { email, password, username, _root, op_user });
+            if (signUpData.ack === 'OK') {
+                customToastTopEnd.fire('OK!', 'Sign up success!', 'success');
                 //reset input box
                 resetSignupInput();
                 //get all users info to update user's grid 
                 getAllUsersInfo_();
-            } else if (signUpData.msg === 'Email_Is_Exist') {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: 'Email Is Exist',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+            } else if (signUpData.ackDesc === 'Email_Is_Exist') {
+                customToastTopEnd.fire('NO NO!', 'Email Is Exist', 'error');
             } else {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: 'Sign up fail',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                customToastTopEnd.fire('NO NO!', 'Sign up fail', 'error');
             }
             setIsLoadingSingUp(!isLoadingSingUp); //btn loading
         }
@@ -101,7 +80,7 @@ export default function AdminUser() {
     }, []);
 
     const getAllUsersInfo_ = () => {
-        getData("/api/getAllUsers")
+        getData("/api/user/getAllUsers")
             .then((result) => {
                 // console.log(result.data);
                 var tmp = [];
@@ -122,10 +101,12 @@ export default function AdminUser() {
             renderCell: (params) => {
                 return (
                     <div className="userListUser">
-                        {params.row.photourl !== null ?
+                        {/* {params.row.photourl !== null ?
                             <img className="userListImg" src={params.row.photourl} alt="" />
                             : <AccountCircle className="userListIcon" alt="" />
-                        }
+                        } */}
+                        {/* TODO: 待補 user photo */}
+                        <AccountCircle className="userListIcon" alt="" />
                         {params.row.displayname}
                     </div>
                 )
@@ -157,12 +138,7 @@ export default function AdminUser() {
                 }
                 return (
                     <>
-                        <Button
-                            variant="text"
-                            startIcon={<Edit />}
-                            themeColor='success'
-                            onClick={() => userListEditOpen(params.row)}
-                        />
+                        <Button variant="text" startIcon={<Edit />} themeColor='success' onClick={() => userListEditOpen(params.row)} />
                         {userListEditModalShow ?
                             <ModalEditUser show={userListEditModalShow} onHide={() => setUserListEditModalShow(false)}
                                 editData={userListEditData} getAllUsersInfo={getAllUsersInfo_} /> : ''
@@ -199,29 +175,15 @@ export default function AdminUser() {
                                     <Form.Group className="mb-1" controlId="formBasicEmail">
                                         <div className="row">
                                             <div className="adminUserBodySignUpItem col-md-5">
-                                                <FloatingLabel
-                                                    controlId="floatingInputEmail"
-                                                    label="Email"
-                                                    className="mb-1 ">
-                                                    <Form.Control
-                                                        type="email"
-                                                        placeholder="abc@xyz.com"
-                                                        value={email}
-                                                        onChange={e => setEmail(e.target.value)}
-                                                    />
+                                                <FloatingLabel controlId="floatingInputEmail" label="Email" className="mb-1 ">
+                                                    <Form.Control type="email" placeholder="abc@xyz.com" value={email}
+                                                        onChange={e => setEmail(e.target.value)} />
                                                 </FloatingLabel>
                                             </div>
                                             <div className="adminUserBodySignUpItem col-md-5">
-                                                <FloatingLabel
-                                                    controlId="floatingInputUsername"
-                                                    label="UserName"
-                                                    className="mb-1 ">
-                                                    <Form.Control
-                                                        type="text"
-                                                        placeholder="UserName"
-                                                        value={username}
-                                                        onChange={e => setUsername(e.target.value)}
-                                                    />
+                                                <FloatingLabel controlId="floatingInputUsername" label="UserName" className="mb-1 ">
+                                                    <Form.Control type="text" placeholder="UserName" value={username}
+                                                        onChange={e => setUsername(e.target.value)} />
                                                 </FloatingLabel>
                                             </div>
                                         </div>
@@ -231,15 +193,13 @@ export default function AdminUser() {
                                             <div className="adminUserBodySignUpItem col-md-5 ">
                                                 <FloatingLabel controlId="floatingPassword" label="Password" className="mb-3">
                                                     <Form.Control type="password" placeholder="Password" value={password}
-                                                        onChange={e => setPassword(e.target.value)}
-                                                    />
+                                                        onChange={e => setPassword(e.target.value)} />
                                                 </FloatingLabel>
                                             </div>
                                             <div className="adminUserBodySignUpItem col-md-5 ">
                                                 <FloatingLabel controlId="floatingRePassword" label="RePassword" className="mb-3">
                                                     <Form.Control type="password" placeholder="RePassword" value={rePassword}
-                                                        onChange={e => setRePassword(e.target.value)}
-                                                    />
+                                                        onChange={e => setRePassword(e.target.value)} />
                                                 </FloatingLabel>
                                             </div>
                                         </div>
@@ -264,11 +224,7 @@ export default function AdminUser() {
                                 </div>
                             </div>
                             <div className="adminUserBodySignUpItem adminUserBodySignUpItemBtn">
-                                <Button
-                                    variant="contained"
-                                    onClick={signUp}
-                                    isLoading={isLoadingSingUp}
-                                >
+                                <Button variant="contained" onClick={signUp} isLoading={isLoadingSingUp}>
                                     Sign Up
                                 </Button>
                             </div>

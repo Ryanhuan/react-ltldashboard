@@ -10,7 +10,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { CustomModal } from '../../../components/modal/customModal';
 import { postData } from "../../../api";
 import Button from '../../../components/button/Button';
-import { customAlert } from '../../../components/customAlert/customAlert';
+import { customAlert, customToastTopEnd } from '../../../components/customAlert/customAlert';
 
 export class AdminMatManage extends Component {
     constructor(props) {
@@ -65,40 +65,41 @@ export class AdminMatManage extends Component {
         //qry from state.SelectOption
         let qryTmp = Object.keys(_selectOption);
         //get Select Option res 
-        let _res = await postData("/api/getSelectOption", qryTmp);
+        let _res = await postData("/api/codeManage/getSelectOption", qryTmp);
         //update Select Option data
-        qryTmp.forEach(ele => {
-            _res.data[ele].forEach(ele_res => {
-                if (ele_res.value !== '**') { _selectOption[ele].push(ele_res) }
+        if (_res.ack === 'OK') {
+            qryTmp.forEach(ele => {
+                _res.data[ele].forEach(ele_res => {
+                    if (ele_res.value !== '**') { _selectOption[ele].push(ele_res) }
+                })
             })
-        })
+        } else {
+            customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
+        }
     }
 
     //get mat data for grid
     async _getMatData(qryData) {
-        let _res = await postData("/api/getMatData", qryData);
-        let _gridData = _res.data;
-        delete _gridData.guid;
-        for (let i = 0; i < _gridData.length; i++) {
-            _gridData[i].seq = (i + 1);
+        let _res = await postData("/api/mat/getMatData", qryData);
+        if (_res.ack === 'OK') {
+            let _gridData = _res.data;
+            delete _gridData.guid;
+            for (let i = 0; i < _gridData.length; i++) {
+                _gridData[i].seq = (i + 1);
+            }
+            this.setState({ gridData: [..._gridData] });
+        } else {
+            customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
         }
-        this.setState({ gridData: [..._gridData] });
     }
 
     //材料新增材料
     async insertData(event) {
         event.preventDefault();
-        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
+        this.setState({ isLoadingInsert: true });
         // console.log(this.state.insertData);
         if (this.state.insertData.id === '' || this.state.insertData.id === null) {
-            customAlert.fire({
-                position: 'bottom-end',
-                width: 400,
-                icon: 'error',
-                title: 'ID 必填!',
-                showConfirmButton: false,
-                timer: 1500
-            })
+            customToastTopEnd.fire('NO NO!', 'ID 必填!', 'error')
         } else {
             let _insertData = this.state.insertData
             for (let ele in _insertData) {
@@ -107,54 +108,29 @@ export class AdminMatManage extends Component {
                 }
             }
             // _insertData
-            let _res = await postData("/api/insertMatData", this.state.insertData);
-            if (_res.status === 'InsertMatData_OK') {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'success',
-                    title: '新增材料成功!',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+            let _res = await postData("/api/mat/insertMatData", this.state.insertData);
+            if (_res.ack === 'OK') {
+                customToastTopEnd.fire('OK!', '新增材料成功!', 'success')
                 this._getMatData({});
-            } else if (_res.msg === 'ID_Repeated') {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: 'ID 重複!',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+            } else if (_res.ackDesc === 'ID_Repeated') {
+                customToastTopEnd.fire('NO NO!', 'ID 重複!', 'error')
             } else {
-                customAlert.fire({
-                    position: 'bottom-end',
-                    width: 400,
-                    icon: 'error',
-                    title: JSON.stringify(_res.msg),
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                customToastTopEnd.fire('NO NO!', JSON.stringify(_res.ackDesc), 'error')
             }
         }
-        this.setState({ isLoadingInsert: !this.state.isLoadingInsert });
+        this.setState({ isLoadingInsert: false });
     }
 
     //材料搜尋材料
     async searchData(event) {
         event.preventDefault();
-        this.setState({ isLoadingSearch: !this.state.isLoadingSearch });
+        this.setState({ isLoadingSearch: true });
         if (this.state.searchData.lowPricePer > this.state.searchData.highPrice) {
-            customAlert.fire(
-                'No No!',
-                '最低單價不可高於最高單價',
-                'error'
-            )
+            customToastTopEnd.fire('NO NO!', '最低單價不可高於最高單價', 'error')
         } else {
             this._getMatData(this.state.searchData);
         }
-        this.setState({ isLoadingSearch: !this.state.isLoadingSearch });
+        this.setState({ isLoadingSearch: false });
     }
 
     // insert & search data onchange
@@ -236,12 +212,12 @@ export class AdminMatManage extends Component {
             cancelButtonText: '取消'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                let _res = await postData("/api/editMatData", data);
-                if (_res.status === 'editMatData_OK') {
-                    customAlert.fire('完成修改!', '修改成功.', 'success')
+                let _res = await postData("/api/mat/editMatData", data);
+                if (_res.ack === 'OK') {
+                    customToastTopEnd.fire('OK!', '修改成功!', 'success')
                     this._getMatData({});
                 } else {
-                    customAlert.fire('Fail!', _res.msg, 'error')
+                    customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error')
                 }
             }
         })
@@ -263,12 +239,12 @@ export class AdminMatManage extends Component {
             cancelButtonText: '取消'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                let _res = await postData("/api/deleteMatData", data);
-                if (_res.status === 'deleteMatData_OK') {
-                    customAlert.fire('完成刪除!', '刪除成功.', 'success')
+                let _res = await postData("/api/mat/deleteMatData", data);
+                if (_res.ack === 'OK') {
+                    customToastTopEnd.fire('OK!', '刪除成功.', 'success')
                     this._getMatData({});
                 } else {
-                    customAlert.fire('Fail!', _res.msg, 'error')
+                    customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error')
                 }
             }
         })
