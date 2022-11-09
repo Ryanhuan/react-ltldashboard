@@ -179,9 +179,11 @@ input[type=number] {
 .swal_customToastTopEnd{
     margin-top: 40px !important;
 }
+
 .swal_customToastTitle{
     text-align: center !important;
-
 }
+
+/* ========================================================================== */
 
 @media screen and (max-width: 820px) {}

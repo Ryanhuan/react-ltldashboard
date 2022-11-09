@@ -202,25 +202,18 @@ export class AdminMatManage extends Component {
     //edit submit
     async submitForm(event, data) {
         event.preventDefault();
-        customAlert.fire({
-            title: '確定要修改?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: '確定',
-            cancelButtonText: '取消'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                let _res = await postData("/api/mat/editMatData", data);
-                if (_res.ack === 'OK') {
-                    customToastTopEnd.fire('OK!', '修改成功!', 'success')
-                    this._getMatData({});
-                } else {
-                    customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error')
+        customAlert.fire({ title: '確定要修改?', icon: 'warning' })
+            .then(async (result) => {
+                if (result.isConfirmed) {
+                    let _res = await postData("/api/mat/editMatData", data);
+                    if (_res.ack === 'OK') {
+                        customToastTopEnd.fire('OK!', '修改成功!', 'success')
+                        this._getMatData({});
+                    } else {
+                        customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error')
+                    }
                 }
-            }
-        })
+            })
         this.modalOnHide();
     }
     // #endregion
@@ -229,25 +222,18 @@ export class AdminMatManage extends Component {
     // delete
     async handleGridDelete(event, data) {
         event.preventDefault();
-        customAlert.fire({
-            title: '確定要刪除?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: '確定',
-            cancelButtonText: '取消'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                let _res = await postData("/api/mat/deleteMatData", data);
-                if (_res.ack === 'OK') {
-                    customToastTopEnd.fire('OK!', '刪除成功.', 'success')
-                    this._getMatData({});
-                } else {
-                    customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error')
+        customAlert.fire({ title: '確定要刪除?', icon: 'warning' })
+            .then(async (result) => {
+                if (result.isConfirmed) {
+                    let _res = await postData("/api/mat/deleteMatData", data);
+                    if (_res.ack === 'OK') {
+                        customToastTopEnd.fire('OK!', '刪除成功.', 'success')
+                        this._getMatData({});
+                    } else {
+                        customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error')
+                    }
                 }
-            }
-        })
+            })
     }
 
     // #endregion

@@ -159,25 +159,18 @@ export class AdminProductCode extends Component {
 
     async submitForm(event, data) {
         event.preventDefault();
-        customAlert.fire({
-            title: '確定要修改?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: '確定',
-            cancelButtonText: '取消'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                let _res = await postData("/api/codeManage/editCodeData", data);
-                if (_res.ack === 'OK') {
-                    customAlert.fire('完成修改!', '修改成功.', 'success')
-                    this._getGridData([this.state.searchTypeCode]);
-                } else {
-                    customAlert.fire('Fail!', _res.ackDesc, 'error')
+        customAlert.fire({ title: '確定要修改?', icon: 'warning' })
+            .then(async (result) => {
+                if (result.isConfirmed) {
+                    let _res = await postData("/api/codeManage/editCodeData", data);
+                    if (_res.ack === 'OK') {
+                        customToastTopEnd.fire('完成修改!', '修改成功.', 'success')
+                        this._getGridData([this.state.searchTypeCode]);
+                    } else {
+                        customToastTopEnd.fire('Fail!', _res.ackDesc, 'error')
+                    }
                 }
-            }
-        })
+            })
         this.modalOnHide();
     }
 
@@ -187,25 +180,18 @@ export class AdminProductCode extends Component {
     // delete
     async handleDelete(event, data) {
         event.preventDefault();
-        customAlert.fire({
-            title: '確定要刪除?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: '確定',
-            cancelButtonText: '取消'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                let _res = await postData("/api/codeManage/deleteCodeData", data);
-                if (_res.ack === 'OK') {
-                    customAlert.fire('完成刪除!', '刪除成功.', 'success')
-                    this._getGridData([this.state.searchTypeCode]);
-                } else {
-                    customAlert.fire('Fail!', _res.ackDesc, 'error')
+        customAlert.fire({ title: '確定要刪除?', icon: 'warning' })
+            .then(async (result) => {
+                if (result.isConfirmed) {
+                    let _res = await postData("/api/codeManage/deleteCodeData", data);
+                    if (_res.ack === 'OK') {
+                        customToastTopEnd.fire('完成刪除!', '刪除成功.', 'success')
+                        this._getGridData([this.state.searchTypeCode]);
+                    } else {
+                        customToastTopEnd.fire('Fail!', _res.ackDesc, 'error')
+                    }
                 }
-            }
-        })
+            })
     }
 
     // #endregion

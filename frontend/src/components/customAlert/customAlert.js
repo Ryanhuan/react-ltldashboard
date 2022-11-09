@@ -1,6 +1,11 @@
 import Swal from 'sweetalert2';
 
 export const customAlert = Swal.mixin({
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: '確定',
+    cancelButtonText: '取消',
     customClass: {
         confirmButton: 'btn btnMain',
         cancelButton: 'btn btnError'
@@ -25,3 +30,10 @@ export const customToastTopEnd = Swal.mixin({
 
 // customToastTopEnd.fire('OK!', '修改成功!', 'success');
 
+
+// customAlert.fire({ title: '確定要修改?', icon: 'warning' })
+// .then(async (result) => {
+//     if (result.isConfirmed) {
+       
+//     }
+// })
