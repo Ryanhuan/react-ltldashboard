@@ -23,7 +23,7 @@ export class AdminProductCode extends Component {
             searchTypeCode: '',
             selectOption: [],
             insertData: {
-                type: '', label: '',
+                type: '', label: '', value: '', mark: ''
             },
             gridData: [],
             modal: {
@@ -200,23 +200,33 @@ export class AdminProductCode extends Component {
         const { searchTypeCode, modal, wrapperOpen, selectOption, insertData, isLoadingInsert, gridData } = this.state;
 
         // #region [Modal]
-        const _tmpModalCols = searchTypeCode === 'product_catena' || searchTypeCode === 'product_single' ?
+        const _tmpModalCols_mark = searchTypeCode === 'product_catena' || searchTypeCode === 'product_single' ?
             { field: 'mark', headerName: '描述', type: 'text', className: 'mb-2 col-12' }
             : { field: '', headerName: '', hide: true };
 
+        // const _tmpModalCols_value = searchTypeCode === 'product_catena' || searchTypeCode === 'product_single' ?
+        //     { field: 'value', headerName: 'value', type: 'text', className: 'mb-2 col-12' }
+        //     : { field: '', headerName: '', hide: true };
+
         const modalCols = [
-            { field: 'label', headerName: '項目', type: 'text', className: 'mb-2 col-6' },
-            _tmpModalCols
+            { field: 'label', headerName: '項目', type: 'text', className: 'mb-2 col-4' },
+            _tmpModalCols_mark,
         ]
 
-        const _tmpCols = searchTypeCode === 'product_catena' || searchTypeCode === 'product_single' ?
-            { field: 'mark', headerName: '描述', flex: 2 }
-            : { field: '', headerName: '', hide: true };
+        const _tmpCols_value = searchTypeCode === 'product_catena' || searchTypeCode === 'product_single' ?
+            { field: 'value', headerName: '代碼', flex: 1 } : { field: 'hide', headerName: '' };
+
+        const _tmpCols_mark = searchTypeCode === 'product_catena' || searchTypeCode === 'product_single' ?
+            { field: 'mark', headerName: '描述', flex: 1 } : { field: 'hide', headerName: '' };
+
+        //設定要隱藏的欄位 
+        const columnVisibilityModel = { hide: false };
 
         const columns = [
             { field: 'seq', headerName: '序', flex: 1 },
             { field: 'label', headerName: '項目', flex: 2 },
-            _tmpCols,
+            _tmpCols_value,
+            _tmpCols_mark,
             {
                 field: 'actions', headerName: 'Actions', flex: 2,
                 renderCell: (params) => {
@@ -261,19 +271,26 @@ export class AdminProductCode extends Component {
                                         </FloatingLabel>
                                     </Col>
                                     {insertData.type === 'product_catena' || insertData.type === 'product_single' ?
-                                        <Col xs={12} md={3}>
-                                            <FloatingLabel controlId="floatingInputMark" label="描述" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="描述" name='mark' value={insertData.mark} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
-                                            </FloatingLabel>
-                                        </Col> : null
+                                        <>
+                                            <Col xs={12} md={3}>
+                                                <FloatingLabel controlId="floatingInputMark" label="代碼(3碼)" className="mb-1 ">
+                                                    <Form.Control type="text" placeholder="代碼(3碼)" name='value' value={insertData.value} onChange={(e) => { this.handleDataChange(e, "insertData") }} maxLength="3" />
+                                                </FloatingLabel>
+                                            </Col>
+                                            <Col xs={12} md={3}>
+                                                <FloatingLabel controlId="floatingInputMark" label="描述" className="mb-1 ">
+                                                    <Form.Control type="text" placeholder="描述" name='mark' value={insertData.mark} onChange={(e) => { this.handleDataChange(e, "insertData") }} />
+                                                </FloatingLabel>
+                                            </Col>
+                                        </> : null
                                     }
-                                    {insertData.type === 'product_status' ?
+                                    {/* {insertData.type === 'product_status' ?
                                         <Col xs={12} md={3}>
                                             <div className="checkboxStyle mb-3">
                                                 <Form.Check type="checkbox" id="checkboxInventory" name="isInventory" label="庫存設定" />
                                             </div>
                                         </Col> : null
-                                    }
+                                    } */}
                                 </Row>
 
                                 <Row className="justify-content-md-center">
@@ -310,6 +327,7 @@ export class AdminProductCode extends Component {
                                     pageSize={10}
                                     rowsPerPageOptions={[10]}
                                     disableSelectionOnClick
+                                    columnVisibilityModel={columnVisibilityModel}
                                     getRowId={(row) => row.seq}
                                 />
                             </div>

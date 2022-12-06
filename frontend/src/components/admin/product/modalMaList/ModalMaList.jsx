@@ -133,18 +133,18 @@ export class ModalMaList extends Component {
         event.preventDefault();
         let _selectedList = this.state.selectedList;
         if (_selectedList.length == 0) {
-            _selectedList.push({ ...data, cntNum: 1 })
+            _selectedList.push({ ...data, cnt_num: 1 })
         } else {
             let _res = _selectedList.filter(function (item, index, array) {
                 if (item.id == data.id) {
-                    item.cntNum = item.cntNum + 1;
+                    item.cnt_num = item.cnt_num + 1;
                     return true;
                 } else {
                     return false;
                 }
             });
             if (_res == false) {
-                _selectedList.push({ ...data, cntNum: 1 })
+                _selectedList.push({ ...data, cnt_num: 1 })
             }
         }
         this.setState({ selectedList: [..._selectedList] })
@@ -162,7 +162,7 @@ export class ModalMaList extends Component {
     increaseCntItem(event, index) {
         event.preventDefault();
         let _selectedList = this.state.selectedList;
-        _selectedList[index].cntNum = _selectedList[index].cntNum >= 50 ? _selectedList[index].cntNum : _selectedList[index].cntNum + 1;
+        _selectedList[index].cnt_num = _selectedList[index].cnt_num >= 50 ? _selectedList[index].cnt_num : _selectedList[index].cnt_num + 1;
         this.setState({ selectedList: [..._selectedList] })
     }
 
@@ -170,7 +170,7 @@ export class ModalMaList extends Component {
     decreaseCntItem(event, index) {
         event.preventDefault();
         let _selectedList = this.state.selectedList;
-        _selectedList[index].cntNum = _selectedList[index].cntNum <= 1 ? _selectedList[index].cntNum : _selectedList[index].cntNum + 1;
+        _selectedList[index].cnt_num = _selectedList[index].cnt_num <= 1 ? _selectedList[index].cnt_num : _selectedList[index].cnt_num + 1;
         this.setState({ selectedList: [..._selectedList] })
     }
 
@@ -329,7 +329,7 @@ export class ModalMaList extends Component {
                                                     <Col xs={6} md={6} className="selectedListItem selectedListItemIconRight">
                                                         <Button variant="text" startIcon={<RemoveCircleOutline />} themeColor='main'
                                                             onClick={(e) => { this.decreaseCntItem(e, index) }} />
-                                                        <span className="cntNumStyle"> {ele.cntNum} </span>
+                                                        <span className="cntNumStyle"> {ele.cnt_num} </span>
                                                         <Button variant="text" startIcon={<AddCircleOutline />} themeColor='main'
                                                             onClick={(e) => { this.increaseCntItem(e, index) }} />
                                                     </Col>

@@ -1,4 +1,4 @@
-const log = require('async');
+// const log = require('async');
 var express = require('express');
 const Tokens = require("../../../middlewares/token");
 const utility = require("../../../public/javascripts/utility");
@@ -13,8 +13,7 @@ router.post("/insertProductData", async function (req, res) {
         console.log("----------api/insertProductData_start-----------");
         var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
         var op_user = TokenVerify.decodeData.email;
-        var reqData = { ...req.body, op_user };
-        let _res = await product.insertProduct(reqData);
+        let _res = await product.insertProduct({ ...req.body, op_user });
         rtn.ack= _res.ack;
         if (_res.ack == 'OK') {
             rtn.ackDesc = 'insertProductData_OK';

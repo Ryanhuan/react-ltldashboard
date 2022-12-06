@@ -99,9 +99,9 @@ module.exports = {
                 } else {
                     let _splitTmp = _res[_res.length - 1].code_seq1.split('_');
                     _seq = (Number(_splitTmp[_splitTmp.length - 1]) + 1).toString();
+                    if (_seq == 'NaN') { _seq = '1'; }
                 }
             }
-
             rtn.ack = "OK"
             rtn.data = _seq;
             return rtn;
@@ -120,17 +120,18 @@ module.exports = {
     insertCodeData: async function (reqData) {
         var rtn = {};
         try {
-            let ChkRepeated = await _ChkRepeated(reqData);
+            let ChkRepeated = await _ChkRepeated(reqData, { 'code_type': 'type', 'code_seq1': 'value' });
 
             if (ChkRepeated.ack == 'FAIL') {
-                console.log("insertCode_ChkRepeated_fail");
-                rtn.ack = 'FAIL';
-                rtn.ackDesc = ChkRepeated.msg;
+                rtn.ack = ChkRepeated.ack;
+                rtn.ackDesc = ChkRepeated.ackDesc;
+                console.log("!ERR! insertCode_ChkRepeated_fail", ChkRepeated.ackDesc);
             } else {
                 var insertData = {};
                 insertData.code_type = reqData.type;
-                insertData.code_seq1 = reqData.type + "_" + reqData._codeSeq.data;
+                insertData.code_seq1 = reqData.value == undefined ? reqData.type + "_" + reqData._codeSeq : reqData.value.toUpperCase();
                 insertData.code_desc1 = reqData.label;
+                insertData.mark = reqData.mark;
                 insertData.op_user = reqData.op_user;
                 insertData.cr_date = utility.get_today();
 
@@ -159,6 +160,7 @@ module.exports = {
             var upData = {};
             upData.code_seq1 = reqData.value;
             upData.code_desc1 = reqData.label;
+            upData.mark = reqData.mark;
             upData.op_user = reqData.op_user;
             upData.up_date = utility.get_today();
 
@@ -194,12 +196,20 @@ module.exports = {
     },
 }
 
-async function _ChkRepeated(data) {
+
+/**
+    * Function description : 檢查是否重複
+    * @param  {JSON} data 資料
+    * @param  {JSON} chkCols 要檢查的欄位及對應之Data Name{'code_type':'type', 'code_seq1':'value','code_desc1':'label'}
+*/
+async function _ChkRepeated(data, chkCols) {
     var rtn = {};
     try {
         var options = {};
         var qry = {};
-        qry.code_type = data.type;
+        for (let ele in chkCols) qry[ele] = data[chkCols[ele]];
+        
+
         let _res = {};
         await m_db.query("publiccode", qry, options, function (err, result) {
             err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : (_res = JSON.parse(JSON.stringify(result)));

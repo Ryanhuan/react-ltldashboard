@@ -28,19 +28,16 @@ router.all('/*', async function (req, res, next) {
         if (!token) {
             rtn.ack = 'FAIL';
             rtn.ackDesc = 'No token provided!';
-            // rtn.msg = 'No token provided!';
             return res.status(403).json(rtn);
         }
         var TokenVerify = await Tokens.accessToken.verifyToken(token);
         if (TokenVerify.ack == 'FAIL') {
             rtn.ack = TokenVerify.ack;
-            if (TokenVerify.msg == 'AccessToken_Is_Expired') {
+            if (TokenVerify.ackDesc == 'AccessToken_Is_Expired') {
                 rtn.ackDesc = 'Login Expired!'
-                // rtn.msg = 'Login Expired!'
                 return res.status(401).json(rtn);
             } else {
                 rtn.ackDesc = 'Login Fail!'
-                // rtn.msg = 'Login Fail!'
                 return res.status(403).json(rtn);
             }
         } else {

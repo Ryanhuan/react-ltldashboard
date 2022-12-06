@@ -87,8 +87,6 @@ module.exports.refreshToken = {
                 if (err != null) {
                     rtn.ack = 'FAIL';
                     rtn.ackDesc = "RefreshToken_Is_Denied"
-                    // rtn.result = false;
-                    // rtn.msg = "RefreshToken_Is_Denied"
                     return rtn;
                 } else {
                     decoded_refreshToken = decoded;
@@ -98,14 +96,10 @@ module.exports.refreshToken = {
                 rtn.ack = 'OK';
                 rtn.ackDesc = "RefreshToken_Is_Access"
                 rtn.decodeData = decoded_refreshToken;
-                // rtn.result = true;
-                // rtn.msg = "RefreshToken_Is_Access"
                 return rtn;
             } else {
                 rtn.ack = 'FAIL';
                 rtn.ackDesc = "RefreshToken_Is_Expired";
-                // rtn.result = false;
-                // rtn.msg = "RefreshToken_Is_Expired";
                 return rtn;
             }
         } catch (err) {

@@ -116,6 +116,12 @@ var fs = require('fs');
 //     }
 //     return result;
 // }
+
+exports.padLeft = function (str, length, sign) {
+    return str.length >= length ?  str :  this.padLeft(sign + str, length, sign);
+}
+
+
 /**
  * 取得民國年yyyMMdd
  */
@@ -216,7 +222,7 @@ exports.isValidDate = function (dateString) {
 //         host: login_config.mail_host, //寄信的host
 //         port: login_config.mail_port //寄信的port
 //     };
-    
+
 //     transjson.secure = false;
 //     transjson.tls = {
 //         rejectUnauthorized: false
@@ -283,7 +289,7 @@ exports.get_timestamp = function () {
 /**
  * 取得時間 HHMM
  */
- exports.get_nowtime = function () {
+exports.get_nowtime = function () {
     var today = new Date();
     var hour = pad(2, today.getHours(), "0");
     var minute = pad(2, today.getMinutes(), "0");
@@ -292,7 +298,7 @@ exports.get_timestamp = function () {
 
 /**
  * @param {JSON} path  路徑
- * @param {callback} callback function(err, result)  
+ * @param {callback} callback function(err, result)
  */
 // exports.createFolder = function (path, callback) {
 //     try {
@@ -322,4 +328,6 @@ exports.get_timestamp = function () {
 //         callback(error)
 //     }
 // }
+
+
 

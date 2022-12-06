@@ -71,7 +71,7 @@ export class AdminMatCode extends Component {
                 customToastTopEnd.fire('No No!', '代碼或代碼描述 重複!', 'error')
             } else {
                 //失敗 其他錯誤
-                customToastTopEnd.fire('No No!', _res.msg, 'error')
+                customToastTopEnd.fire('No No!', _res.ackDesc, 'error')
             }
         }
         this.setState({ isLoadingInsert: false });

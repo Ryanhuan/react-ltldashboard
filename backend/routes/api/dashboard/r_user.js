@@ -37,6 +37,7 @@ router.post("/signup", async function (req, res) {
       rtn.ack = _insertUser.ack;
       if (_insertUser.ack != 'OK') {
         rtn.ackDesc = "SingUp_Fail";
+        console.log("SingUp_Fail");
       } else {
         rtn.ackDesc = "SingUp_OK";
       }

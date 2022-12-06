@@ -127,18 +127,30 @@ router.post("/insertCodeData", async function (req, res) {
         rtn.data = {};
         var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
         var op_user = TokenVerify.decodeData.email;
+        // type => code_type ,value => code_seq1, label=>code_desc1
         //新增代碼 自產code_seq1(code_type+_+seq)
         //先取現在code_seq1 順序
-        // req.body { type: 'ma_quality', label: '1111' }
-        let _codeSeq = await codeManage.getCodeSeq1_seq(req.body.type);
-        if (_codeSeq.ack == 'OK') {
-            let _res = await codeManage.insertCodeData({ ...req.body, _codeSeq, op_user });
+        //EX: req.body { type: 'ma_quality', label: '1111' }
+        let insertData = { ...req.body, op_user };
+        if (insertData.value == undefined) {
+            // 若 value==undefined 則取 getCodeSeq1_seq
+            let _codeSeq = await codeManage.getCodeSeq1_seq(insertData.type);
+            _codeSeq.ack == 'OK' ? insertData._codeSeq = _codeSeq.data : (rtn.ack = 'FAIL', rtn.ackDesc = err.message);
+        }
+
+        if (rtn.ack !== 'FAIL') {
+            // console.log("req.body.value************", req.body.value);
+            let _res = await codeManage.insertCodeData(insertData);
             rtn.ack = _res.ack;
             if (_res.ack == 'OK') {
                 rtn.ackDesc = 'insertCodeData_OK';
                 rtn.data = _res.data;
             } else {
-                rtn.ackDesc = 'insertCodeData_Fail';
+                if (_res.ackDesc == 'code_ChkRepeated') {
+                    rtn.ackDesc = _res.ackDesc;
+                } else {
+                    rtn.ackDesc = 'insertCodeData_Fail';
+                }
             }
         }
         console.log("----------api/insertCodeData_end-----------");

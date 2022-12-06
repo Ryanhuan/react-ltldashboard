@@ -11,8 +11,8 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel'
 
 import TextField from '@mui/material/TextField';
 import { Clear } from '@material-ui/icons';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { postData } from "../../../api";
@@ -25,37 +25,33 @@ import { customAlert, customToastTopEnd } from '../../customAlert/customAlert';
 //hashtag   
 import { WithContext as ReactTags } from 'react-tag-input';
 
+const initialState = {
+    isLoading: false,
+    selectOption: {
+        product_kind: [],
+        product_status: [],
+        product_catena: [],
+        product_single: [],
+    },
+    modal: {
+        isShow: false,
+        data: [],
+    },
+    insertData: {
+        name: '', kind: '', size: '', inventory: '', status: '',
+        catena_belong: '', single_belong: '', catena_intro: '', product_intro: '', other_intro: '',
+        scheduled_date: null, limit_date_beg: null, limit_date_end: null,
+        product_items_total_price: 0, product_profit: 0, product_price: '',
+    },
+    hashtags: [],
+    fileList: [], // upload
+    maList: [], // 使用材料清單
+};
 
 export class Product extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isLoading: false,
-            insertData: this.props.type == 'update' ? this.props.updateData : {
-                name: '', kind: '', size: '', inventory: '', status: '',
-                catenaBelong: '', singleBelong: '', catenaIntro: '', productIntro: '', otherIntro: '',
-                scheduledDate: null, LimitDateBeg: null, LimitDateEnd: null,
-                productItemsTotalPrice: '', productProfit: '', productPrice: '',
-            },
-            // insertData: {
-            //     name: '', kind: '', size: '', inventory: '', status: '',
-            //     catenaBelong: '', singleBelong: '', catenaIntro: '', productIntro: '', otherIntro: '',
-            //     scheduledDate: null, LimitDateBeg: null, LimitDateEnd: null,
-            // },
-            selectOption: {
-                product_kind: [],
-                product_status: [],
-                product_catena: [],
-                product_single: [],
-            },
-            modal: {
-                isShow: false,
-                data: [],
-            },
-            hashtags: [],
-            fileList: [],// upload
-            maList: [], // 使用材料清單
-        };
+        this.state = { ...initialState };
 
         // this.target = createRef(null);
 
@@ -92,17 +88,17 @@ export class Product extends Component {
 
     // 計算總計&利潤
     cntPriceAndProfit() {
-        if (this.state.insertData.productPrice >= 0 || this.state.insertData.productPrice == undefined) {
+        if (this.state.insertData.product_price >= 0 || this.state.insertData.product_price == undefined) {
             let _maList = this.state.maList;
             let tmpTotalPrice = 0;
             for (let ele of _maList) {
-                tmpTotalPrice += Number(ele.cntNum * ele.price_per);
+                tmpTotalPrice += Number(ele.cnt_num * ele.price_per);
             }
 
             this.setState((prev) => (
                 {
                     insertData: {
-                        ...prev.insertData, productItemsTotalPrice: tmpTotalPrice, productProfit: (Number(prev.insertData.productPrice) - tmpTotalPrice)
+                        ...prev.insertData, product_items_total_price: tmpTotalPrice, product_profit: (Number(prev.insertData.product_price) - tmpTotalPrice)
                     }
                 }));
         }
@@ -128,7 +124,7 @@ export class Product extends Component {
 
     //get select Option 
     async _getSelectOption() {
-        let qryTmp = Object.keys(this.state.selectOption);
+        let qryTmp = Object.keys(initialState.selectOption);
         let _SelectOption = [];
         //get Select Option res 
         let _res = await postData("/api/codeManage/getSelectOption", qryTmp);
@@ -160,23 +156,23 @@ export class Product extends Component {
         _insertData[event.target.name] = event.target.value;
 
         switch (event.target.name) {
-            case 'catenaBelong':
-                if (await checkEmpty(this.state.insertData.catenaBelong)) {
+            case 'catena_belong':
+                if (await checkEmpty(this.state.insertData.catena_belong)) {
                     // get code mark
-                    let _res = await postData("/api/codeManage/getCodeMark/product_catena/" + this.state.insertData.catenaBelong);
-                    _res.ack === 'OK' ? _insertData.catenaIntro = _res.data.mark : customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
+                    let _res = await postData("/api/codeManage/getCodeMark/product_catena/" + this.state.insertData.catena_belong);
+                    _res.ack === 'OK' ? _insertData.catena_intro = _res.data.mark : customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
                 } else {
-                    _insertData.catenaIntro = '';
+                    _insertData.catena_intro = '';
                 }
                 break;
 
-            case 'singleBelong':
-                if (await checkEmpty(this.state.insertData.singleBelong)) {
+            case 'single_belong':
+                if (await checkEmpty(this.state.insertData.single_belong)) {
                     // get code mark
-                    let _res = await postData("/api/codeManage/getCodeMark/product_single/" + this.state.insertData.singleBelong);
-                    _res.ack === 'OK' ? _insertData.productIntro = _res.data.mark : customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
+                    let _res = await postData("/api/codeManage/getCodeMark/product_single/" + this.state.insertData.single_belong);
+                    _res.ack === 'OK' ? _insertData.product_intro = _res.data.mark : customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
                 } else {
-                    _insertData.productIntro = '';
+                    _insertData.product_intro = '';
                 }
                 break;
 
@@ -188,10 +184,10 @@ export class Product extends Component {
                 break;
 
             // 計算利潤
-            case 'productItemsTotalPrice':
-            case 'productPrice':
-                if (this.state.insertData.productPrice >= 0 || this.state.insertData.productPrice == undefined) {
-                    _insertData.productProfit = _insertData.productPrice - _insertData.productItemsTotalPrice;
+            case 'product_items_total_price':
+            case 'product_price':
+                if (this.state.insertData.product_price >= 0 || this.state.insertData.product_price == undefined) {
+                    _insertData.product_profit = _insertData.product_price - _insertData.product_items_total_price;
                 }
                 break;
 
@@ -211,10 +207,24 @@ export class Product extends Component {
 
     async handleSubmitInsertData(event) {
         event.preventDefault();
-        // console.log("insertData", this.state.insertData);
+        if (this.state.insertData.catena_belong === '' || this.state.insertData.single_belong === '') {
+            customToastTopEnd.fire('NO NO!', "'所屬系列'及'所屬單品'為必填!", 'error');
+        } else {
+            let data = {
+                insertData: { ...this.state.insertData },
+                fileList: [...this.state.fileList],
+                maList: [...this.state.maList],
+            }
 
-        // let _res = await postData('/api/product/insertProductData',res);
-
+            let _res = await postData('/api/product/insertProductData', data);
+            if (_res.ack === 'OK') {
+                customToastTopEnd.fire('Success!', 'Add product successfully!', 'success');
+                this.setState({ ...initialState });
+                this._getSelectOption();
+            } else {
+                customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
+            }
+        };
     }
 
     // #region [hashtag]
@@ -283,9 +293,9 @@ export class Product extends Component {
         event.preventDefault();
         let _maList = this.state.maList;
         _maList[index][event.target.name] = event.target.value;
-        if (event.target.name == 'cntNum') {
+        if (event.target.name == 'cnt_num') {
             // 計算單素材使用價錢
-            _maList[index].itemPrice = _maList[index].cntNum * _maList[index].price_per;
+            _maList[index].itemPrice = _maList[index].cnt_num * _maList[index].price_per;
             this.cntPriceAndProfit();
         }
         this.setState({ maList: _maList });
@@ -301,7 +311,7 @@ export class Product extends Component {
         // let tmpMaList = this.state.maList;
         let tmpMaList = [];
         for (let ele of data) {
-            tmpMaList.push({ ...ele, itemPrice: ele.cntNum * ele.price_per });
+            tmpMaList.push({ ...ele, itemPrice: ele.cnt_num * ele.price_per });
         }
         this.setState({ maList: tmpMaList })
         this.modalOnHide();
@@ -344,7 +354,7 @@ export class Product extends Component {
                 </Col>
                 <Col xs={2} md={2}>
                     <FloatingLabel controlId="floatingInputItemNum" label="數量" className="mb-1 ">
-                        <Form.Control type="text" placeholder="數量" name='cntNum' value={item.cntNum}
+                        <Form.Control type="text" placeholder="數量" name='cnt_num' value={item.cnt_num}
                             onChange={(event) => { this.handleMaListData(event, index) }} />
                     </FloatingLabel>
                 </Col>
@@ -356,11 +366,11 @@ export class Product extends Component {
                 </Col>
             </Row>
         ))
-
         return (
             <div className="product">
                 {this.state.isLoading ? <Loading /> : null}
                 {/* productWrapper */}
+
                 <div className="productWrapper">
                     {/* adminProductBodyLeft */}
                     <div className="adminProductBodyLeft">
@@ -412,12 +422,13 @@ export class Product extends Component {
                                     {this.state.insertData.status === 'Scheduled' ?
                                         <Row>
                                             <Col xs={12} md={12} className="mb-2 " >
-                                                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                                    <DatePicker
-                                                        label="預訂上架日期"
-                                                        value={this.state.insertData.scheduledDate}
-                                                        onChange={(newValue) => { this.handleDatePickerChange(newValue, 'scheduledDate') }}
-                                                        renderInput={(params) => <TextField {...params} />}
+                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                    <DateTimePicker
+                                                        renderInput={(props) => <TextField {...props} />}
+                                                        label="預訂上架時間"
+                                                        inputFormat="YYYY/MM/DD hh:mm a"
+                                                        value={this.state.insertData.scheduled_date}
+                                                        onChange={(newValue) => { this.handleDatePickerChange(newValue, 'scheduled_date') }}
                                                     />
                                                 </LocalizationProvider>
                                             </Col>
@@ -425,28 +436,34 @@ export class Product extends Component {
                                     }
 
                                     {this.state.insertData.status === 'Limit' ?
-                                        <Row>
-                                            <Col xs={12} md={6} className="mb-2 ">
-                                                <LocalizationProvider dateAdapter={AdapterDateFns} >
-                                                    <DatePicker
-                                                        label="上架日期"
-                                                        value={this.state.insertData.LimitDateBeg}
-                                                        onChange={(newValue) => { this.handleDatePickerChange(newValue, 'LimitDateBeg') }}
-                                                        renderInput={(params) => <TextField {...params} />}
-                                                    />
-                                                </LocalizationProvider>
-                                            </Col>
-                                            <Col xs={12} md={6}>
-                                                <LocalizationProvider dateAdapter={AdapterDateFns} >
-                                                    <DatePicker
-                                                        label="下架日期"
-                                                        value={this.state.insertData.LimitDateEnd}
-                                                        onChange={(newValue) => { this.handleDatePickerChange(newValue, 'LimitDateEnd') }}
-                                                        renderInput={(params) => <TextField {...params} />}
-                                                    />
-                                                </LocalizationProvider>
-                                            </Col>
-                                        </Row> : null
+                                        <>
+                                            <Row>
+                                                <Col xs={12} md={12} className="mb-2 ">
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            renderInput={(props) => <TextField {...props} />}
+                                                            label="上架時間"
+                                                            inputFormat="YYYY/MM/DD hh:mm a"
+                                                            value={this.state.insertData.limit_date_beg}
+                                                            onChange={(newValue) => { this.handleDatePickerChange(newValue, 'limit_date_beg') }}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col xs={12} md={12} className="mb-2 ">
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DateTimePicker
+                                                            renderInput={(props) => <TextField {...props} />}
+                                                            label="下架日期"
+                                                            inputFormat="YYYY/MM/DD hh:mm a"
+                                                            value={this.state.insertData.limit_date_end}
+                                                            onChange={(newValue) => { this.handleDatePickerChange(newValue, 'limit_date_end') }}
+                                                        />
+                                                    </LocalizationProvider>
+                                                </Col>
+                                            </Row>
+                                        </> : null
                                     }
                                 </Container>
                             </div>
@@ -460,7 +477,7 @@ export class Product extends Component {
                                     <Row>
                                         <Col xs={12} md={6}>
                                             <FloatingLabel controlId="floatingSelectCatenaBelong" label="所屬系列" className="mb-1 ">
-                                                <Form.Select aria-label="Floating label select" name='catenaBelong' value={this.state.insertData.catenaBelong} onChange={this.handleInsertDataChange} >
+                                                <Form.Select aria-label="Floating label select" name='catena_belong' value={this.state.insertData.catena_belong} onChange={this.handleInsertDataChange} >
                                                     {this.state.selectOption.product_catena.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                 </Form.Select>
                                             </FloatingLabel>
@@ -470,8 +487,8 @@ export class Product extends Component {
                                                 <Form.Control
                                                     as="textarea"
                                                     placeholder="系列介紹"
-                                                    name='catenaIntro'
-                                                    value={this.state.insertData.catenaIntro}
+                                                    name='catena_intro'
+                                                    value={this.state.insertData.catena_intro}
                                                     onChange={this.handleInsertDataChange}
                                                     style={{ height: '100px' }} />
                                             </FloatingLabel>
@@ -480,7 +497,7 @@ export class Product extends Component {
                                     <Row>
                                         <Col xs={12} md={6}>
                                             <FloatingLabel controlId="floatingSelectProductBelong" label="所屬單品" className="mb-1 ">
-                                                <Form.Select aria-label="Floating label select" name='singleBelong' value={this.state.insertData.singleBelong} onChange={this.handleInsertDataChange} >
+                                                <Form.Select aria-label="Floating label select" name='single_belong' value={this.state.insertData.single_belong} onChange={this.handleInsertDataChange} >
                                                     {this.state.selectOption.product_single.map(({ value, label }, index) => <option key={index} value={value} >{label}</option>)}
                                                 </Form.Select>
                                             </FloatingLabel>
@@ -490,8 +507,8 @@ export class Product extends Component {
                                                 <Form.Control
                                                     as="textarea"
                                                     placeholder="單品介紹"
-                                                    name='productIntro'
-                                                    value={this.state.insertData.productIntro}
+                                                    name='product_intro'
+                                                    value={this.state.insertData.product_intro}
                                                     onChange={this.handleInsertDataChange}
                                                     style={{ height: '100px' }} />
                                             </FloatingLabel>
@@ -503,8 +520,8 @@ export class Product extends Component {
                                                 <Form.Control
                                                     as="textarea"
                                                     placeholder="其他介紹"
-                                                    name='otherIntro'
-                                                    value={this.state.insertData.otherIntro}
+                                                    name='other_intro'
+                                                    value={this.state.insertData.other_intro}
                                                     onChange={this.handleInsertDataChange}
                                                     style={{ height: '100px' }} />
                                             </FloatingLabel>
@@ -577,7 +594,7 @@ export class Product extends Component {
                                     <Row>
                                         <Col xs={12} md={4}>
                                             <FloatingLabel controlId="floatingInputProductPrice" label="售價" className="mb-1 ">
-                                                <Form.Control type="text" placeholder="售價" name='productPrice' value={this.state.insertData.productPrice} onChange={this.handleInsertDataChange} />
+                                                <Form.Control type="text" placeholder="售價" name='product_price' value={this.state.insertData.product_price} onChange={this.handleInsertDataChange} />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -601,7 +618,7 @@ export class Product extends Component {
                                     <Row>
                                         <Col xs={12} md={6}>
                                             <FloatingLabel controlId="floatingInputProductTotalPrice" label="總計" className="mb-2 ">
-                                                <Form.Control type="text" placeholder="總計" name='productItemsTotalPrice' value={this.state.insertData.productItemsTotalPrice} onChange={this.handleInsertDataChange} disabled />
+                                                <Form.Control type="number" placeholder="總計" name='product_items_total_price' value={this.state.insertData.product_items_total_price} onChange={this.handleInsertDataChange} disabled />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>
@@ -609,7 +626,7 @@ export class Product extends Component {
                                     <Row>
                                         <Col xs={12} md={6}>
                                             <FloatingLabel controlId="floatingInputProductProfit" label="利潤" className="mb-2 ">
-                                                <Form.Control type="text" placeholder="利潤" name='productProfit' value={this.state.insertData.productProfit} onChange={this.handleInsertDataChange} disabled />
+                                                <Form.Control type="number" placeholder="利潤" name='product_profit' value={this.state.insertData.product_profit} onChange={this.handleInsertDataChange} disabled />
                                             </FloatingLabel>
                                         </Col>
                                     </Row>

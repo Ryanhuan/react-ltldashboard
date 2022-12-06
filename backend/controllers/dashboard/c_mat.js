@@ -17,8 +17,9 @@ module.exports = {
             let chkMatId = await checkMatId(reqData.id);
 
             if (chkMatId.ack == 'FAIL') {
-                console.log("insertMat_chkMatId_fail");
-                rtn = chkMatId;
+                rtn.ack = chkMatId.ack;
+                rtn.ackDesc = chkMatId.ackDesc;
+                console.log("!ERR! insertMat_chkMatId_fail", chkMatId.ackDesc);
             } else {
                 console.log("insertMat_chkMatId_ok");
                 var insertData = reqData;
