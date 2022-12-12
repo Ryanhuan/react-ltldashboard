@@ -24,14 +24,14 @@ const AdminProductAdd = loadable(() => import('./pages/admin/adminProductAdd/Adm
 export const pageSettings = {
 
     Admin: [
-        { title: 'Home', pageTitle: '',href: '/Admin', element: <Home /> },
-        { title: 'AdminUser',pageTitle: '成員管理', href: '/AdminUser', element: <AdminUser /> },
-        { title: 'AdminMatManage', pageTitle: '材料管理',href: '/AdminMatManage', element: <AdminMatManage /> },
-        { title: 'AdminMatCode',pageTitle: '材料分類管理', href: '/AdminMatCode', element: <AdminMatCode /> },
+        { title: 'Home', pageTitle: '', href: '/Admin', element: <Home /> },
+        { title: 'AdminUser', pageTitle: '成員管理', href: '/AdminUser', element: <AdminUser /> },
+        { title: 'AdminMatManage', pageTitle: '材料管理', href: '/AdminMatManage', element: <AdminMatManage /> },
+        { title: 'AdminMatCode', pageTitle: '材料分類管理', href: '/AdminMatCode', element: <AdminMatCode /> },
         { title: 'AdminProductManage', pageTitle: '產品管理', href: '/AdminProductManage', element: <AdminProductManage /> },
-        { title: 'AdminProductCode', pageTitle: '材料分類管理',href: '/AdminProductCode', element: <AdminProductCode /> },
-        { title: 'AdminProductAdd', pageTitle: '產品新增',href: '/AdminProductAdd', element: <AdminProductAdd /> },
+        { title: 'AdminProductCode', pageTitle: '材料分類管理', href: '/AdminProductCode', element: <AdminProductCode /> },
+        { title: 'AdminProductAdd', pageTitle: '產品新增', href: '/AdminProductAdd', element: <AdminProductAdd /> },
 
-        { title: '',pageTitle: '', href: '*', element: <Home /> },
+        { title: '', pageTitle: '', href: '*', element: <Home /> },
     ],
 };

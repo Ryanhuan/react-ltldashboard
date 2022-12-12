@@ -25,7 +25,6 @@ module.exports = {
             } else {
                 data.insertData.sku = skuRes.ackDesc;
                 const { sku } = data.insertData;
-                console.log("insertData================", data.insertData);
 
                 rtn = db.transaction().then(function (t) {
                     var rtn_ = {};
@@ -82,8 +81,34 @@ module.exports = {
         }
     },
 
+    /**
+        * Function description : 取得商品資料
+        * @param  {string} reqData 使用者查詢條件資料
+        */
+    getProduct: async function (reqData) {
+        var rtn = {};
+        try {
+            console.log("getProduct reqData", reqData);
+
+            let _res = await queryProducts(reqData);
+            // console.log("_res", _res);
+            rtn = _res;
+
+            // console.log("rtn", rtn);
+
+            return rtn;
+        } catch (err) {
+            console.log("getProduct err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
+            return rtn;
+        }
+    },
 }
 
+
+
+//Function =====================================================================
 
 /**
    * Function description : handle Product Data Promise
@@ -170,7 +195,7 @@ async function createSKUCode(data) {
         } else {
             // 建前六碼
             let _tmpSKU = data.insertData.catena_belong.toUpperCase() + data.insertData.single_belong.toUpperCase();
-            let products = await getProducts(_tmpSKU);
+            let products = await queryProducts({ sku: _tmpSKU });
             if (products.ack == 'FAIL') {
                 rtn.ack = products.ack;
                 rtn.ackDesc = products.ackDesc;
@@ -197,20 +222,47 @@ async function createSKUCode(data) {
     }
 }
 
-// getProducts by Sku
-async function getProducts(reqSku) {
+// queryProducts
+async function queryProducts(reqData) {
     const rtn = {};
     try {
         var options = {};
         var qry = {};
-        if (reqSku != undefined && reqSku != "") {
-            qry.sku = {};
-            qry.sku[Op.like] = '%' + reqSku + '%';
+
+        // set fuzzy search col
+        let fuzzySearchArr = ['sku', 'name',];
+
+        for (let ele in reqData) {
+            if (fuzzySearchArr.includes(ele) === true) {
+                if (reqData[ele] != undefined && reqData[ele] != "") {
+                    qry[ele] = {};
+                    qry[ele][Op.like] = '%' + reqData[ele] + '%';
+                }
+            } else {
+                if (reqData[ele] != undefined && reqData[ele] != "") {
+                    qry[ele] = reqData[ele];
+                }
+            }
         }
+
+        // TODO:
+        // inventory: '',
 
         await m_db.query("products", qry, options, function (err, result) {
             err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : (rtn.ack = "OK", rtn.data = JSON.parse(JSON.stringify(result)));
         })
+
+
+        // Test function tmp
+
+        console.log("rtn.data", rtn.data);
+        const { kind, status, catena_belong, single_belong } = rtn.data;
+        // let _tmp = await transformPublicCode('ma_type_1', 'code_seq1', 'code_desc1');
+        // console.log('transformPublicCode!!!!', _tmp);
+
+        rtn.data
+        // Test function tmp
+
 
         return rtn;
     } catch (err) {
@@ -220,3 +272,25 @@ async function getProducts(reqSku) {
         return rtn;
     }
 }
+
+// TODO:
+// data
+// fromCol
+// toCol
+async function transformPublicCode(data, fromCol, toCol) {
+    var qry = {};
+    var options = {};
+    let rtn = null;
+    qry[fromCol] = data;
+
+    await m_db.query("publiccode", qry, options, function (err, result) {
+        if (err != null) {
+            console.log('transformPublicCode err :', err.message);
+        } else {
+            rtn = JSON.parse(JSON.stringify(result))[0][toCol];
+        }
+    })
+    return rtn;
+
+}
+

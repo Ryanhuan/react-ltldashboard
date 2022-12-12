@@ -1,0 +1,44 @@
+.adminProductManage {
+    .adminWrapper {
+        .adminItems {
+            padding: 20px;
+
+            .adminItemWrapper {
+                height: 0px;
+                transition: 0.5s;
+                overflow: hidden;
+                padding: 10px 20px 0px 20px;
+                margin-top: 10px;
+
+                &.active {
+                    height: 200px;
+                    transition: 0.5s;
+                }
+
+                .checkboxStyle {
+                    text-align: left;
+                    margin-top: 20px;
+                    line-height: 25px;
+                }
+            }
+
+            .adminItemContainer {
+                padding: 10px 0;
+
+                .productCodeDataList {
+                    height: 635px;
+                }
+
+            }
+        }
+    }
+}
+
+
+@media(max-width:768px) {
+    .adminProductCode {
+        .adminItemWrapper.active {
+            height: auto;
+        }
+    }
+}

@@ -118,7 +118,6 @@ export class Product extends Component {
             // 重新計算總計&利潤
             this.cntPriceAndProfit();
         }
-
     }
 
 
@@ -207,6 +206,7 @@ export class Product extends Component {
 
     async handleSubmitInsertData(event) {
         event.preventDefault();
+        this.setState({isLoading: true});
         if (this.state.insertData.catena_belong === '' || this.state.insertData.single_belong === '') {
             customToastTopEnd.fire('NO NO!', "'所屬系列'及'所屬單品'為必填!", 'error');
         } else {
@@ -225,6 +225,7 @@ export class Product extends Component {
                 customToastTopEnd.fire('NO NO!', _res.ackDesc, 'error');
             }
         };
+        this.setState({isLoading: false});
     }
 
     // #region [hashtag]
@@ -344,7 +345,6 @@ export class Product extends Component {
                         <Form.Control type="text" placeholder="名稱" name='itemName' value={item.name} disabled
                             onChange={(event) => { this.handleMaListData(event, index) }} />
                     </FloatingLabel>
-
                 </Col>
                 <Col xs={2} md={2}>
                     <FloatingLabel controlId="floatingInputItemSize" label="尺寸" className="mb-1 ">

@@ -14,10 +14,9 @@ router.post("/insertProductData", async function (req, res) {
         var TokenVerify = Tokens.accessToken.verifyToken(JSON.parse(req.headers["authorization"]));
         var op_user = TokenVerify.decodeData.email;
         let _res = await product.insertProduct({ ...req.body, op_user });
-        rtn.ack= _res.ack;
+        rtn.ack = _res.ack;
         if (_res.ack == 'OK') {
             rtn.ackDesc = 'insertProductData_OK';
-            rtn.data = _res.data;
         } else {
             rtn.ackDesc = 'insertProductData_Fail'
         }
@@ -25,6 +24,28 @@ router.post("/insertProductData", async function (req, res) {
         res.json(rtn);
     } catch (err) {
         console.log("insertProductData err:", err);
+        rtn.ack = 'FAIL';
+        rtn.ackDesc = err.message;
+        res.json(rtn);
+    }
+});
+
+router.post("/getProductData", async function (req, res) {
+    var rtn = {};
+    try {
+        console.log("----------api/getProductData_start-----------");
+        let _res = await product.getProduct(req.body);
+        rtn.ack = _res.ack;
+        if (_res.ack == 'OK') {
+            rtn.ackDesc = 'getProductData_OK';
+            rtn.data = _res.data;
+        } else {
+            rtn.ackDesc = 'getProductData_Fail'
+        }
+        console.log("----------api/getProductData_end-----------");
+        res.json(rtn);
+    } catch (err) {
+        console.log("getProductData err:", err);
         rtn.ack = 'FAIL';
         rtn.ackDesc = err.message;
         res.json(rtn);
