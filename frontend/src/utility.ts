@@ -1,4 +1,4 @@
-import { postData } from "./api";
+import { postData } from "@/api";
 
 export async function getSelectOption(type: string) {
     let _SelectOption = [{ value: '', label: '==請選擇==' },];

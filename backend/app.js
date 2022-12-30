@@ -6,6 +6,7 @@ var logger = require('morgan');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 var authRouter = require('./routes/auth');
+var indexRouter = require('./routes/index');
 var apiRouter = require('./routes/api/index');
 const fileUpload = require('express-fileupload');
 
@@ -54,6 +55,7 @@ app.use(cors({
 }));
 
 
+app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/api', apiRouter);
 

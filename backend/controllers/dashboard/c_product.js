@@ -7,36 +7,72 @@ const Op = Sequelize.Op;
 const fse = require('fs-extra');
 var fs = require('fs');
 const { FileFolderUrl } = require('../../config/ltlConfig');
+const { codeDesc } = require('./c_mat');
 
 module.exports = {
     /**
      * Function description : 新增
      * @param  {JSON} reqData 新增資料
      */
-    insertProduct: async function (reqData) {
+    handleProduct: async function (reqData) {
         var rtn = {};
         try {
             let data = reqData;
-            let skuRes = await createSKUCode(reqData);
-            if (skuRes.ack == 'FAIL') {
-                rtn.ack = skuRes.ack;
-                rtn.ackDesc = skuRes.ackDesc;
-                console.log("!ERR! skuRes", skuRes.ackDesc);
-            } else {
-                data.insertData.sku = skuRes.ackDesc;
-                const { sku } = data.insertData;
 
-                rtn = db.transaction().then(function (t) {
-                    var rtn_ = {};
+            return rtn = db.transaction().then(async function (t) {
+                var rtn_ = {};
+                let req_productData;
+                let req_imgData;
+                let req_bomData;
+                let req_bomDataDelete;
 
+                if (data.insertData.sku === undefined || data.insertData.sku === null || data.insertData.sku === '') {
+                    // insert
                     // insert product data
-                    let req_productData = new Promise((resolve, reject) => {
-                        handleProductDataPromise(data.insertData, data.op_user, t, resolve, reject);
+
+                    let skuRes = await createSKUCode(reqData);
+                    if (skuRes.ack == 'FAIL') {
+                        rtn.ack = skuRes.ack;
+                        rtn.ackDesc = skuRes.ackDesc;
+                        console.log("!ERR! skuRes", skuRes.ackDesc);
+                    } else {
+                        data.insertData.sku = skuRes.ackDesc;
+                        const { sku } = data.insertData;
+
+                        req_productData = new Promise((resolve, reject) => {
+                            handleInsertProductDataPromise(data.insertData, data.op_user, t, resolve, reject);
+                        });
+
+                        // upload img
+                        req_imgData = new Promise((resolve, reject) => {
+                            if (data.fileList.length != 0) {
+                                let picPath = path.join(FileFolderUrl, sku);
+                                fse.ensureDirSync(picPath);
+                                data.fileList.map((item, index) => {
+                                    let target = path.join(picPath, sku + "_" + index + ".jpg");
+                                    handleImgDataPromise(item.imageUrl, target, t, resolve, reject);
+                                })
+                            } else {
+                                return resolve();
+                            }
+                        });
+
+                        req_bomDataDelete = new Promise((resolve, reject) => {
+                            return resolve();
+                        })
+                    }
+                } else {
+                    // update
+                    const { sku } = data.insertData;
+                    // update product data
+                    req_productData = new Promise((resolve, reject) => {
+                        handleUpdateProductDataPromise(data.insertData, data.op_user, t, resolve, reject);
                     });
 
-                    // upload img
-                    let req_imgData = new Promise((resolve, reject) => {
+                    // rm and upload img
+                    req_imgData = new Promise((resolve, reject) => {
                         let picPath = path.join(FileFolderUrl, sku);
+                        fs.rmdirSync(picPath, { recursive: true });
                         fse.ensureDirSync(picPath);
                         data.fileList.map((item, index) => {
                             let target = path.join(picPath, sku + "_" + index + ".jpg");
@@ -44,37 +80,47 @@ module.exports = {
                         })
                     });
 
-                    // insert bom
-                    let req_bomData = new Promise((resolve, reject) => {
-                        data.maList.map((item) => {
-                            item.sku = data.insertData.sku;
-                            handleBomDataPromise(item, t, resolve, reject);
-                        })
+                    // delete bom
+                    req_bomDataDelete = new Promise((resolve, reject) => {
+                        handleDeleteBomDataPromise(sku, t, resolve, reject);
                     });
 
-                    return Promise.all([req_productData, req_imgData, req_bomData])
-                        .then(value => {
-                            t.commit();
-                            rtn_.ack = "OK";
-                            return rtn_;
-                        }, resion => {
-                            t.rollback();
-                            rtn_.ack = "FAIL";
-                            rtn_.ackDesc = "新增時發生錯誤";
-                            return rtn_;
-                        })
-                        .catch(err => {
-                            console.log("insertProduct err", err);
-                            rtn_.ack = "FAIL";
-                            rtn_.ackDesc = err.message;
-                            return rtn_;
-                        });
-                })
-            }
+                }
 
-            return rtn;
+                // insert bom
+                req_bomData = new Promise((resolve, reject) => {
+                    if(data.maList.length!=0){
+                    data.maList.map((item) => {
+                        item.sku = data.insertData.sku;
+                        handleInsertBomDataPromise(item, t, resolve, reject);
+                    })
+                    }else{
+                        return resolve(); 
+                    }
+
+                });
+
+                return Promise.all([req_productData, req_imgData, req_bomData, req_bomDataDelete])
+                    .then(value => {
+                        t.commit();
+                        rtn_.ack = "OK";
+                        return rtn_;
+                    }, resion => {
+                        t.rollback();
+                        rtn_.ack = "FAIL";
+                        rtn_.ackDesc = "處理資料時發生錯誤";
+                        return rtn_;
+                    })
+                    .catch(err => {
+                        console.log("handleProduct err", err);
+                        rtn_.ack = "FAIL";
+                        rtn_.ackDesc = err.message;
+                        return rtn_;
+                    });
+            })
+           
         } catch (err) {
-            console.log("insertProduct err:", err);
+            console.log("handleProduct err:", err);
             rtn.ack = 'FAIL';
             rtn.ackDesc = err.message;
             return rtn;
@@ -88,14 +134,13 @@ module.exports = {
     getProduct: async function (reqData) {
         var rtn = {};
         try {
-            console.log("getProduct reqData", reqData);
-
-            let _res = await queryProducts(reqData);
-            // console.log("_res", _res);
-            rtn = _res;
-
-            // console.log("rtn", rtn);
-
+            rtn = await queryProducts(reqData);
+            for (let ele in rtn.data) {
+                rtn.data[ele].kind = await codeDesc(rtn.data[ele].kind, "product_kind");
+                rtn.data[ele].status = await codeDesc(rtn.data[ele].status, "product_status");
+                rtn.data[ele].catena_belong = await codeDesc(rtn.data[ele].catena_belong, "product_catena");
+                rtn.data[ele].single_belong = await codeDesc(rtn.data[ele].single_belong, "product_single");
+            }
             return rtn;
         } catch (err) {
             console.log("getProduct err:", err);
@@ -104,31 +149,138 @@ module.exports = {
             return rtn;
         }
     },
-}
 
+    /**
+      * Function description : 取得商品Bom表
+      * @param  {string} sku 商品sku
+      */
+    getProductBom: async function (sku) {
+        var rtn = {};
+        try {
+            // rtn = await queryProducts(reqData);
+            var qry = { sku: sku };
+            var options = {};
+
+            await m_db.query("bom", qry, options, function (err, result) {
+                if (err != null) {
+                    rtn.ack = 'FAIL';
+                    rtn.ackDesc = err.message;
+                    console.log('getProductBom_query err :', err.message);
+                } else {
+                    rtn.ack = 'OK';
+                    rtn.ackDesc = '';
+                    rtn.data = JSON.parse(JSON.stringify(result));
+                }
+            })
+            return rtn;
+        } catch (err) {
+            console.log("getProductBom err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
+            return rtn;
+        }
+    },
+
+    /**
+    * Function description : 取得商品圖
+    * @param  {string} sku 商品sku
+    */
+    getProductImg: async function (sku) {
+        var rtn = {};
+        try {
+            let _tmpImg = [];
+            let picPath = path.join(FileFolderUrl, sku);
+            let _tmpArr = fs.readdirSync(picPath);
+            _tmpArr.forEach(img => {
+                const extensionName = path.extname(img);
+                const file = fs.readFileSync(path.join(picPath, img));
+                const base64Image = Buffer.from(file).toString('base64');
+                const base64ImageStr = `data:image/${extensionName.split('.').pop()};base64,${base64Image}`;
+                _tmpImg.push(base64ImageStr);
+            });
+
+            rtn.ack = 'OK';
+            rtn.data = _tmpImg;
+            return rtn;
+        } catch (err) {
+            console.log("getProductImg err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
+            return rtn;
+        }
+    },
+
+    //delete
+    deleteProduct: async function (reqData) {
+        var rtn = {};
+        try {
+            const sku = reqData;
+            rtn = db.transaction().then(async function (t) {
+                var rtn_ = {};
+
+                // delete bom
+                let req_productDataDelete = new Promise((resolve, reject) => {
+                    handleDeleteProductDataPromise(sku, t, resolve, reject);
+                });
+                // delete bom
+                let req_bomDataDelete = new Promise((resolve, reject) => {
+                    handleDeleteBomDataPromise(sku, t, resolve, reject);
+                });
+
+                return Promise.all([req_productDataDelete, req_bomDataDelete])
+                    .then(value => {
+                        let picPath = path.join(FileFolderUrl, sku);
+                        fse.ensureDirSync(picPath);
+                        fs.rmdirSync(picPath, { recursive: true });
+                        t.commit();
+                        rtn_.ack = "OK";
+                        return rtn_;
+                    }, resion => {
+                        t.rollback();
+                        rtn_.ack = "FAIL";
+                        rtn_.ackDesc = "刪除資料時發生錯誤";
+                        return rtn_;
+                    })
+                    .catch(err => {
+                        console.log("deleteProduct err", err);
+                        rtn_.ack = "FAIL";
+                        rtn_.ackDesc = err.message;
+                        return rtn_;
+                    });
+
+            })
+            return rtn;
+        } catch (err) {
+            console.log("deleteProduct err:", err);
+            rtn.ack = 'FAIL';
+            rtn.ackDesc = err.message;
+            return rtn;
+        }
+    },
+}
 
 
 //Function =====================================================================
 
 /**
-   * Function description : handle Product Data Promise
+   * Function description : handle insert Product Data Promise
    * @param  {object} insertData 新增資料
    * @param  {string} op_user op user
    * @param  {transaction} t transaction
    * @param  {resolve} resolve resolve
    * @param  {reject} reject reject
    */
-function handleProductDataPromise(data, op_user, t, resolve, reject) {
+function handleInsertProductDataPromise(data, op_user, t, resolve, reject) {
     try {
         const insertData = data;
         insertData.cr_date = utility.get_today();
         insertData.op_user = op_user;
 
         m_db.insertWithTx(insertData, 'products', t, function (err, result) {
-            err != null ? (console.log("handleProductDataPromise1 err", err), reject()) : resolve();
+            err != null ? (console.log("handleInsertProductDataPromise1 err", err), reject()) : resolve();
         })
     } catch (err) {
-        console.log("handleProductDataPromise err", err)
+        console.log("handleInsertProductDataPromise err", err)
         reject();
     }
 }
@@ -159,24 +311,98 @@ function handleImgDataPromise(file, target, t, resolve, reject) {
 }
 
 /**
-   * Function description : handle Bom Data Promise
+   * Function description : handle insert Bom Data Promise
    * @param  {JSON} data data
    * @param  {transaction} t transaction
    * @param  {resolve} resolve resolve
    * @param  {reject} reject reject
    */
-function handleBomDataPromise(data, t, resolve, reject) {
+function handleInsertBomDataPromise(data, t, resolve, reject) {
     try {
         const insertData = data;
         insertData.cr_date = utility.get_today();
         m_db.insertWithTx(insertData, 'bom', t, function (err, result) {
-            err != null ? (console.log("handleBomDataPromise1 err", err), reject()) : resolve();
+            err != null ? (console.log("handleInsertBomDataPromise1 err", err), reject()) : resolve();
         })
     } catch (err) {
-        console.log("handleBomDataPromise err", err)
+        console.log("handleInsertBomDataPromise err", err)
         reject();
     }
 }
+
+
+/**
+   * Function description : handle update Product Data Promise
+   * @param  {JSON} data data
+   * @param  {string} op_user op user
+   * @param  {transaction} t transaction
+   * @param  {resolve} resolve resolve
+   * @param  {reject} reject reject
+   */
+function handleUpdateProductDataPromise(data, op_user, t, resolve, reject) {
+    try {
+        var where = {};
+        where.guid = data.guid;
+        var upData = data;
+        upData.op_user = op_user;
+        upData.up_date = utility.get_today();
+
+        m_db.updateWithTx(upData, 'products', where, t, function (err, result) {
+            err != null ? (console.log("handleUpdateProductDataPromise1 err", err), reject()) : resolve();
+        })
+    } catch (err) {
+        console.log("handleUpdateProductDataPromise err", err)
+        reject();
+    }
+}
+
+/**
+   * Function description : handle delete Bom Data Promise
+   * @param  {string} key key
+   * @param  {transaction} t transaction
+   * @param  {resolve} resolve resolve
+   * @param  {reject} reject reject
+   */
+function handleDeleteBomDataPromise(key, t, resolve, reject) {
+    try {
+        var where = {};
+        where.sku = key;
+
+        m_db.deleteWithTx('bom', where, t, function (err, result) {
+            err != null ? (console.log("handleDeleteBomDataPromise1 err", err), reject()) : resolve();
+        })
+
+    } catch (err) {
+        console.log("handleDeleteBomDataPromise err", err)
+        reject();
+    }
+}
+
+
+/**
+   * Function description : handle delete Product Data Promise
+   * @param  {string} key key
+   * @param  {transaction} t transaction
+   * @param  {resolve} resolve resolve
+   * @param  {reject} reject reject
+   */
+function handleDeleteProductDataPromise(key, t, resolve, reject) {
+    try {
+        var where = {};
+        where.sku = key;
+
+        m_db.deleteWithTx('products', where, t, function (err, result) {
+            err != null ? (console.log("handleDeleteProductDataPromise1 err", err), reject()) : resolve();
+        })
+
+    } catch (err) {
+        console.log("handleDeleteProductDataPromise err", err)
+        reject();
+    }
+}
+
+
+
 
 
 /**
@@ -245,24 +471,9 @@ async function queryProducts(reqData) {
             }
         }
 
-        // TODO:
-        // inventory: '',
-
         await m_db.query("products", qry, options, function (err, result) {
             err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) : (rtn.ack = "OK", rtn.data = JSON.parse(JSON.stringify(result)));
         })
-
-
-        // Test function tmp
-
-        console.log("rtn.data", rtn.data);
-        const { kind, status, catena_belong, single_belong } = rtn.data;
-        // let _tmp = await transformPublicCode('ma_type_1', 'code_seq1', 'code_desc1');
-        // console.log('transformPublicCode!!!!', _tmp);
-
-        rtn.data
-        // Test function tmp
-
 
         return rtn;
     } catch (err) {
@@ -273,24 +484,4 @@ async function queryProducts(reqData) {
     }
 }
 
-// TODO:
-// data
-// fromCol
-// toCol
-async function transformPublicCode(data, fromCol, toCol) {
-    var qry = {};
-    var options = {};
-    let rtn = null;
-    qry[fromCol] = data;
-
-    await m_db.query("publiccode", qry, options, function (err, result) {
-        if (err != null) {
-            console.log('transformPublicCode err :', err.message);
-        } else {
-            rtn = JSON.parse(JSON.stringify(result))[0][toCol];
-        }
-    })
-    return rtn;
-
-}
 

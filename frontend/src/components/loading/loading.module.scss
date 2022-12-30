@@ -1,0 +1,151 @@
+.Loading {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    z-index: 9999999;
+    overflow: hidden !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .logoImg {
+        position: absolute;
+        width: 25%;
+        margin: auto;
+        padding-left: 20px;
+    }
+
+    .ldsDefault {
+        position: absolute;
+        margin: auto;
+
+        div {
+            position: absolute;
+            color: var(--mainColor);
+
+            .IConStyle {
+                font-size: 12px !important;
+                display: flex;
+                align-items: center;
+                width: 20px;
+                height: 20px;
+                animation: ldsDefaultAn 1.2s linear infinite;
+            }
+
+        }
+
+        & div:nth-child(1) {
+            transform: rotate(calc(360deg / 12 * 1)) translateX(20vw);
+
+            .IConStyle {
+                animation-delay: 0s;
+            }
+
+        }
+
+        & div:nth-child(2) {
+            transform: rotate(calc(360deg / 12 * 2)) translateX(20vw);
+
+            .IConStyle {
+                animation-delay: -0.1s;
+            }
+        }
+
+        & div:nth-child(3) {
+            transform: rotate(calc(360deg / 12 * 3)) translateX(20vw);
+
+            .IConStyle {
+                animation-delay: -0.2s;
+            }
+
+        }
+
+        & div:nth-child(4) {
+        
+            transform: rotate(calc(360deg / 12 * 4)) translateX(20vw);
+            .IConStyle {
+                animation-delay: -0.3s;
+            }
+        }
+
+        & div:nth-child(5) {
+          
+            transform: rotate(calc(360deg / 12 * 5)) translateX(20vw);
+            .IConStyle {
+                animation-delay: -0.4s;
+            }
+        }
+
+        & div:nth-child(6) {
+     
+            transform: rotate(calc(360deg / 12 * 6)) translateX(20vw);
+            .IConStyle {
+                animation-delay: -0.5s;
+            }
+        }
+
+        & div:nth-child(7) {
+           
+            transform: rotate(calc(360deg / 12 * 7)) translateX(20vw);
+            .IConStyle {
+                animation-delay: -0.6s;
+            }
+        }
+
+
+        & div:nth-child(8) {
+            transform: rotate(calc(360deg / 12 * 8)) translateX(20vw);
+            .IConStyle {
+                animation-delay: -0.7s;
+            }
+        }
+
+
+        & div:nth-child(9) {
+            transform: rotate(calc(360deg / 12 * 9)) translateX(20vw);
+            .IConStyle {
+                animation-delay: -0.8s;
+            }
+        }
+
+        & div:nth-child(10) {
+            transform: rotate(calc(360deg / 12 * 10)) translateX(20vw);
+            .IConStyle {
+                animation-delay: -0.9s;
+            }
+        }
+
+        & div:nth-child(11) {
+            transform: rotate(calc(360deg / 12 * 11)) translateX(20vw);
+            .IConStyle {
+                animation-delay: -1s;
+            }
+        }
+
+        & div:nth-child(12) {
+            transform: rotate(calc(360deg / 12 * 12)) translateX(20vw);
+            .IConStyle {
+                animation-delay: -1.1s;
+            }
+        }
+
+
+    }
+}
+
+
+
+@keyframes ldsDefaultAn {
+
+    0%,
+    20%,
+    80%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.5);
+    }
+}

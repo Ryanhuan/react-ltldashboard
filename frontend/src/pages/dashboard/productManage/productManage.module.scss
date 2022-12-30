@@ -1,0 +1,37 @@
+.productManage {
+    .wrapper {
+        .items {
+            padding: 20px;
+
+            .itemWrapper {
+                height: 0px;
+                transition: 0.5s;
+                overflow: hidden;
+                padding: 10px 20px 0px 20px;
+                margin-top: 10px;
+
+                &.active {
+                    height: 200px;
+                    transition: 0.5s;
+                }
+
+            }
+
+            .matDataList {
+                height: 635px;
+            }
+
+        }
+
+       
+    }
+}
+
+
+@media(max-width:768px) {
+    .productCode {
+        .itemWrapper.active {
+            height: auto;
+        }
+    }
+}

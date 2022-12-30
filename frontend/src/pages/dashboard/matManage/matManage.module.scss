@@ -1,0 +1,49 @@
+.matManage {
+    .wrapper {
+        .items {
+            padding: 20px;
+
+            .itemWrapper {
+                height: 0px;
+                transition: 0.5s;
+                overflow: hidden;
+                padding: 10px 20px 0px 20px;
+                margin-top: 10px;
+
+                .insertRow {
+                    padding: 5px 0;
+                }
+
+                &.active {
+                    height: 370px;
+                    transition: 0.5s;
+                }
+
+                &.search {
+                    &.active {
+                        height: 300px;
+                    }
+                }
+            }
+
+            .matDataList {
+                height: 635px;
+            }
+
+        }
+    }
+}
+
+@media screen and (max-width: 820px) {
+    .matManage {
+        .wrapper {
+            .items {
+                .matDataList {
+                    Button {
+                        min-width: 40px !important;
+                    }
+                }
+            }
+        }
+    }
+}

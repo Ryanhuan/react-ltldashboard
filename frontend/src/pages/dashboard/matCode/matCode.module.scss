@@ -1,0 +1,43 @@
+.matCode {
+    .wrapper {
+        .items {
+            padding: 20px;
+
+            .itemWrapper {
+                height: 0px;
+                transition: 0.5s;
+                overflow: hidden;
+                padding: 10px 20px 0px 20px;
+                margin-top: 10px;
+
+                &.active {
+                    height: 150px;
+                    transition: 0.5s;
+                }
+            }
+
+            .itemsContainer {
+                padding: 10px 0;
+
+                .matCodeDataList {
+                    height: 635px;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .matCode {
+        .wrapper {
+            .items {
+                .itemWrapper {
+                    &.active {
+                        height: 200px;
+                        transition: 0.5s;
+                    }
+                }
+            }
+        }
+    }
+}

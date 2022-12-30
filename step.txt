@@ -1,0 +1,11 @@
+npx degit fabien-ml/react-ts-vite-template frontend
+
+cd frontend
+
+git init
+
+npm i
+
+npm audit fix
+
+npm run dev 

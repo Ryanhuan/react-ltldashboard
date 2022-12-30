@@ -1,0 +1,17 @@
+.modal-content {
+    border: 0px !important;
+    Form {
+        label {
+            font-size: 20px;
+        }
+    
+        .modalTitle {
+            font-weight: 600 !important;
+        }
+    }
+}
+
+.modal-backdrop {
+    background-color: rgba(125, 125, 125, 0.353) !important;
+}
+

@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import Upload from './Upload'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { defaultTheme } from '../../contexts/theme';
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -73,7 +74,7 @@ class PicWall extends Component {
                 border-radius: 4px;
                 cursor: pointer;
                 &:hover {
-                border: 1px dashed ${(props) => props.theme.color.primary};
+                border: 1px dashed ${defaultTheme.color.primary};
                 }
             `;
 

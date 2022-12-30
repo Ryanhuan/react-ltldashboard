@@ -1,70 +1,90 @@
-# Getting Started with Create React App
+# React TypeScript template with Vite
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a [React](https://reactjs.org) + [TypeScript](https://www.typescriptlang.org/) boilerplate built with [Vite](https://vitejs.dev).
 
-## Available Scripts
+## What's inside?
 
-In the project directory, you can run:
+- [ReactJS](https://reactjs.org)
+- [Vite](https://vitejs.dev)
+- [TypeScript](https://www.typescriptlang.org)
+- [Jest](https://jestjs.io)
+- [Testing Library](https://testing-library.com)
+- [Cypress](https://www.cypress.io)
+- [ESLint](https://eslint.org)
+- [Prettier](https://prettier.io)
+- [Polyfills](https://github.com/vitejs/vite/tree/main/packages/plugin-legacy#readme)
 
-### `npm start`
+## Getting started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Create the project.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+   ```bash
+   npx degit fabien-ml/react-ts-vite-template my-app
+   ```
 
-### `npm test`
+2. Access the project directory.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```bash
+   cd my-app
+   ```
 
-### `npm run build`
+3. Initialize a git repository.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```bash
+   git init
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Install dependencies.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   ```bash
+   npm install
+   ```
 
-### `npm run eject`
+5. Start dev server with hot reload at http://localhost:3000.
+   ```bash
+   npm run dev
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Recommended VS Code extensions
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Other commands
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Lint commands
 
-## Learn More
+```bash
+npm run lint
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Build commands
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+npm run build
+```
 
-### Code Splitting
+### Run the app in production mode at http://localhost:3000.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+npm run serve
+```
 
-### Analyzing the Bundle Size
+### Test commands
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Run unit tests and watch
+  ```bash
+  npm run test:unit
+  ```
+- Run unit tests with coverage
+  ```bash
+  npm run test:unit:coverage
+  ```
+- Run e2e tests
+  ```bash
+  npm run test:e2e
+  ```
 
-### Making a Progressive Web App
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License.

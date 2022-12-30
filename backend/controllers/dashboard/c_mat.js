@@ -80,15 +80,15 @@ module.exports = {
                 }
                 qry.price_per[Op.lte] = reqData.highPricePer;
             }
-            
+
             await m_db.query("materials", qry, options, async function (err, result) {
                 err != null ? (rtn.ack = 'FAIL', rtn.ackDesc = err.message) :
                     (rtn.ack = "OK", rtn.data = JSON.parse(JSON.stringify(result)));
             })
 
             for (let ele in rtn.data) {
-                rtn.data[ele].type = await codeDesc(rtn.data[ele].type, "ma_type");
-                rtn.data[ele].quality = await codeDesc(rtn.data[ele].quality, "ma_quality");
+                rtn.data[ele].type = await this.codeDesc(rtn.data[ele].type, "ma_type");
+                rtn.data[ele].quality = await this.codeDesc(rtn.data[ele].quality, "ma_quality");
             }
 
             return rtn;
@@ -148,6 +148,28 @@ module.exports = {
             rtn.ackDesc = err.message;
             return rtn;
         }
+    },
+
+    codeDesc: async function (data, searchCodeType) {
+        var qry = {};
+        var rtn = '';
+        if (data != null && data != undefined) {
+            qry.code_seq1 = data;
+            qry.code_type = searchCodeType;
+
+            var options = {};
+
+            await m_db.query("publiccode", qry, options, function (err, result) {
+                if (err != null) {
+                    console.log("codeDesc_err", err);
+                    rtn = data;
+                } else {
+                    let _res = JSON.parse(JSON.stringify(result));
+                    rtn = _res.length != 0 ? _res[0].code_desc1 : data;
+                }
+            })
+        }
+        return rtn;
     }
 
 }
@@ -184,24 +206,24 @@ async function checkMatId(Id) {
 }
 
 
-async function codeDesc(data, searchCodeType) {
-    var qry = {};
-    var rtn = '';
-    if (data != null && data != undefined) {
-        qry.code_seq1 = data;
-        qry.code_type = searchCodeType;
+// async function codeDesc(data, searchCodeType) {
+//     var qry = {};
+//     var rtn = '';
+//     if (data != null && data != undefined) {
+//         qry.code_seq1 = data;
+//         qry.code_type = searchCodeType;
 
-        var options = {};
+//         var options = {};
 
-        await m_db.query("publiccode", qry, options, function (err, result) {
-            if (err != null) {
-                console.log("codeDesc_err", err);
-                rtn = data;
-            } else {
-                let _res = JSON.parse(JSON.stringify(result));
-                rtn = _res.length != 0 ? _res[0].code_desc1 : data;
-            }
-        })
-    }
-    return rtn;
-}
+//         await m_db.query("publiccode", qry, options, function (err, result) {
+//             if (err != null) {
+//                 console.log("codeDesc_err", err);
+//                 rtn = data;
+//             } else {
+//                 let _res = JSON.parse(JSON.stringify(result));
+//                 rtn = _res.length != 0 ? _res[0].code_desc1 : data;
+//             }
+//         })
+//     }
+//     return rtn;
+// }
