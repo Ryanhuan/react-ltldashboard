@@ -53,8 +53,8 @@ http://localhost:3000
 
 ## View
 
-![image](https://gitlab.com/cazofu2802/react-ltldashboard/-/blob/Master/_forREADME/view1.png)
+![image](_forREADME/view1.png)
 
-![image](https://gitlab.com/cazofu2802/react-ltldashboard/-/blob/Master/_forREADME/view2.png)
+![image](_forREADME/view2.png)
 
-![image](https://gitlab.com/cazofu2802/react-ltldashboard/-/blob/Master/_forREADME/view3.png)
+![image](_forREADME/view3.png)
