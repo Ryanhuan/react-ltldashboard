@@ -35,7 +35,9 @@ export default function login(props: any) {
 
   return (
     <div className={styles.login}>
-      <div className={styles.wrapper}>
+      {/* <div className={clsx(styles.wrapper)}> */}
+      {/* <div className={clsx(styles.backFont, 'diffuseLight')}>前面路燈左轉</div> */}
+      <div className={clsx(styles.wrapper, 'diffuseLight')}>
         <div className={styles.wrapperTop}>
           <span className={styles.wrapperTitle}>Login</span>
         </div>
@@ -62,7 +64,7 @@ export default function login(props: any) {
 
             <div className="row">
               <div className={styles.wrapperBodyItem}>
-                <Button className="btn btnMain" type="submit">Login</Button>
+                <Button className="btn btnMainWhite" type="submit">Login</Button>
               </div>
             </div>
           </Form>

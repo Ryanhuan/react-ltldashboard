@@ -1,5 +1,6 @@
 import "./main.scss";
-import '../src/css/reset.css'
+import '@/css/reset.css'
+import '@/css/animates.scss'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { StrictMode } from "react";
