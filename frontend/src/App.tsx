@@ -57,29 +57,31 @@ export default function App() {
               <div className="appBody">
                 <Topbar />
                 <Routes>
-                  {pageSettings.Admin.map((route, index) => (
-                    <Route
-                      key={index}
-                      path={route.href}
-                      element={
-                        <>
-                          <span className="PageTitle">{route.pageTitle}</span>
-                          {
-                            <route.element
-                              setLoading={state => {
-                                _setLoading(state);
-                              }}
-                            />
+                  {pageSettings.Admin.map((ele) => (
+                      ele.treeChildren.map((route, index) => (
+                        <Route
+                          key={index}
+                          path={route.href}
+                          element={
+                            <>
+                              <span className="PageTitle">{route.pageTitle}</span>
+                              {
+                                <route.element
+                                  setLoading={state => {
+                                    _setLoading(state);
+                                  }}
+                                />
+                              }
+                            </>
                           }
-                        </>
-                      }
-                    />
+                        />
+                      ))
                   ))}
-                </Routes>
-              </div>
+              </Routes>
             </div>
-          </Router>
-        </ErrorBoundary>
+          </div>
+        </Router>
+      </ErrorBoundary>
       </>
     );
   }
